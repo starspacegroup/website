@@ -56,16 +56,6 @@ export const projects: Project[] = [
 		tags: [madeHere, stack('Web Audio API')]
 	},
 	{
-		id: 'hermes',
-		name: 'Hermes',
-		description:
-			'An eCommerce platform for building your own store in minutes. An AI store builder, responsive storefronts, checkout by card or crypto, and a zero-monthly-fee revenue share instead of a subscription.',
-		url: 'https://hermes.starspace.group/',
-		external: true,
-		screenshot: '/projects/hermes-screenshot.webp',
-		tags: [madeHere, stack('SvelteKit'), stack('Cloudflare Workers')]
-	},
-	{
 		id: 'nebulakit',
 		name: 'NebulaKit',
 		description:

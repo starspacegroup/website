@@ -1,6 +1,7 @@
 import { render } from '@testing-library/svelte';
 import { describe, expect, it, beforeEach } from 'vitest';
 import SharingMeta from './SharingMeta.svelte';
+import { site } from '$lib/site.config';
 
 describe('SharingMeta', () => {
 	beforeEach(() => {
@@ -366,5 +367,15 @@ describe('SharingMeta', () => {
 			'Test Author'
 		);
 		expect(document.querySelector('meta[name="robots"]')).not.toBeInTheDocument();
+	});
+
+	it('does not repeat the site name when a page is named after the site', () => {
+		render(SharingMeta, { title: site.name, description: 'Home' });
+		expect(document.title).toBe(site.name);
+	});
+
+	it('still suffixes a page that has its own name', () => {
+		render(SharingMeta, { title: 'Projects', description: 'Built here' });
+		expect(document.title).toBe(`Projects - ${site.name}`);
 	});
 });

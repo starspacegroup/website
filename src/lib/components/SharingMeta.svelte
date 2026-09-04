@@ -44,7 +44,10 @@
 	/** Height of the share image in pixels */
 	export let imageHeight: number = 0;
 
-	$: fullTitle = siteName ? `${title} - ${siteName}` : title;
+	// The home page passes the site's own name as its title, and appending the
+	// suffix there produced "*Space - *Space" in the tab. A page named after the
+	// site is already fully qualified.
+	$: fullTitle = siteName && title !== siteName ? `${title} - ${siteName}` : title;
 	// Resolve root-relative image paths to absolute URLs for OG/Twitter compliance
 	$: absoluteImage = image && image.startsWith('/') ? `${$page.url.origin}${image}` : image;
 </script>

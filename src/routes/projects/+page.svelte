@@ -100,7 +100,7 @@
 		padding: 0.75rem 1.5rem;
 		border-radius: var(--radius-md);
 		background: var(--color-primary);
-		color: #ffffff;
+		color: var(--color-background);
 		font-weight: 600;
 		text-decoration: none;
 		transition: background var(--transition-fast);

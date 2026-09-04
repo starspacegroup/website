@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/svelte';
+import { render, screen, within } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
 import Footer from './Footer.svelte';
 import { DISCORD_INVITE } from '$lib/discord';
@@ -98,8 +98,11 @@ describe('Footer', () => {
 	// The site credits its author only when the author is someone else. Here the
 	// site IS the author, so "© *Space. Created by *Space." would be noise.
 	it('credits the author only when the author is not the site itself', () => {
-		render(Footer);
-		const authorLink = screen.queryByRole('link', { name: site.author });
+		const { container } = render(Footer);
+		// Scoped to the copyright line: the brand link in the footer logo carries
+		// the same text, because on this site the author IS the site.
+		const copyright = container.querySelector('.footer-copyright') as HTMLElement;
+		const authorLink = within(copyright).queryByRole('link', { name: site.author });
 		if (site.author === site.name) {
 			expect(authorLink).not.toBeInTheDocument();
 			return;

@@ -1,35 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="*Space">
+	<title>*Space</title>
+	<!--
+		The *Space mark on a night tile, for a dark tab bar.
+
+		Geometry is the site's own star, traced in design/logos/icon.svg: inner
+		to outer radius 0.41, and a delta inscribed rather than cut out. The
+		delta is painted in the tile's own navy so it reads as a hole in the
+		bronze, which is what the carved-wood original does with shadow.
+
+		The source star sits high in its box (y 30..430); translating it down by
+		26 centres it here, where there is no name band under it.
+	-->
 	<defs>
-		<radialGradient id="dark-bg" cx="48%" cy="42%" r="70%">
-			<stop offset="0" stop-color="#202653" />
-			<stop offset="1" stop-color="#080d21" />
+		<radialGradient id="dark-tile" cx="48%" cy="40%" r="72%">
+			<stop offset="0" stop-color="#1b2450" />
+			<stop offset="1" stop-color="#070c1f" />
 		</radialGradient>
 	</defs>
-	<rect width="512" height="512" rx="104" fill="url(#dark-bg)" />
-	<ellipse
-		cx="256"
-		cy="256"
-		rx="146"
-		ry="48"
-		fill="none"
-		stroke="#a78bfa"
-		stroke-width="12"
-		transform="rotate(-18 256 256)"
-	/>
-	<ellipse
-		cx="256"
-		cy="256"
-		rx="112"
-		ry="34"
-		fill="none"
-		stroke="#22d3ee"
-		stroke-width="8"
-		opacity=".8"
-		transform="rotate(20 256 256)"
-	/>
-	<circle cx="256" cy="256" r="42" fill="#8b5cf6" />
-	<circle cx="256" cy="256" r="18" fill="#f8fafc" />
-	<circle cx="104" cy="102" r="7" fill="#f8fafc" />
-	<circle cx="414" cy="126" r="5" fill="#67e8f9" />
-	<circle cx="390" cy="402" r="6" fill="#ddd6fe" />
+	<rect width="512" height="512" rx="104" fill="url(#dark-tile)" />
+	<g transform="translate(0 26) translate(256 256) scale(0.84) translate(-256 -256)">
+		<path
+			d="M256,30 L309,178 L466,183 L342,279 L386,430 L256,342 L126,430 L170,279 L46,183 L203,178 Z"
+			fill="#e0a063"
+		/>
+		<path d="M256,74 L347,346 L165,346 Z" fill="#0b1026" />
+	</g>
 </svg>

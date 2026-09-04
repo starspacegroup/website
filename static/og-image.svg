@@ -1,98 +1,161 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <defs>
-    <radialGradient id="bg-grad" cx="50%" cy="50%" r="70%">
-      <stop offset="0%" stop-color="#1a1a2e"/>
-      <stop offset="50%" stop-color="#16213e"/>
-      <stop offset="100%" stop-color="#0f0f23"/>
-    </radialGradient>
-    <radialGradient id="nebula1" cx="30%" cy="40%">
-      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.6"/>
-      <stop offset="50%" stop-color="#6366f1" stop-opacity="0.3"/>
-      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="nebula2" cx="70%" cy="60%">
-      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.5"/>
-      <stop offset="50%" stop-color="#6366f1" stop-opacity="0.25"/>
-      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="nebula3" cx="50%" cy="30%">
-      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.4"/>
-      <stop offset="60%" stop-color="#a855f7" stop-opacity="0.15"/>
-      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
-    </radialGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="3" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="*Space — an inclusive digital coworking space on Discord">
+	<title>*Space</title>
+	<!--
+		The share card. 1200x630 is the 1.91:1 every platform crops toward.
 
-  <!-- Background -->
-  <rect width="1200" height="630" fill="url(#bg-grad)"/>
+		Rendered to og-image.png with rsvg-convert; the PNG is what ships, because
+		no scraper fetches an SVG og:image. Rebuild both together — see the "Share
+		cards" section of README.md.
 
-  <!-- Nebula clouds -->
-  <ellipse cx="300" cy="250" rx="350" ry="280" fill="url(#nebula1)"/>
-  <ellipse cx="850" cy="380" rx="400" ry="300" fill="url(#nebula2)"/>
-  <ellipse cx="600" cy="200" rx="300" ry="200" fill="url(#nebula3)"/>
+		The starfield is seeded (20260904), so re-running the build produces the
+		same card rather than a gratuitous binary diff.
+	-->
+	<defs>
+		<radialGradient id="sky" cx="30%" cy="35%" r="85%">
+			<stop offset="0" stop-color="#1b2450" />
+			<stop offset="1" stop-color="#070c1f" />
+		</radialGradient>
+		<radialGradient id="nebula" cx="50%" cy="50%" r="50%">
+			<stop offset="0" stop-color="#fe795d" stop-opacity="0.30" />
+			<stop offset="1" stop-color="#fe795d" stop-opacity="0" />
+		</radialGradient>
+	</defs>
 
-  <!-- Stars -->
-  <circle cx="100" cy="80" r="1.5" fill="white" opacity="0.8"/>
-  <circle cx="250" cy="120" r="1" fill="white" opacity="0.6"/>
-  <circle cx="400" cy="60" r="1.5" fill="white" opacity="0.7"/>
-  <circle cx="550" cy="100" r="1" fill="white" opacity="0.5"/>
-  <circle cx="700" cy="50" r="2" fill="white" opacity="0.9"/>
-  <circle cx="850" cy="90" r="1" fill="white" opacity="0.6"/>
-  <circle cx="1000" cy="70" r="1.5" fill="white" opacity="0.7"/>
-  <circle cx="1100" cy="130" r="1" fill="white" opacity="0.5"/>
-  <circle cx="150" cy="500" r="1" fill="white" opacity="0.6"/>
-  <circle cx="350" cy="550" r="1.5" fill="white" opacity="0.7"/>
-  <circle cx="500" cy="520" r="1" fill="white" opacity="0.5"/>
-  <circle cx="750" cy="560" r="1.5" fill="white" opacity="0.8"/>
-  <circle cx="950" cy="500" r="1" fill="white" opacity="0.6"/>
-  <circle cx="1050" cy="540" r="2" fill="white" opacity="0.7"/>
-  <circle cx="80" cy="300" r="1" fill="white" opacity="0.5"/>
-  <circle cx="1120" cy="350" r="1.5" fill="white" opacity="0.6"/>
+	<rect width="1200" height="630" fill="url(#sky)" />
+	<ellipse cx="300" cy="300" rx="460" ry="360" fill="url(#nebula)" />
 
-  <!-- Logo / Icon area -->
-  <g transform="translate(600, 240)" filter="url(#glow)">
-    <!-- Nebula ring -->
-    <ellipse cx="0" cy="0" rx="65" ry="20" fill="none" stroke="#7c3aed" stroke-width="2" opacity="0.7" transform="rotate(-20)"/>
-    <ellipse cx="0" cy="0" rx="55" ry="18" fill="none" stroke="#06b6d4" stroke-width="1.5" opacity="0.5" transform="rotate(15)"/>
-    <!-- Core star -->
-    <circle cx="0" cy="0" r="12" fill="#a855f7" opacity="0.9"/>
-    <circle cx="0" cy="0" r="8" fill="#c4b5fd" opacity="0.8"/>
-    <circle cx="0" cy="0" r="4" fill="white" opacity="0.95"/>
-  </g>
+	<g id="starfield">
+		<circle cx="143.0" cy="250.3" r="1.8" fill="#ffffff" opacity="0.42" />
+		<circle cx="295.5" cy="307.8" r="0.8" fill="#ffffff" opacity="0.79" />
+		<circle cx="324.8" cy="230.0" r="1.5" fill="#ffffff" opacity="0.61" />
+		<circle cx="268.8" cy="173.3" r="0.8" fill="#ffffff" opacity="0.92" />
+		<circle cx="159.5" cy="226.6" r="1.2" fill="#ffffff" opacity="0.59" />
+		<circle cx="821.5" cy="123.2" r="1.5" fill="#ffffff" opacity="0.82" />
+		<circle cx="32.9" cy="360.1" r="1.2" fill="#ffffff" opacity="0.66" />
+		<circle cx="1199.2" cy="56.5" r="1.5" fill="#ffffff" opacity="0.64" />
+		<circle cx="527.8" cy="395.8" r="1.2" fill="#ffffff" opacity="0.28" />
+		<circle cx="1015.8" cy="553.5" r="1.8" fill="#ffffff" opacity="0.38" />
+		<circle cx="753.9" cy="83.6" r="1.5" fill="#ffffff" opacity="0.43" />
+		<circle cx="331.4" cy="599.5" r="0.8" fill="#ffffff" opacity="0.57" />
+		<circle cx="407.9" cy="591.0" r="1.5" fill="#ffffff" opacity="0.76" />
+		<circle cx="525.2" cy="380.4" r="1.2" fill="#ffffff" opacity="0.64" />
+		<circle cx="291.7" cy="77.1" r="0.8" fill="#ffffff" opacity="0.34" />
+		<circle cx="807.7" cy="556.6" r="1.8" fill="#ffffff" opacity="0.67" />
+		<circle cx="744.3" cy="86.8" r="1.0" fill="#ffffff" opacity="0.85" />
+		<circle cx="160.8" cy="516.8" r="1.5" fill="#ffffff" opacity="0.71" />
+		<circle cx="886.8" cy="522.9" r="1.2" fill="#ffffff" opacity="0.56" />
+		<circle cx="554.1" cy="520.7" r="1.0" fill="#ffffff" opacity="0.67" />
+		<circle cx="274.7" cy="555.4" r="0.8" fill="#ffffff" opacity="0.64" />
+		<circle cx="609.9" cy="586.6" r="0.8" fill="#ffffff" opacity="0.78" />
+		<circle cx="1178.8" cy="355.1" r="1.2" fill="#ffffff" opacity="0.41" />
+		<circle cx="1094.6" cy="107.9" r="2.4" fill="#ffffff" opacity="0.69" />
+		<circle cx="0.0" cy="311.8" r="1.0" fill="#ffffff" opacity="0.27" />
+		<circle cx="443.1" cy="599.3" r="2.4" fill="#ffffff" opacity="0.83" />
+		<circle cx="53.5" cy="232.8" r="1.5" fill="#ffffff" opacity="0.26" />
+		<circle cx="918.7" cy="533.3" r="1.8" fill="#ffffff" opacity="0.53" />
+		<circle cx="836.1" cy="156.6" r="1.8" fill="#ffffff" opacity="0.69" />
+		<circle cx="1091.2" cy="543.3" r="2.4" fill="#ffffff" opacity="0.79" />
+		<circle cx="41.9" cy="269.3" r="0.8" fill="#ffffff" opacity="0.8" />
+		<circle cx="146.9" cy="219.1" r="1.0" fill="#ffffff" opacity="0.54" />
+		<circle cx="1187.8" cy="68.6" r="1.5" fill="#ffffff" opacity="0.76" />
+		<circle cx="188.3" cy="303.9" r="1.8" fill="#ffffff" opacity="0.53" />
+		<circle cx="501.8" cy="511.9" r="1.8" fill="#ffffff" opacity="0.79" />
+		<circle cx="451.6" cy="256.6" r="1.5" fill="#ffffff" opacity="0.35" />
+		<circle cx="1100.2" cy="10.0" r="1.0" fill="#ffffff" opacity="0.65" />
+		<circle cx="858.3" cy="88.9" r="1.2" fill="#ffffff" opacity="0.6" />
+		<circle cx="98.6" cy="475.1" r="0.8" fill="#ffffff" opacity="0.78" />
+		<circle cx="510.8" cy="199.7" r="1.5" fill="#ffffff" opacity="0.74" />
+		<circle cx="60.6" cy="159.1" r="2.4" fill="#ffffff" opacity="0.78" />
+		<circle cx="13.9" cy="503.5" r="1.2" fill="#ffffff" opacity="0.47" />
+		<circle cx="491.3" cy="75.5" r="1.8" fill="#ffffff" opacity="0.39" />
+		<circle cx="317.4" cy="204.8" r="2.4" fill="#ffffff" opacity="0.27" />
+		<circle cx="386.0" cy="492.4" r="1.5" fill="#ffffff" opacity="0.52" />
+		<circle cx="446.0" cy="20.3" r="0.8" fill="#ffffff" opacity="0.9" />
+		<circle cx="185.4" cy="596.0" r="1.0" fill="#ffffff" opacity="0.4" />
+		<circle cx="543.3" cy="542.5" r="1.8" fill="#ffffff" opacity="0.92" />
+		<circle cx="505.1" cy="349.5" r="1.5" fill="#ffffff" opacity="0.95" />
+		<circle cx="189.3" cy="119.1" r="1.8" fill="#ffffff" opacity="0.95" />
+		<circle cx="484.8" cy="189.9" r="1.5" fill="#ffffff" opacity="0.27" />
+		<circle cx="329.6" cy="241.0" r="1.0" fill="#ffffff" opacity="0.62" />
+		<circle cx="288.1" cy="536.4" r="1.0" fill="#ffffff" opacity="0.9" />
+		<circle cx="382.3" cy="590.7" r="1.8" fill="#ffffff" opacity="0.66" />
+		<circle cx="65.9" cy="209.2" r="2.4" fill="#ffffff" opacity="0.43" />
+		<circle cx="258.3" cy="624.9" r="1.0" fill="#ffffff" opacity="0.41" />
+		<circle cx="538.0" cy="213.0" r="1.0" fill="#ffffff" opacity="0.83" />
+		<circle cx="152.3" cy="68.8" r="2.4" fill="#ffffff" opacity="0.46" />
+		<circle cx="234.6" cy="203.7" r="2.4" fill="#ffffff" opacity="0.84" />
+		<circle cx="393.9" cy="291.7" r="0.8" fill="#ffffff" opacity="0.58" />
+		<circle cx="32.0" cy="340.4" r="1.5" fill="#ffffff" opacity="0.91" />
+		<circle cx="1063.5" cy="624.2" r="0.8" fill="#ffffff" opacity="0.35" />
+		<circle cx="503.1" cy="109.1" r="0.8" fill="#ffffff" opacity="0.82" />
+		<circle cx="400.9" cy="444.2" r="0.8" fill="#ffffff" opacity="0.64" />
+		<circle cx="496.4" cy="277.2" r="1.8" fill="#ffffff" opacity="0.75" />
+		<circle cx="680.1" cy="100.9" r="0.8" fill="#ffffff" opacity="0.34" />
+		<circle cx="244.0" cy="343.5" r="1.8" fill="#ffffff" opacity="0.91" />
+		<circle cx="661.0" cy="46.2" r="1.2" fill="#ffffff" opacity="0.38" />
+		<circle cx="303.9" cy="549.2" r="2.4" fill="#ffffff" opacity="0.82" />
+		<circle cx="336.1" cy="138.3" r="1.0" fill="#ffffff" opacity="0.27" />
+		<circle cx="314.9" cy="616.8" r="1.8" fill="#ffffff" opacity="0.58" />
+		<circle cx="403.6" cy="114.6" r="1.8" fill="#ffffff" opacity="0.47" />
+		<circle cx="1003.6" cy="77.1" r="1.0" fill="#ffffff" opacity="0.48" />
+		<circle cx="977.4" cy="45.1" r="1.2" fill="#ffffff" opacity="0.9" />
+		<circle cx="16.9" cy="398.8" r="1.5" fill="#ffffff" opacity="0.69" />
+		<circle cx="1197.0" cy="346.1" r="0.8" fill="#ffffff" opacity="0.95" />
+		<circle cx="827.8" cy="115.6" r="1.0" fill="#ffffff" opacity="0.38" />
+		<circle cx="898.3" cy="563.0" r="2.4" fill="#ffffff" opacity="0.85" />
+		<circle cx="404.0" cy="339.3" r="1.2" fill="#ffffff" opacity="0.26" />
+		<circle cx="682.7" cy="612.0" r="1.0" fill="#ffffff" opacity="0.78" />
+		<circle cx="741.6" cy="76.9" r="1.2" fill="#ffffff" opacity="0.27" />
+		<circle cx="145.7" cy="583.4" r="0.8" fill="#ffffff" opacity="0.72" />
+		<circle cx="394.1" cy="258.3" r="1.8" fill="#ffffff" opacity="0.26" />
+		<circle cx="70.9" cy="158.1" r="2.4" fill="#ffffff" opacity="0.83" />
+		<circle cx="231.3" cy="121.7" r="1.2" fill="#ffffff" opacity="0.49" />
+		<circle cx="337.0" cy="559.3" r="1.0" fill="#ffffff" opacity="0.59" />
+		<circle cx="481.6" cy="135.3" r="0.8" fill="#ffffff" opacity="0.74" />
+		<circle cx="25.9" cy="563.4" r="0.8" fill="#ffffff" opacity="0.94" />
+		<circle cx="525.0" cy="372.6" r="1.0" fill="#ffffff" opacity="0.25" />
+		<circle cx="934.9" cy="103.9" r="1.2" fill="#ffffff" opacity="0.88" />
+		<circle cx="30.4" cy="359.7" r="1.2" fill="#ffffff" opacity="0.94" />
+		<circle cx="947.3" cy="24.0" r="1.8" fill="#ffffff" opacity="0.28" />
+		<circle cx="386.5" cy="321.8" r="1.0" fill="#ffffff" opacity="0.71" />
+		<circle cx="296.4" cy="523.0" r="1.5" fill="#ffffff" opacity="0.28" />
+		<circle cx="240.2" cy="558.2" r="1.2" fill="#ffffff" opacity="0.37" />
+		<circle cx="245.7" cy="364.1" r="2.4" fill="#ffffff" opacity="0.88" />
+		<circle cx="49.8" cy="345.9" r="2.4" fill="#ffffff" opacity="0.8" />
+		<circle cx="115.7" cy="556.3" r="1.2" fill="#ffffff" opacity="0.59" />
+		<circle cx="193.0" cy="570.6" r="1.2" fill="#ffffff" opacity="0.46" />
+		<circle cx="1158.4" cy="525.0" r="0.8" fill="#ffffff" opacity="0.64" />
+		<circle cx="394.9" cy="123.1" r="1.5" fill="#ffffff" opacity="0.8" />
+		<circle cx="50.3" cy="594.4" r="1.2" fill="#ffffff" opacity="0.92" />
+		<circle cx="610.8" cy="99.6" r="1.8" fill="#ffffff" opacity="0.86" />
+		<circle cx="246.6" cy="388.6" r="1.0" fill="#ffffff" opacity="0.75" />
+		<circle cx="941.1" cy="531.8" r="2.4" fill="#ffffff" opacity="0.31" />
+		<circle cx="310.5" cy="152.4" r="1.0" fill="#ffffff" opacity="0.41" />
+		<circle cx="291.1" cy="527.9" r="1.5" fill="#ffffff" opacity="0.35" />
+		<circle cx="3.8" cy="577.0" r="1.5" fill="#ffffff" opacity="0.77" />
+		<circle cx="1145.5" cy="27.2" r="1.8" fill="#ffffff" opacity="0.29" />
+		<circle cx="486.0" cy="319.0" r="1.2" fill="#ffffff" opacity="0.62" />
+		<circle cx="535.3" cy="2.6" r="1.5" fill="#ffffff" opacity="0.48" />
+		<circle cx="137.8" cy="358.1" r="2.4" fill="#ffffff" opacity="0.39" />
+		<circle cx="773.2" cy="122.8" r="1.5" fill="#ffffff" opacity="0.88" />
+		<circle cx="408.5" cy="278.8" r="1.8" fill="#ffffff" opacity="0.71" />
+		<circle cx="29.0" cy="390.0" r="1.5" fill="#ffffff" opacity="0.9" />
+		<circle cx="236.3" cy="259.3" r="1.0" fill="#ffffff" opacity="0.27" />
+	</g>
 
-  <!-- Title -->
-  <text x="600" y="340" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="64" font-weight="700" fill="white" letter-spacing="4" filter="url(#glow)">
-    NebulaKit
-  </text>
+	<!-- The mark, from design/logos/icon.svg, scaled into the left third. -->
+	<g transform="translate(300 315) scale(0.62) translate(-256 -230)">
+		<path
+			d="M256,30 L309,178 L466,183 L342,279 L386,430 L256,342 L126,430 L170,279 L46,183 L203,178 Z"
+			fill="#e0a063"
+		/>
+		<path d="M256,74 L347,346 L165,346 Z" fill="#0b1026" />
+	</g>
 
-  <!-- Subtitle -->
-  <text x="600" y="390" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#a5b4fc" letter-spacing="2" opacity="0.9">
-    A cosmic-grade SvelteKit starter powered by Cloudflare
-  </text>
-
-  <!-- Bottom accent line -->
-  <line x1="400" y1="430" x2="800" y2="430" stroke="url(#nebula1)" stroke-width="1" opacity="0.5"/>
-
-  <!-- Feature pills -->
-  <g font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#c4b5fd" opacity="0.8">
-    <text x="350" y="480" text-anchor="middle">SvelteKit</text>
-    <text x="480" y="480" text-anchor="middle">Cloudflare Workers</text>
-    <text x="630" y="480" text-anchor="middle">D1 Database</text>
-    <text x="760" y="480" text-anchor="middle">Auth.js</text>
-    <text x="870" y="480" text-anchor="middle">AI Chat</text>
-  </g>
-
-  <!-- Dots between features -->
-  <g fill="#7c3aed" opacity="0.6">
-    <circle cx="415" cy="476" r="2"/>
-    <circle cx="555" cy="476" r="2"/>
-    <circle cx="695" cy="476" r="2"/>
-    <circle cx="815" cy="476" r="2"/>
-  </g>
+	<g font-family="Noto Sans, DejaVu Sans, sans-serif">
+		<text x="560" y="285" font-size="120" font-weight="700" fill="#ffffff" letter-spacing="-3">*Space</text>
+		<text x="566" y="350" font-size="37" font-weight="400" fill="#c9d1e8">An inclusive digital coworking</text>
+		<text x="566" y="398" font-size="37" font-weight="400" fill="#c9d1e8">space on Discord.</text>
+		<text x="566" y="470" font-size="30" font-weight="600" fill="#fe795d">starspace.group</text>
+	</g>
 </svg>

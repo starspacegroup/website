@@ -170,7 +170,7 @@
 		padding: 0.5rem 1rem;
 		border-radius: var(--radius-md);
 		background: var(--color-primary);
-		color: #ffffff;
+		color: var(--color-background);
 		font-weight: 600;
 		text-decoration: none;
 		transition: background var(--transition-fast);

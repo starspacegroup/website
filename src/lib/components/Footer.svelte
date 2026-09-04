@@ -11,7 +11,14 @@
 			<!-- Brand Column -->
 			<div class="footer-brand">
 				<a href="/" class="footer-logo">
-					<span class="logo-icon">✨</span>
+					<span class="logo-icon" aria-hidden="true">
+						<svg width="22" height="22" viewBox="0 0 512 512" fill="none">
+							<path
+								d="M256,30 L309,178 L466,183 L342,279 L386,430 L256,342 L126,430 L170,279 L46,183 L203,178 Z"
+								fill="currentColor"
+							/>
+						</svg>
+					</span>
 					<span class="logo-text">{site.name}</span>
 				</a>
 				<p class="footer-tagline">
@@ -151,7 +158,9 @@
 	}
 
 	.logo-icon {
-		font-size: 1.25rem;
+		display: inline-flex;
+		align-items: center;
+		color: var(--color-secondary);
 	}
 
 	.footer-tagline {

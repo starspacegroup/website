@@ -249,7 +249,7 @@
 		width: 100%;
 		padding: var(--spacing-sm) var(--spacing-md);
 		background: var(--color-primary);
-		color: white;
+		color: var(--color-background);
 		border: none;
 		border-radius: var(--radius-md);
 		font-size: 1rem;

@@ -324,27 +324,6 @@
 		<div class="stars-layer"></div>
 		<div class="stars-layer-2"></div>
 
-		<!-- Chat bubble decoration with user icon -->
-		<div class="chat-bubble">
-			<svg
-				width="80"
-				height="80"
-				viewBox="0 0 80 80"
-				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
-			>
-				<rect width="80" height="80" rx="16" fill="url(#chatGradient)" />
-				<circle cx="40" cy="28" r="10" fill="white" />
-				<path d="M26 52c0-7.732 6.268-14 14-14s14 6.268 14 14v6H26v-6z" fill="white" />
-				<defs>
-					<linearGradient id="chatGradient" x1="0" y1="0" x2="80" y2="80">
-						<stop offset="0%" stop-color="#6366f1" />
-						<stop offset="100%" stop-color="#8b5cf6" />
-					</linearGradient>
-				</defs>
-			</svg>
-		</div>
-
 		<!-- Planets with enhanced detail -->
 		<div class="planet planet-left"></div>
 		<div class="planet planet-right"></div>
@@ -630,6 +609,61 @@
 					links to the manual, and nobody has to prove they belong before they can ask.
 				</p>
 			</div>
+
+			<div class="feature-card">
+				<div class="feature-header">
+					<div class="feature-icon">
+						<svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+							<rect
+								x="5"
+								y="8"
+								width="30"
+								height="21"
+								rx="3"
+								stroke="var(--color-primary)"
+								stroke-width="2.5"
+							/>
+							<path d="M14 34h12M20 29v5" stroke="var(--color-primary)" stroke-width="2.5" stroke-linecap="round" />
+							<path d="M13 22l5-6 4 5 5-7" stroke="var(--color-secondary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+						</svg>
+					</div>
+					<h3 class="feature-title">Show and tell</h3>
+				</div>
+				<p class="feature-description">
+					A channel for what you made this week, however small and however broken. It is the
+					deadline that is not a deadline, and it is why things get finished.
+				</p>
+			</div>
+
+			<div class="feature-card">
+				<div class="feature-header">
+					<div class="feature-icon">
+						<svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+							<path
+								d="M12 18V13a8 8 0 0 1 15.4-3"
+								stroke="var(--color-secondary)"
+								stroke-width="2.5"
+								stroke-linecap="round"
+							/>
+							<rect
+								x="8"
+								y="18"
+								width="24"
+								height="16"
+								rx="3"
+								stroke="var(--color-primary)"
+								stroke-width="2.5"
+							/>
+							<circle cx="20" cy="26" r="2.5" fill="var(--color-secondary)" />
+						</svg>
+					</div>
+					<h3 class="feature-title">Free, and open</h3>
+				</div>
+				<p class="feature-description">
+					No application, no fee, no minimum hours. Click the invite, read the rules, say hello in
+					whatever channel looks like your kind of trouble.
+				</p>
+			</div>
 		</div>
 	</div>
 </section>
@@ -806,7 +840,7 @@
 		width: 100%;
 		height: 100%;
 		z-index: 0;
-		opacity: 0.95;
+		opacity: 0.42;
 		pointer-events: none;
 		/* Gradient mask to fade out on right edge */
 		-webkit-mask-image: linear-gradient(
@@ -923,7 +957,7 @@
 		position: absolute;
 		border-radius: 50%;
 		filter: blur(100px);
-		opacity: 0.5;
+		opacity: 0.3;
 		animation: float 25s ease-in-out infinite;
 		will-change: transform;
 	}
@@ -1081,15 +1115,6 @@
 	}
 
 	/* Chat bubble decoration */
-	.chat-bubble {
-		position: absolute;
-		top: 12%;
-		right: 10%;
-		animation: float 20s ease-in-out infinite;
-		animation-delay: -3s;
-		filter: drop-shadow(0 10px 30px color-mix(in srgb, var(--color-primary) 40%, transparent));
-		will-change: transform;
-	}
 
 	/* Planets with enhanced realism */
 	.planet {
@@ -1188,6 +1213,27 @@
 		transform: translateY(0);
 	}
 
+	/* A scrim between the nebula and the copy. The artwork is painted from the
+	   brand accent, which is a mid-luminance coral — close enough to the body
+	   text that on a phone, where the nebula fills the whole viewport, the two
+	   cancelled out. This keeps the hero readable however loud the art gets,
+	   in either theme, instead of tuning opacities per breakpoint forever. */
+	.hero-content::before {
+		content: '';
+		position: absolute;
+		inset: -6% -10%;
+		z-index: -1;
+		border-radius: 50%;
+		background: radial-gradient(
+			ellipse at center,
+			color-mix(in srgb, var(--color-background) 88%, transparent) 0%,
+			color-mix(in srgb, var(--color-background) 66%, transparent) 45%,
+			transparent 78%
+		);
+		filter: blur(24px);
+		pointer-events: none;
+	}
+
 	.main-title {
 		font-size: 3.5rem;
 		font-weight: 700;
@@ -1210,11 +1256,13 @@
 	}
 
 	.subtitle {
+		max-width: 42rem;
+		margin: 0 auto var(--spacing-2xl);
 		font-size: 1.125rem;
-		color: var(--color-text-secondary);
-		margin-bottom: var(--spacing-2xl);
+		color: var(--color-text);
 		line-height: 1.7;
 		font-weight: 400;
+		opacity: 0.88;
 	}
 
 	@media (min-width: 768px) {
@@ -1648,18 +1696,6 @@
 	}
 
 	/* Responsive adjustments */
-	@media (max-width: 1024px) {
-		.chat-bubble {
-			width: 70px;
-			height: 70px;
-		}
-
-		.chat-bubble svg {
-			width: 70px;
-			height: 70px;
-		}
-	}
-
 	@media (max-width: 768px) {
 		.hero {
 			padding: var(--spacing-xl) var(--spacing-md);
@@ -1675,7 +1711,7 @@
 		}
 
 		.nebula-flow-left {
-			opacity: 0.9;
+			opacity: 0.38;
 		}
 
 		.nebula-waves-svg {
@@ -1704,18 +1740,6 @@
 		.nebula-left-overlay {
 			width: 300px;
 			height: 350px;
-		}
-
-		.chat-bubble {
-			width: 60px;
-			height: 60px;
-			top: 8%;
-			right: 5%;
-		}
-
-		.chat-bubble svg {
-			width: 60px;
-			height: 60px;
 		}
 
 		.star-sparkle {
@@ -1832,7 +1856,7 @@
 		}
 
 		.nebula-flow-left {
-			opacity: 0.85;
+			opacity: 0.34;
 		}
 
 		.nebula-waves-svg {

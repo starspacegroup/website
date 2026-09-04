@@ -102,7 +102,14 @@
 	<div class="container nav-container">
 		<div class="nav-content">
 			<a href="/" class="logo" on:click={closeMobileMenu}>
-				<span class="logo-icon">✨</span>
+				<span class="logo-icon" aria-hidden="true">
+					<svg width="22" height="22" viewBox="0 0 512 512" fill="none">
+						<path
+							d="M256,30 L309,178 L466,183 L342,279 L386,430 L256,342 L126,430 L170,279 L46,183 L203,178 Z"
+							fill="currentColor"
+						/>
+					</svg>
+				</span>
 				<span class="logo-text">{site.name}</span>
 			</a>
 
@@ -188,7 +195,14 @@
 				<div class="mobile-menu-shell">
 					<div class="mobile-menu-header">
 						<a href="/" class="logo mobile-menu-logo" on:click={closeMobileMenu}>
-							<span class="logo-icon">✨</span>
+							<span class="logo-icon" aria-hidden="true">
+								<svg width="22" height="22" viewBox="0 0 512 512" fill="none">
+									<path
+										d="M256,30 L309,178 L466,183 L342,279 L386,430 L256,342 L126,430 L170,279 L46,183 L203,178 Z"
+										fill="currentColor"
+									/>
+								</svg>
+							</span>
 							<span class="logo-text">{site.name}</span>
 						</a>
 						<button
@@ -438,8 +452,11 @@
 		opacity: 0.8;
 	}
 
+	/* The mark inherits `color`, so it follows the logo's own hover state. */
 	.logo-icon {
-		font-size: 1.5rem;
+		display: inline-flex;
+		align-items: center;
+		color: var(--color-secondary);
 	}
 
 	.nav-actions {

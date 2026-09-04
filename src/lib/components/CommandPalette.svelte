@@ -112,6 +112,13 @@
 			icon: '📍'
 		},
 		{
+			id: 'contact',
+			label: 'Contact',
+			description: 'Send a message to *Space',
+			action: () => goto('/contact'),
+			icon: '✉️'
+		},
+		{
 			id: 'discord',
 			label: 'Join on Discord',
 			description: 'Open the invite to the *Space server',

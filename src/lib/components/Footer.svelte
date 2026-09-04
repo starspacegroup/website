@@ -63,12 +63,20 @@
 							<a href={repoUrl} target="_blank" rel="noopener noreferrer">GitHub</a>
 						</li>
 						<li>
-							<a href="https://www.instagram.com/starspace.group/" target="_blank" rel="noopener noreferrer">
+							<a
+								href="https://www.instagram.com/starspace.group/"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
 								Instagram
 							</a>
 						</li>
 						<li>
-							<a href="https://bsky.app/profile/starspace.group" target="_blank" rel="noopener noreferrer">
+							<a
+								href="https://bsky.app/profile/starspace.group"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
 								Bluesky
 							</a>
 						</li>

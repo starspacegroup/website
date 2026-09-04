@@ -14,10 +14,12 @@ the command list, repository map, and architecture explanation.
 - Use theme tokens from `src/app.css`, not hardcoded colors. Add light and dark values together and
   run contrast validation. See `docs/THEME_SYSTEM.md`.
 - Put logs, generated analysis, debug traces, and temporary files in ignored `.llm-outputs/`.
-- *Space is a starter template; apps are created from it with "Use this template". Keep the
-  customization path working — `bun run customize`, `CUSTOMIZE.md`,
-  `INITIAL_CUSTOMIZATION_STATUS.md`, and `docs/INITIAL_CUSTOMIZATION.md` — and keep the branding
-  ledger honest rather than deleting it.
+- This repository is starspace.group itself, not the NebulaKit starter it was built from. Say so
+  in docs and on public surfaces; `tests/unit/product-identity.test.ts` fails on "starter
+  template" or "Use this template" copy. The rebranding machinery stays for forks — `bun run
+customize`, `CUSTOMIZE.md`, `INITIAL_CUSTOMIZATION_STATUS.md`, `docs/INITIAL_CUSTOMIZATION.md`
+  — and the ledger stays honest rather than deleted. The public directories are checked-in data
+  (`src/lib/data/`), not CMS entries, so both pages render without a database.
 - Preserve the complete logo-derived install set: Apple touch icon, 192/512 manifest icons,
   `site.webmanifest`, light/dark tab favicons, and the declarations in `src/app.html`. Installed-app
   icons are static; only tab favicons switch theme.

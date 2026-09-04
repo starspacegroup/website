@@ -1,8 +1,22 @@
 # *Space feature map
 
-This document maps what the starter template ships to where it is implemented. Everything below is
-working code in this repository, inherited by any app created from it with "Use this template"; it
-is not a catalog of hypothetical integrations.
+This document maps what the site ships to where it is implemented. Everything below is working
+code in this repository — the public pages, and the platform underneath them that *Space
+inherited from NebulaKit. It is not a catalog of hypothetical integrations.
+
+## Public site
+
+- Home page, hero and Discord member count: `src/routes/+page.svelte`,
+  `src/lib/components/MemberCount.svelte`
+- Discord invite, and the counts fetched from it: `src/lib/discord.ts`
+- Project directory and cards: `src/routes/projects/`, `src/lib/components/ProjectCard.svelte`,
+  `src/lib/data/projects.ts`
+- Sister spaces: `src/routes/sister-spaces/`, `src/lib/data/sister-spaces.ts`
+- Brand assets and the share card: `static/favicon*.svg`, `static/icon-*.png`,
+  `static/og-image.svg`
+
+The two directories are checked-in data rather than CMS entries, so both pages render on a clone
+with no database. `tests/unit/site-content.test.ts` holds them to it.
 
 ## Content platform
 

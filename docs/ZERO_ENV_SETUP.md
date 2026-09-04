@@ -8,9 +8,9 @@
 
 ## Getting Started
 
-[![Use this template](https://img.shields.io/badge/Use%20this%20template-238636?style=for-the-badge&logo=github&logoColor=white)](https://github.com/new?template_name=*Space&template_owner=starspacegroup)
+[![Use NebulaKit as a template](https://img.shields.io/badge/Use%20NebulaKit%20as%20a%20template-238636?style=for-the-badge&logo=github&logoColor=white)](https://github.com/new?template_name=NebulaKit&template_owner=starspacegroup)
 
-Click the button above to create your own repository from the *Space template, then follow the setup instructions below.
+This document describes a setup path *Space inherited from NebulaKit. It applies to this repository as it stands; the button above is for starting a new app from the starter, not for this one.
 
 ---
 

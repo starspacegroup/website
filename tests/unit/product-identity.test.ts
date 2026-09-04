@@ -8,7 +8,10 @@ const root = resolve(import.meta.dirname, '../..');
 const read = (path: string) => readFileSync(resolve(root, path), 'utf8');
 
 describe('*Space product identity', () => {
-	it('presents *Space as a starter template, consistently', () => {
+	// Inverted from the template's own guard, which asserted the opposite. This
+	// repository is starspace.group, not the starter it was built from; a reader
+	// who lands here from the site must not be told to click "Use this template".
+	it('presents itself as the *Space site, not as the starter it came from', () => {
 		const publicSurfaces = [
 			read('README.md'),
 			read('FEATURES.md'),
@@ -16,14 +19,13 @@ describe('*Space product identity', () => {
 			read('src/routes/documentation/+page.svelte')
 		].join('\n');
 
-		expect(publicSurfaces).toMatch(/starter template/i);
-		expect(publicSurfaces).toMatch(/use this template/i);
-		// The marketing site sells *Space as a template. If this repository ever
-		// describes itself as a finished product instead, the two disagree and a
-		// visitor who follows the site to the repo is told the opposite thing.
-		expect(publicSurfaces).not.toMatch(/independent Cloudflare-native platform/i);
+		expect(publicSurfaces).toMatch(/starspace\.group/i);
+		expect(publicSurfaces).not.toMatch(/starter template/i);
+		expect(publicSurfaces).not.toMatch(/use this template/i);
 	});
 
+	// Kept, though this site's own pass is done: a fork of this repository needs
+	// the same escape hatch that produced it.
 	it('ships a working customization workflow', () => {
 		for (const path of [
 			'CUSTOMIZE.md',
@@ -42,9 +44,12 @@ describe('*Space product identity', () => {
 		// downstream product.
 		expect(read('.gitignore')).toMatch(/^customize\.config\.json$/m);
 
-		// The entry points a new user is pointed at must actually name the script.
-		expect(read('README.md')).toMatch(/bun run customize/);
+		// The entry point that still points at the script must actually name it.
 		expect(read('CUSTOMIZE.md')).toMatch(/bun run customize/);
+
+		// And the ledger has to say the pass was run here, or every assistant
+		// that reads it will keep offering to do the onboarding again.
+		expect(read('INITIAL_CUSTOMIZATION_STATUS.md')).toMatch(/^status: complete$/m);
 	});
 
 	it('uses Bun for package-script orchestration', () => {

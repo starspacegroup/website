@@ -3,6 +3,29 @@ import { describe, expect, it } from 'vitest';
 import Page from '../../src/routes/documentation/+page.svelte';
 
 describe('Documentation Page', () => {
+	it('describes this site, not the template it came from', () => {
+		render(Page);
+		const section = screen
+			.getByRole('heading', { name: /^Start Here$/i })
+			.closest('section') as HTMLElement;
+		expect(within(section).getByText(/website for the \*Space Discord community/i)).toBeTruthy();
+		// The starter's own onboarding copy ("Use this template", "run customize")
+		// belongs upstream. Finding it here means a template pull was merged raw.
+		expect(section.textContent).not.toMatch(/use this template/i);
+		expect(section.textContent).not.toMatch(/starter template/i);
+	});
+
+	it('documents where the project and sister-space lists live', () => {
+		render(Page);
+		const section = screen
+			.getByRole('heading', { name: /^Site Content$/i })
+			.closest('section') as HTMLElement;
+		const scoped = within(section);
+		expect(scoped.getByText('src/lib/data/projects.ts')).toBeTruthy();
+		expect(scoped.getByText('src/lib/data/sister-spaces.ts')).toBeTruthy();
+		expect(scoped.getByText('src/lib/discord.ts')).toBeTruthy();
+	});
+
 	it('renders the primary documentation heading and intro', () => {
 		render(Page);
 		expect(screen.getByRole('heading', { name: /\*Space documentation/i })).toBeInTheDocument();

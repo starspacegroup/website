@@ -7,7 +7,7 @@ implementation starts from a known shape rather than a blank file.
 
 Downstream projects surveyed (2026-07-06):
 
-| Project                               | Divergence from *Space                                       |
+| Project                               | Divergence from *Space                                          |
 | ------------------------------------- | --------------------------------------------------------------- |
 | Nabu                                  | Large — media/AI-generation platform                            |
 | Payments/credits downstream app       | Large — consumer app with Stripe checkout and a credits ledger  |
@@ -74,7 +74,7 @@ binding — the missing "user uploads" story.
 > [docs/CMS_EMBEDS.md](./docs/CMS_EMBEDS.md). **Remaining:** the opt-in
 > markdown-blog-import recipe (item 4 below) is not yet ported.
 
-**Goal: *Space's CMS grows up.** That site took the registry-driven CMS and made
+*_Goal: *Space's CMS grows up.*_ That site took the registry-driven CMS and made
 authoring actually pleasant — a real WYSIWYG editor, live Svelte components embedded
 inside richtext content, and an R2 image pipeline wired into the editor. Bring the
 whole system into *Space, and improve it where the downstream version cut corners.

@@ -173,7 +173,9 @@ describe('Dev auth simulation endpoint', () => {
 		// a real owner/admin session, so this is the production-safety guard.
 		await expect(
 			GET({
-				url: new URL('https://starspace-group.starspace.group/api/auth/dev-simulate?provider=github'),
+				url: new URL(
+					'https://starspace-group.starspace.group/api/auth/dev-simulate?provider=github'
+				),
 				platform: { env: { DEV_AUTH_BYPASS: 'true', DB: db } }
 			} as any)
 		).rejects.toMatchObject({ status: 302, location: '/auth/login?error=not_configured' });

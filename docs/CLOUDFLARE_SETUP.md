@@ -17,12 +17,12 @@ the same `database_id`, the same KV `id`, and the same KV `preview_id`:
 
 | project            | what it thought it had | what it actually bound |
 | ------------------ | ---------------------- | ---------------------- |
-| *Space          | `starspace-group-db`         | `starspace-group-db`         |
-| Guides             | `guides-db`            | `starspace-group-db`         |
-| derived app A      | `starspace-group-db`         | `starspace-group-db`         |
-| derived app B      | `starspace-group-db`         | `starspace-group-db`         |
-| derived app C      | its own db             | `starspace-group-db`         |
-| derived app C (v2) | its own db             | `starspace-group-db`         |
+| *Space             | `starspace-group-db`   | `starspace-group-db`   |
+| Guides             | `guides-db`            | `starspace-group-db`   |
+| derived app A      | `starspace-group-db`   | `starspace-group-db`   |
+| derived app B      | `starspace-group-db`   | `starspace-group-db`   |
+| derived app C      | its own db             | `starspace-group-db`   |
+| derived app C (v2) | its own db             | `starspace-group-db`   |
 
 The result: one D1 with 28 tables and four projects' migrations interleaved in a
 single `d1_migrations` table, numbering collided (two `0004`s, two `0005`s…).

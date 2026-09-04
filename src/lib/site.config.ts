@@ -20,7 +20,8 @@ export const site = {
 	/** One-line tagline for the footer and hero. */
 	tagline: 'An inclusive digital coworking space on Discord.',
 	/** Longer description for the meta description and OG/Twitter cards. */
-	description: '*Space is an inclusive digital coworking space on Discord. Work around rock star makers, creators, artists, and innovators who are creativity and productivity driven.',
+	description:
+		'*Space is an inclusive digital coworking space on Discord. Work around rock star makers, creators, artists, and innovators who are creativity and productivity driven.',
 	/**
 	 * URL-safe slug. Drives the Cloudflare resource names in wrangler.toml
 	 * (`<slug>-db`, `<slug>-files`, `<slug>-queue`). Those files can't import this

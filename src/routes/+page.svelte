@@ -346,9 +346,9 @@
 			</div>
 
 			<p class="subtitle">
-				{site.name} is an inclusive digital coworking space on Discord, where everyone is
-				welcome. Work around makers, creators, artists, visionaries and trailblazers who are
-				creativity and productivity driven. 🤘 🚀
+				{site.name} is an inclusive digital coworking space on Discord, where everyone is welcome. Work
+				around makers, creators, artists, visionaries and trailblazers who are creativity and productivity
+				driven. 🤘 🚀
 			</p>
 
 			<div class="hero-actions">
@@ -405,10 +405,42 @@
 							fill="none"
 							xmlns="http://www.w3.org/2000/svg"
 						>
-							<rect x="2" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8" />
-							<rect x="11" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8" />
-							<rect x="2" y="12" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.8" />
-							<rect x="11" y="12" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.8" />
+							<rect
+								x="2"
+								y="3"
+								width="7"
+								height="7"
+								rx="1.5"
+								stroke="currentColor"
+								stroke-width="1.8"
+							/>
+							<rect
+								x="11"
+								y="3"
+								width="7"
+								height="7"
+								rx="1.5"
+								stroke="currentColor"
+								stroke-width="1.8"
+							/>
+							<rect
+								x="2"
+								y="12"
+								width="7"
+								height="5"
+								rx="1.5"
+								stroke="currentColor"
+								stroke-width="1.8"
+							/>
+							<rect
+								x="11"
+								y="12"
+								width="7"
+								height="5"
+								rx="1.5"
+								stroke="currentColor"
+								stroke-width="1.8"
+							/>
 						</svg>
 						<span>Projects</span>
 					</button>
@@ -558,7 +590,12 @@
 								stroke-width="2.5"
 								stroke-linejoin="round"
 							/>
-							<path d="M5 30h30" stroke="var(--color-primary)" stroke-width="2.5" stroke-linecap="round" />
+							<path
+								d="M5 30h30"
+								stroke="var(--color-primary)"
+								stroke-width="2.5"
+								stroke-linecap="round"
+							/>
 						</svg>
 					</div>
 					<h3 class="feature-title">Build in public, in a small room</h3>
@@ -623,8 +660,19 @@
 								stroke="var(--color-primary)"
 								stroke-width="2.5"
 							/>
-							<path d="M14 34h12M20 29v5" stroke="var(--color-primary)" stroke-width="2.5" stroke-linecap="round" />
-							<path d="M13 22l5-6 4 5 5-7" stroke="var(--color-secondary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+							<path
+								d="M14 34h12M20 29v5"
+								stroke="var(--color-primary)"
+								stroke-width="2.5"
+								stroke-linecap="round"
+							/>
+							<path
+								d="M13 22l5-6 4 5 5-7"
+								stroke="var(--color-secondary)"
+								stroke-width="2.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
 						</svg>
 					</div>
 					<h3 class="feature-title">Show and tell</h3>
@@ -701,9 +749,7 @@
 
 		<div class="closing-card closing-card-accent">
 			<h2>Pull up a chair</h2>
-			<p>
-				The server is free, it is open, and someone is almost certainly in a channel right now.
-			</p>
+			<p>The server is free, it is open, and someone is almost certainly in a channel right now.</p>
 			<a class="hero-join" href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
 				<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
 					<path

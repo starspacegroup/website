@@ -1,15 +1,16 @@
-[![*Space — a cosmic-grade SvelteKit starter](./static/og-image.png)](https://github.com/starspacegroup/starspace-group-nebulakit)
+[![*Space — an inclusive digital coworking space on Discord](./static/og-image.png)](https://github.com/starspacegroup/starspace-group-nebulakit)
 
 # *Space
 
-*Space is a cosmic-grade SvelteKit starter template powered by Cloudflare's full stack.
-Publishing structured content, managing authenticated users, operating AI-assisted workflows,
-and observing the app without third-party analytics are all wired up and tested before you
-write a line. It runs on Cloudflare Pages with D1, KV, and R2 bindings.
+The website for [starspace.group](https://starspace.group) — the front page with its live
+Discord member count, the project directory, and the sister spaces.
 
-**Click "Use this template"** to create your own repository, then follow
-[CUSTOMIZE.md](./CUSTOMIZE.md) — one script renames the app, the slug, the dev port, and the
-Cloudflare resource names, and tells you what is left to do by hand.
+It is built on [NebulaKit](https://nebulakit.starspace.group/), the community's own SvelteKit
+and Cloudflare starter, and it keeps the whole platform: accounts, a command palette, a
+D1-backed CMS, AI chat, first-party analytics, and the test gates that come with them. That is
+deliberate — the site is also the place those capabilities get exercised in public.
+
+It replaces `starspace-group-svelte`, the earlier flowbite build of the same site.
 
 [![SvelteKit](https://img.shields.io/badge/SvelteKit-4%2F5-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/docs/kit)
 [![Cloudflare](https://img.shields.io/badge/Cloudflare-Pages-F38020?logo=cloudflare&logoColor=white)](https://developers.cloudflare.com/pages/)
@@ -17,6 +18,8 @@ Cloudflare resource names, and tells you what is left to do by hand.
 
 ## What ships
 
+- **The public site:** the hero with a live member count read straight from Discord's public
+  invite endpoint, `/projects`, `/sister-spaces`, and share cards built from the *Space mark.
 - **Content operations:** typed CMS schemas, rich-text embeds, tags, media uploads, public
   content routes, and guarded admin editing.
 - **Authentication:** email/password accounts plus GitHub and Discord OAuth, account linking,
@@ -32,9 +35,9 @@ Cloudflare resource names, and tells you what is left to do by hand.
   gesture has a keyboard equivalent.
 
 *Space does **not** advertise an OAuth authorization server or an MCP server. Its discovery
-metadata lists only routes implemented by this repository — keep that honest in your own app.
+metadata lists only routes this repository actually implements. Keep it that way.
 
-Planned additions — including capabilities already proven in *Space-derived projects — are tracked in [ROADMAP.md](./ROADMAP.md).
+Planned additions are tracked in [ROADMAP.md](./ROADMAP.md).
 
 ## Requirements
 
@@ -46,16 +49,39 @@ The repository deliberately contains placeholder D1/KV identifiers. Builds fail 
 project-owned resources are configured; this prevents accidental access to another deployment's
 data.
 
-## Make it yours
+## Editing the site's content
+
+The two public directories are checked-in TypeScript, not CMS entries — they change a few times
+a year, and both pages have to render on a clone that has never been pointed at a database.
+
+| To change                                               | Edit                            |
+| ------------------------------------------------------- | ------------------------------- |
+| The projects grid, and the three the home page features | `src/lib/data/projects.ts`      |
+| The allied makerspaces                                  | `src/lib/data/sister-spaces.ts` |
+| The Discord invite, everywhere at once                  | `src/lib/discord.ts`            |
+| Name, tagline, URL, dev port, repo                      | `src/lib/site.config.ts`        |
+
+Card artwork goes under `static/projects/` or `static/sister-spaces/` as WebP, around 900px
+wide. `tests/unit/site-content.test.ts` fails when an entry names a file that is not there, so a
+renamed asset never reaches the page as a broken card.
+
+`featuredProjects` is the first three entries of the same list, so a new project at the top of
+`projects.ts` leads the home page and the directory together.
+
+### Rebranding a fork
+
+This repository is *Space's own site, so its rebranding pass is already done —
+[INITIAL_CUSTOMIZATION_STATUS.md](./INITIAL_CUSTOMIZATION_STATUS.md) records that. The machinery
+that did it is still here, inherited from the template, if you fork this for something else:
 
 ```bash
-bun run customize          # interactive rename: name, slug, dev port, repo, URL
 bun run customize --dry    # preview every file it would touch, writes nothing
+bun run customize          # interactive rename: name, slug, dev port, repo, URL
 ```
 
-The full ordered path — including the parts a script cannot do — is
-[CUSTOMIZE.md](./CUSTOMIZE.md). Track whether it is finished in
-[INITIAL_CUSTOMIZATION_STATUS.md](./INITIAL_CUSTOMIZATION_STATUS.md).
+Two things it cannot get right on its own, both learned the hard way here: a new repo name
+containing the old slug gets rewritten twice, and a name beginning with `*` lands inside regex
+literals. Read [CUSTOMIZE.md](./CUSTOMIZE.md) and check `bun run check` afterwards.
 
 ## Local development
 
@@ -158,7 +184,7 @@ Important boundaries:
 
 ## Documentation
 
-- [Customizing a new app](./CUSTOMIZE.md) and its [deep reference](./docs/INITIAL_CUSTOMIZATION.md)
+- [Rebranding a fork](./CUSTOMIZE.md) and its [deep reference](./docs/INITIAL_CUSTOMIZATION.md)
 - [Local setup](./docs/LOCAL_SETUP.md)
 - [Cloudflare setup](./docs/CLOUDFLARE_SETUP.md)
 - [Agent readiness](./docs/AGENT_READINESS.md)

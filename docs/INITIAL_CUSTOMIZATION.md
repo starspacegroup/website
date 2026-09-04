@@ -5,7 +5,9 @@
 > This file is the deep reference for the branding/asset details that path points to
 > — especially the web-app icon set below.
 
-Do this before feature work, bug fixes, or content entry. The repository still contains NebulaKit template branding and template documentation. If you skip this step, the app, metadata, and assistant guidance will keep pointing back to the template.
+**This repository's pass is already done** — see `INITIAL_CUSTOMIZATION_STATUS.md`, which reads `status: complete`. What follows is the reference for a fork.
+
+Do it before feature work, bug fixes, or content entry. A fresh clone still contains NebulaKit branding and documentation; skip this step and the app, its metadata and its assistant guidance keep pointing back at the template.
 
 ## Goals
 

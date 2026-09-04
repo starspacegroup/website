@@ -67,6 +67,7 @@ bun run deploy`;
 		<nav class="docs-nav" aria-label="Documentation navigation">
 			<a href="#start-here">Start Here</a>
 			<a href="#quick-start">Quick Start</a>
+			<a href="#site-content">Site Content</a>
 			<a href="#feature-overview">Feature Overview</a>
 			<a href="#how-to-use">How To Use</a>
 			<a href="#drag-and-drop">Drag and Drop</a>
@@ -88,17 +89,21 @@ bun run deploy`;
 		<section id="start-here" class="docs-section">
 			<h2>Start Here</h2>
 			<p>
-				*Space is a SvelteKit starter template for Cloudflare. Create your own repository with
-				<strong>Use this template</strong>, then run <code>bun run customize</code> to rename the
-				app, the slug, the dev port, and the Cloudflare resource names in one pass —
-				<code>CUSTOMIZE.md</code> covers the steps a script cannot do.
+				*Space is the website for the *Space Discord community: the front page with its live member
+				count, the <a href="/projects">project directory</a>, and the
+				<a href="/sister-spaces">sister spaces</a>. It is built on
+				<a href="https://nebulakit.starspace.group/" target="_blank" rel="noopener noreferrer">
+					NebulaKit
+				</a>, the community's own SvelteKit and Cloudflare starter, so everything below about
+				bindings, migrations, authentication and the coverage gate describes this repository as it
+				stands — not a template you are about to customize.
 			</p>
 			<p>
 				Start locally with an isolated D1 database, then connect the production Cloudflare resources
 				only when you are ready to deploy.
 			</p>
 			<ol>
-				<li>Create your repository from the template and run the customization pass.</li>
+				<li>Clone the repository.</li>
 				<li>Install the frozen Bun dependency graph.</li>
 				<li>Apply database migrations locally.</li>
 				<li>Run the app and verify the setup, login, CMS, and chat surfaces.</li>
@@ -153,12 +158,42 @@ bun run deploy`;
 			</div>
 		</section>
 
+		<section id="site-content" class="docs-section">
+			<h2>Site Content</h2>
+			<p>
+				The two public directories are checked-in TypeScript, not CMS entries. They change a few
+				times a year, a pull request is a fine review step for "we shipped a thing", and both pages
+				have to render on a clone that has never been pointed at a database.
+			</p>
+			<ul>
+				<li>
+					<code>src/lib/data/projects.ts</code> — the <a href="/projects">projects</a> grid.
+					<code>featuredProjects</code> is the first three of the same list, so a new entry at the top
+					leads the home page and the directory at once.
+				</li>
+				<li>
+					<code>src/lib/data/sister-spaces.ts</code> — the
+					<a href="/sister-spaces">sister spaces</a>, each with a site link, an address and a map
+					link.
+				</li>
+			</ul>
+			<p>
+				Card artwork lives under <code>static/projects/</code> and
+				<code>static/sister-spaces/</code> as WebP, roughly 900px wide.
+				<code>tests/unit/site-content.test.ts</code> fails when an entry names a file that is not there,
+				so a renamed asset is caught before anyone sees a broken card.
+			</p>
+			<p>
+				The Discord invite code lives once, in <code>src/lib/discord.ts</code>. The join buttons,
+				the command palette entry and the member count all read it from there.
+			</p>
+		</section>
+
 		<section id="feature-overview" class="docs-section">
 			<h2>What You Get Out of the Box</h2>
 			<p>
-				*Space integrates its main product surfaces as one Cloudflare-native application:
-				identity, content management, AI workflows, administration, analytics, and agent-ready
-				publishing.
+				*Space integrates its main product surfaces as one Cloudflare-native application: identity,
+				content management, AI workflows, administration, analytics, and agent-ready publishing.
 			</p>
 			<div class="callout-grid">
 				<div class="callout-card">
@@ -177,7 +212,7 @@ bun run deploy`;
 					<h3>Account and Admin Flow</h3>
 					<ul>
 						<li>Setup-first authentication flow for owner configuration.</li>
-						<li>Login, signup, profile, reset, and admin routes are already scaffolded.</li>
+						<li>Login, signup, profile, reset, and admin routes all ship with the app.</li>
 						<li>Cloudflare D1 and KV are used for setup state and application data.</li>
 					</ul>
 				</div>
@@ -563,8 +598,8 @@ bun run db:migrate:list</code
 		<section id="testing" class="docs-section">
 			<h2>Testing and Quality Gates</h2>
 			<p>
-				*Space follows Test-Driven Development. Write failing tests first, then implementation,
-				then refactor.
+				*Space follows Test-Driven Development. Write failing tests first, then implementation, then
+				refactor.
 			</p>
 			<pre><code
 					># Run all tests

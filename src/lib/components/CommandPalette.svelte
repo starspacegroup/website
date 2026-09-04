@@ -3,6 +3,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import { DISCORD_INVITE } from '$lib/discord';
 	import { site } from '$lib/site.config';
 	import {
 		resolvedTheme,
@@ -95,6 +96,27 @@
 			description: 'Go to home page',
 			action: () => goto('/'),
 			icon: '🏠'
+		},
+		{
+			id: 'projects',
+			label: 'Projects',
+			description: 'Things the community has built',
+			action: () => goto('/projects'),
+			icon: '🚀'
+		},
+		{
+			id: 'sister-spaces',
+			label: 'Sister Spaces',
+			description: 'Allied makerspaces you can visit in person',
+			action: () => goto('/sister-spaces'),
+			icon: '📍'
+		},
+		{
+			id: 'discord',
+			label: 'Join on Discord',
+			description: 'Open the invite to the *Space server',
+			action: () => window.open(DISCORD_INVITE, '_blank', 'noopener,noreferrer'),
+			icon: '💬'
 		},
 		...(hasAIProviders
 			? [

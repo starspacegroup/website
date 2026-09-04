@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
 import Footer from './Footer.svelte';
+import { DISCORD_INVITE } from '$lib/discord';
 import { site, repoUrl } from '$lib/site.config';
 
 describe('Footer', () => {
@@ -25,9 +26,9 @@ describe('Footer', () => {
 		expect(screen.getByRole('heading', { name: /navigation/i })).toBeInTheDocument();
 	});
 
-	it('should have resources links section', () => {
+	it('should have community links section', () => {
 		render(Footer);
-		expect(screen.getByRole('heading', { name: /resources/i })).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: /community/i })).toBeInTheDocument();
 	});
 
 	it('should have legal links section', () => {
@@ -47,16 +48,17 @@ describe('Footer', () => {
 		expect(chatLink).toHaveAttribute('href', '/chat');
 	});
 
-	it('should contain sign in link', () => {
+	it('should contain chat link', () => {
 		render(Footer);
-		const loginLink = screen.getByRole('link', { name: /sign in/i });
-		expect(loginLink).toHaveAttribute('href', '/auth/login');
+		expect(screen.getByRole('link', { name: /^chat$/i })).toHaveAttribute('href', '/chat');
 	});
 
-	it('should contain sign up link', () => {
+	it('should link the documentation page', () => {
 		render(Footer);
-		const signupLink = screen.getByRole('link', { name: /sign up/i });
-		expect(signupLink).toHaveAttribute('href', '/auth/signup');
+		expect(screen.getByRole('link', { name: /documentation/i })).toHaveAttribute(
+			'href',
+			'/documentation'
+		);
 	});
 
 	it('should contain documentation link pointing to /documentation', () => {
@@ -124,8 +126,25 @@ describe('Footer', () => {
 		expect(resourcesLink).toHaveAttribute('rel', 'noopener noreferrer');
 	});
 
-	it('should render Cloudflare badge', () => {
+	it('should render the brand badge', () => {
 		render(Footer);
-		expect(screen.getByText('Powered by Cloudflare')).toBeInTheDocument();
+		expect(screen.getByText('Coworking on Discord')).toBeInTheDocument();
+	});
+
+	it('should link the community section to the Discord invite', () => {
+		render(Footer);
+		const discord = screen.getByRole('link', { name: 'Discord' });
+		expect(discord).toHaveAttribute('href', DISCORD_INVITE);
+		expect(discord).toHaveAttribute('target', '_blank');
+		expect(discord).toHaveAttribute('rel', 'noopener noreferrer');
+	});
+
+	it('should link the two public content pages', () => {
+		render(Footer);
+		expect(screen.getByRole('link', { name: 'Projects' })).toHaveAttribute('href', '/projects');
+		expect(screen.getByRole('link', { name: 'Sister Spaces' })).toHaveAttribute(
+			'href',
+			'/sister-spaces'
+		);
 	});
 });

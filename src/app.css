@@ -1,10 +1,14 @@
 /* CSS Variables for Theme System */
 :root {
 	/* Light theme colors - WCAG AA compliant */
-	--color-primary: #0066cc;
-	--color-primary-hover: #0052a3;
-	--color-secondary: #6366f1;
-	--color-secondary-hover: #4f46e5;
+	/* *Space brand. The mark is a carved-wood star: coral arms, bronze delta.
+	   Coral #FE795D is the identity colour, but it sits at 2.6:1 on white — far
+	   under the 4.5:1 that validate:contrast enforces on primary/background — so
+	   light mode uses the same hue darkened, and dark mode gets the real coral. */
+	--color-primary: #bc3f1f;
+	--color-primary-hover: #a5371b;
+	--color-secondary: #8a5a2b;
+	--color-secondary-hover: #6f4822;
 	--color-background: #ffffff;
 	--color-surface: #f8f9fa;
 	--color-surface-hover: #e9ecef;
@@ -61,10 +65,10 @@
 
 /* Dark theme */
 [data-theme='dark'] {
-	--color-primary: #3b82f6;
-	--color-primary-hover: #2563eb;
-	--color-secondary: #8b5cf6;
-	--color-secondary-hover: #7c3aed;
+	--color-primary: #fe795d;
+	--color-primary-hover: #ff9077;
+	--color-secondary: #d69153;
+	--color-secondary-hover: #e3a66e;
 	--color-background: #0a0a0a;
 	--color-surface: #1a1a1a;
 	--color-surface-hover: #2a2a2a;

@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import MemberCount from '$lib/components/MemberCount.svelte';
+	import ProjectCard from '$lib/components/ProjectCard.svelte';
 	import SharingMeta from '$lib/components/SharingMeta.svelte';
+	import { featuredProjects } from '$lib/data/projects';
+	import { DISCORD_INVITE } from '$lib/discord';
 	import { site } from '$lib/site.config';
 	import { openCommandPalette } from '$lib/stores/commandPalette';
 	import { onMount } from 'svelte';
@@ -45,8 +49,8 @@
 	}
 
 	function handleAction(action: string) {
-		if (action === 'login') goto('/auth/login');
-		else if (action === 'signup') goto('/auth/signup');
+		if (action === 'projects') goto('/projects');
+		else if (action === 'sister-spaces') goto('/sister-spaces');
 		else if (action === 'chat') goto('/chat');
 	}
 
@@ -354,104 +358,32 @@
 			<!-- Main Title -->
 			<h1 class="main-title">{site.name}</h1>
 
-			<!-- Subtitle -->
+			<p class="hero-tagline">Work, create and collaborate — with chaos and fun.</p>
+
+			<!-- The count is the short, striking part, so on a phone it sits above
+			     the body copy rather than below five lines of it. -->
+			<div class="hero-count">
+				<MemberCount />
+			</div>
+
 			<p class="subtitle">
-				A full-stack
-				<svg
-					class="svelte-icon"
-					width="20"
-					height="20"
-					viewBox="0 0 98.1 118"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-				>
-					<path
-						d="M91.8 15.6C80.9-.1 59.2-4.7 43.6 5.2L16.1 22.8C8.6 27.5 3.4 35.2 1.9 43.9c-1.3 7.3-.2 14.8 3.3 21.3-2.4 3.6-4 7.6-4.7 11.8-1.6 8.9.5 18.1 5.7 25.4 11 15.7 32.6 20.3 48.2 10.4l27.5-17.5c7.5-4.7 12.7-12.4 14.2-21.1 1.3-7.3.2-14.8-3.3-21.3 2.4-3.6 4-7.6 4.7-11.8 1.6-9-.5-18.2-5.7-25.5"
-						fill="#FF3E00"
-					/>
-					<path
-						d="M40.9 103.9c-8.9 2.3-18.2-1.2-23.4-8.7-3.2-4.4-4.4-9.9-3.5-15.3.2-.9.4-1.7.6-2.6l.5-1.6 1.4 1c3.3 2.4 6.9 4.2 10.8 5.4l1 .3-.1 1c-.1 1.4.3 2.9 1.1 4.1 1.6 2.3 4.4 3.4 7.1 2.7.6-.2 1.2-.4 1.7-.7L65.5 72c1.4-.9 2.3-2.2 2.6-3.8.3-1.6-.1-3.3-1-4.6-1.6-2.3-4.4-3.3-7.1-2.6-.6.2-1.2.4-1.7.7l-10.5 6.7c-1.7 1.1-3.6 1.9-5.6 2.4-8.9 2.3-18.2-1.2-23.4-8.7-3.1-4.4-4.4-9.9-3.4-15.3.9-5.2 4.1-9.9 8.6-12.7L50.5 5.5c1.7-1.1 3.6-1.9 5.6-2.5 8.9-2.3 18.2 1.2 23.4 8.7 3.2 4.4 4.4 9.9 3.5 15.3-.2.9-.4 1.7-.7 2.6l-.5 1.6-1.4-1c-3.3-2.4-6.9-4.2-10.8-5.4l-1-.3.1-1c.1-1.4-.3-2.9-1.1-4.1-1.6-2.3-4.4-3.3-7.1-2.6-.6.2-1.2.4-1.7.7L32.4 46c-1.4.9-2.3 2.2-2.6 3.8s.1 3.3 1 4.6c1.6 2.3 4.4 3.3 7.1 2.6.6-.2 1.2-.4 1.7-.7l10.5-6.7c1.7-1.1 3.6-1.9 5.6-2.5 8.9-2.3 18.2 1.2 23.4 8.7 3.2 4.4 4.4 9.9 3.5 15.3-.9 5.2-4.1 9.9-8.6 12.7l-27.5 17.5c-1.7 1.1-3.6 1.9-5.6 2.5"
-						fill="#FFF"
-					/>
-				</svg>
-				SvelteKit +
-				<svg
-					class="cloudflare-icon"
-					width="20"
-					height="20"
-					viewBox="0 0 100 100"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-				>
-					<path
-						d="M70.6 52.9c-.4-1.5-1.7-2.6-3.3-2.6H35.4c-1.3 0-2.4.8-2.8 2-.1.3-.1.6-.1.9 0 1.4 1.2 2.6 2.6 2.6h31.6c1.3 0 2.5-.8 2.9-2 .2-.3.2-.6.2-.9h-.2zm9.3-6c-.3-.1-.5-.1-.8-.1H63.8c-.5-8.9-8-16-17.2-16-7.5 0-13.9 4.8-16.3 11.5-.7-.2-1.5-.3-2.3-.3-4.5 0-8.2 3.7-8.2 8.2v.5c-5.5 1.2-9.6 6.1-9.6 11.9 0 6.7 5.4 12.1 12.1 12.1h38.4c7.8 0 14.1-6.3 14.1-14.1 0-6.9-4.9-12.6-11.4-13.9l-.5.3z"
-						fill="#F38020"
-					/>
-					<path
-						d="M46.6 31.4c7.2 0 13.2 5.1 14.7 11.9h17.4c.3 0 .5 0 .8.1 5.2 1.1 9.1 5.8 9.1 11.4 0 6.4-5.2 11.6-11.6 11.6H38.6c-5.5 0-9.9-4.4-9.9-9.9 0-4.7 3.3-8.7 7.8-9.7l1.5-.3v-1.5c0-3.3 2.7-6 6-6 .6 0 1.2.1 1.8.3l1.6.5.7-1.5c2-4.8 6.7-7.9 12-7.9m0-4.8c-7 0-13.1 4.2-15.8 10.2-4.9.6-8.7 4.8-8.7 9.9v.1c-6.2 1.5-10.8 7-10.8 13.6 0 7.7 6.2 13.9 13.9 13.9h38.4c9 0 16.3-7.3 16.3-16.3 0-7.9-5.6-14.5-13-16.1-.8-9.9-9.1-17.6-19.2-17.6l-1.1.3z"
-						fill="#FAAD3F"
-					/>
-				</svg>
-				Cloudflare-native starter for content operations, secure accounts, command-driven navigation,
-				themes, and
-				<svg
-					class="ai-icon"
-					width="20"
-					height="20"
-					viewBox="0 0 24 24"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-				>
-					<path
-						d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7.4-6.3-4.6-6.3 4.6 2.3-7.4-6-4.6h7.6z"
-						fill="url(#sparkle-gradient-1)"
-					/>
-					<path
-						d="M8 1l1.2 3.7h3.8l-3 2.3 1.15 3.7-3.15-2.3-3.15 2.3 1.15-3.7-3-2.3h3.8z"
-						fill="url(#sparkle-gradient-2)"
-					/>
-					<path
-						d="M16 14l.8 2.5h2.5l-2 1.5.75 2.5-2.05-1.5-2.05 1.5.75-2.5-2-1.5h2.5z"
-						fill="url(#sparkle-gradient-3)"
-					/>
-					<defs>
-						<linearGradient
-							id="sparkle-gradient-1"
-							x1="4"
-							y1="2"
-							x2="20"
-							y2="22"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop offset="0%" stop-color="#667eea" />
-							<stop offset="100%" stop-color="#764ba2" />
-						</linearGradient>
-						<linearGradient
-							id="sparkle-gradient-2"
-							x1="2"
-							y1="1"
-							x2="14"
-							y2="13"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop offset="0%" stop-color="#f093fb" />
-							<stop offset="100%" stop-color="#f5576c" />
-						</linearGradient>
-						<linearGradient
-							id="sparkle-gradient-3"
-							x1="12"
-							y1="14"
-							x2="22"
-							y2="22"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop offset="0%" stop-color="#4facfe" />
-							<stop offset="100%" stop-color="#00f2fe" />
-						</linearGradient>
-					</defs>
-				</svg>
-				AI realtime voice/text chat.
+				{site.name} is an inclusive digital coworking space on Discord, where everyone is
+				welcome. Work around makers, creators, artists, visionaries and trailblazers who are
+				creativity and productivity driven. 🤘 🚀
 			</p>
+
+			<div class="hero-actions">
+				<a class="hero-join" href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
+					<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+						<path
+							d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.3.5c1.6.4 3 1 4.4 1.9a16.6 16.6 0 0 0-14.9 0c1.3-.9 2.8-1.6 4.4-1.9L8.6 3a19.8 19.8 0 0 0-4.9 1.4C.9 8.6.1 12.7.5 16.7A19.9 19.9 0 0 0 6.6 20l1.3-2c-1-.4-2-.9-2.9-1.6l.7-.5a14.2 14.2 0 0 0 12.6 0l.7.5c-.9.7-1.9 1.2-2.9 1.6l1.3 2a19.9 19.9 0 0 0 6.1-3.3c.5-4.7-.8-8.8-3.2-12.3zM8.5 14.3c-1.2 0-2.2-1.1-2.2-2.4 0-1.4 1-2.5 2.2-2.5s2.2 1.1 2.2 2.5c0 1.3-1 2.4-2.2 2.4zm7 0c-1.2 0-2.2-1.1-2.2-2.4 0-1.4 1-2.5 2.2-2.5s2.2 1.1 2.2 2.5c0 1.3-1 2.4-2.2 2.4z"
+						/>
+					</svg>
+					Join on Discord
+				</a>
+				<a class="hero-secondary" href="/projects">See what we build</a>
+			</div>
+
 			<!-- Command Palette Style Search -->
 			<div class="command-palette">
 				<div class="search-box">
@@ -482,7 +414,7 @@
 					<button
 						class="command-option"
 						class:focused={focusedOption === 0}
-						on:click={() => handleAction('login')}
+						on:click={() => handleAction('projects')}
 						on:mouseenter={() => (focusedOption = 0)}
 						on:mouseleave={() => (focusedOption = -1)}
 					>
@@ -491,19 +423,21 @@
 							width="20"
 							height="20"
 							viewBox="0 0 20 20"
-							fill="currentColor"
+							fill="none"
 							xmlns="http://www.w3.org/2000/svg"
 						>
-							<path d="M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
-							<path d="M10 12c-4.42 0-8 1.79-8 4v2h16v-2c0-2.21-3.58-4-8-4z" />
+							<rect x="2" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8" />
+							<rect x="11" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8" />
+							<rect x="2" y="12" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.8" />
+							<rect x="11" y="12" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.8" />
 						</svg>
-						<span>Log in</span>
+						<span>Projects</span>
 					</button>
 
 					<button
 						class="command-option"
 						class:focused={focusedOption === 1}
-						on:click={() => handleAction('signup')}
+						on:click={() => handleAction('sister-spaces')}
 						on:mouseenter={() => (focusedOption = 1)}
 						on:mouseleave={() => (focusedOption = -1)}
 					>
@@ -516,15 +450,14 @@
 							xmlns="http://www.w3.org/2000/svg"
 						>
 							<path
-								d="M6 7h3V4a1 1 0 0 1 2 0v3h3a1 1 0 0 1 0 2h-3v3a1 1 0 0 1-2 0V9H6a1 1 0 0 1 0-2z"
-								fill="currentColor"
+								d="M10 18s6-5.2 6-9.4A6 6 0 0 0 4 8.6C4 12.8 10 18 10 18z"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linejoin="round"
 							/>
-							<path
-								d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm0 14.4A6.4 6.4 0 1 1 10 3.6a6.4 6.4 0 0 1 0 12.8z"
-								fill="currentColor"
-							/>
+							<circle cx="10" cy="8.5" r="2.2" stroke="currentColor" stroke-width="1.8" />
 						</svg>
-						<span>Sign up</span>
+						<span>Sister spaces</span>
 					</button>
 
 					<button
@@ -595,455 +528,156 @@
 	</div>
 </div>
 
-<!-- Features Section -->
+<!-- What this place actually is -->
 <section class="features">
 	<div class="features-shell">
 		<div class="features-header">
-			<h2 class="features-title">Built for the Modern Web</h2>
+			<h2 class="features-title">A coworking space that happens to be a Discord server</h2>
 			<p class="features-subtitle">
-				A complete starting point for publishing, administration, AI workflows, and operations
+				No desks, no badge, no commute. Voice channels you can sit in while you work, people who
+				will read your code at midnight, and a habit of shipping the thing.
 			</p>
 		</div>
 
 		<div class="features-grid">
-			<!-- Feature 1: SvelteKit -->
 			<div class="feature-card">
 				<div class="feature-header">
 					<div class="feature-icon">
-						<svg
-							width="40"
-							height="40"
-							viewBox="0 0 40 40"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
+						<svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+							<circle cx="20" cy="20" r="15" stroke="var(--color-primary)" stroke-width="2.5" />
+							<circle cx="14" cy="17" r="3.5" fill="var(--color-secondary)" />
+							<circle cx="26" cy="17" r="3.5" fill="var(--color-secondary)" />
 							<path
-								d="M34.5 13.5c0-3.5-2-6.5-5-8-3-1.5-6.5-1.5-9.5 0-3 1.5-5 4.5-5 8v13c0 3.5 2 6.5 5 8 3 1.5 6.5 1.5 9.5 0 3-1.5 5-4.5 5-8v-13z"
-								fill="var(--color-primary)"
-							/>
-							<path
-								d="M24 5c-3.5 0-6.5 2-8 5-1.5 3-1.5 6.5 0 9.5 1.5 3 4.5 5 8 5h13c3.5 0 6.5-2 8-5 1.5-3 1.5-6.5 0-9.5-1.5-3-4.5-5-8-5H24z"
-								fill="var(--color-secondary)"
-								opacity="0.8"
-							/>
-						</svg>
-					</div>
-					<h3 class="feature-title">SvelteKit Framework</h3>
-				</div>
-				<p class="feature-description">
-					Blazing fast web applications with SvelteKit's powerful routing, server-side rendering,
-					and reactive components. Zero-config TypeScript support included.
-				</p>
-			</div>
-
-			<!-- Feature 2: Cloudflare Workers -->
-			<div class="feature-card">
-				<div class="feature-header">
-					<div class="feature-icon">
-						<svg
-							width="40"
-							height="40"
-							viewBox="0 0 40 40"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<path
-								d="M8 20l8-8 8 8 8-8v16l-8-8-8 8-8-8V20z"
-								fill="var(--color-primary)"
-								opacity="0.2"
-							/>
-							<path
-								d="M8 12l8-8 8 8 8-8v16l-8-8-8 8-8-8V12z"
-								fill="var(--color-primary)"
-								opacity="0.4"
-							/>
-							<path d="M8 4l8-8 8 8 8-8v16l-8-8-8 8-8-8V4z" fill="var(--color-primary)" />
-						</svg>
-					</div>
-					<h3 class="feature-title">Cloudflare Workers</h3>
-				</div>
-				<p class="feature-description">
-					Deploy globally in seconds with Cloudflare's edge network. Lightning-fast responses from
-					300+ locations worldwide with D1, KV, R2, and Workers AI built-in.
-				</p>
-			</div>
-
-			<!-- Feature 3: Authentication -->
-			<div class="feature-card">
-				<div class="feature-header">
-					<div class="feature-icon">
-						<svg
-							width="40"
-							height="40"
-							viewBox="0 0 40 40"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<rect
-								x="8"
-								y="14"
-								width="24"
-								height="20"
-								rx="2"
+								d="M13 26c2 2.5 4.5 3.5 7 3.5s5-1 7-3.5"
 								stroke="var(--color-primary)"
-								stroke-width="2"
-								fill="none"
-							/>
-							<path
-								d="M13 14v-4a7 7 0 0 1 14 0v4"
-								stroke="var(--color-primary)"
-								stroke-width="2"
-								fill="none"
-							/>
-							<circle cx="20" cy="24" r="3" fill="var(--color-primary)" />
-							<path d="M20 27v4" stroke="var(--color-primary)" stroke-width="2" />
-						</svg>
-					</div>
-					<h3 class="feature-title">Secure Authentication</h3>
-				</div>
-				<p class="feature-description">
-					Built-in authentication with signed sessions, secure password hashing, account linking,
-					and GitHub and Discord OAuth clients.
-				</p>
-			</div>
-
-			<!-- Feature 4: Database -->
-			<div class="feature-card">
-				<div class="feature-header">
-					<div class="feature-icon">
-						<svg
-							width="40"
-							height="40"
-							viewBox="0 0 40 40"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<ellipse cx="20" cy="10" rx="12" ry="4" fill="var(--color-primary)" opacity="0.3" />
-							<ellipse cx="20" cy="20" rx="12" ry="4" fill="var(--color-primary)" opacity="0.5" />
-							<ellipse cx="20" cy="30" rx="12" ry="4" fill="var(--color-primary)" />
-							<path d="M8 10v20M32 10v20" stroke="var(--color-primary)" stroke-width="2" />
-						</svg>
-					</div>
-					<h3 class="feature-title">Cloudflare D1 Database</h3>
-				</div>
-				<p class="feature-description">
-					SQLite at the edge with migrations, type-safe queries, and zero cold starts. Scale
-					effortlessly with automatic backups and point-in-time recovery.
-				</p>
-			</div>
-
-			<!-- Feature 5: AI Integration -->
-			<div class="feature-card">
-				<div class="feature-header">
-					<div class="feature-icon">
-						<svg
-							width="40"
-							height="40"
-							viewBox="0 0 40 40"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<circle cx="20" cy="20" r="8" stroke="var(--color-primary)" stroke-width="2" />
-							<circle cx="20" cy="20" r="3" fill="var(--color-primary)" />
-							<path
-								d="M20 4v8M20 28v8M4 20h8M28 20h8M10.3 10.3l5.7 5.7M24 24l5.7 5.7M10.3 29.7l5.7-5.7M24 16l5.7-5.7"
-								stroke="var(--color-primary)"
-								stroke-width="2"
+								stroke-width="2.5"
 								stroke-linecap="round"
 							/>
 						</svg>
 					</div>
-					<h3 class="feature-title">Workers AI Ready</h3>
+					<h3 class="feature-title">Body doubling that works</h3>
 				</div>
 				<p class="feature-description">
-					Pre-configured for AI integration with Cloudflare Workers AI. Add chat, embeddings, image
-					generation, and LLM capabilities with a few lines of code.
+					Drop into a focus channel and work next to someone. It is the oldest productivity trick
+					there is, and it is the reason people keep coming back at the same hour every day.
 				</p>
 			</div>
 
-			<!-- Feature 6: Testing -->
 			<div class="feature-card">
 				<div class="feature-header">
 					<div class="feature-icon">
-						<svg
-							width="40"
-							height="40"
-							viewBox="0 0 40 40"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
+						<svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
 							<path
-								d="M8 20l8 8 16-16"
+								d="M8 30V14l7-6 7 6v16"
 								stroke="var(--color-primary)"
-								stroke-width="3"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-							/>
-							<circle cx="20" cy="20" r="16" stroke="var(--color-primary)" stroke-width="2" />
-						</svg>
-					</div>
-					<h3 class="feature-title">Test-Driven Development</h3>
-				</div>
-				<p class="feature-description">
-					Vitest unit and integration tests plus Playwright end-to-end coverage. Every coverage
-					metric has an enforced 95% floor.
-				</p>
-			</div>
-
-			<!-- Feature 7: Theme System -->
-			<div class="feature-card">
-				<div class="feature-header">
-					<div class="feature-icon">
-						<svg
-							width="40"
-							height="40"
-							viewBox="0 0 40 40"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<circle cx="20" cy="20" r="12" fill="var(--color-primary)" opacity="0.3" />
-							<path d="M20 8A12 12 0 0 1 32 20" fill="var(--color-primary)" />
-							<circle cx="20" cy="20" r="4" fill="var(--color-background)" />
-						</svg>
-					</div>
-					<h3 class="feature-title">Adaptive Theming</h3>
-				</div>
-				<p class="feature-description">
-					Beautiful light and dark themes with CSS custom properties. System preference detection,
-					smooth transitions, and WCAG AA contrast compliance.
-				</p>
-			</div>
-
-			<!-- Feature 8: Command Palette -->
-			<div class="feature-card">
-				<div class="feature-header">
-					<div class="feature-icon">
-						<svg
-							width="40"
-							height="40"
-							viewBox="0 0 40 40"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<rect
-								x="6"
-								y="10"
-								width="28"
-								height="20"
-								rx="3"
-								stroke="var(--color-primary)"
-								stroke-width="2"
-							/>
-							<path d="M12 18l4 4 4-4" stroke="var(--color-primary)" stroke-width="2" />
-							<line
-								x1="22"
-								y1="16"
-								x2="28"
-								y2="16"
-								stroke="var(--color-primary)"
-								stroke-width="2"
-							/>
-							<line
-								x1="22"
-								y1="20"
-								x2="26"
-								y2="20"
-								stroke="var(--color-primary)"
-								stroke-width="2"
-							/>
-							<line
-								x1="22"
-								y1="24"
-								x2="28"
-								y2="24"
-								stroke="var(--color-primary)"
-								stroke-width="2"
-							/>
-						</svg>
-					</div>
-					<h3 class="feature-title">Command Palette</h3>
-				</div>
-				<p class="feature-description">
-					Power-user navigation with keyboard shortcuts (⌘K). Quick access to all features, search,
-					and actions without touching the mouse.
-				</p>
-			</div>
-
-			<!-- Feature 9: Developer Experience -->
-			<div class="feature-card">
-				<div class="feature-header">
-					<div class="feature-icon">
-						<svg
-							width="40"
-							height="40"
-							viewBox="0 0 40 40"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<path
-								d="M12 14l-6 6 6 6M28 14l6 6-6 6"
-								stroke="var(--color-primary)"
-								stroke-width="2"
-								stroke-linecap="round"
+								stroke-width="2.5"
 								stroke-linejoin="round"
 							/>
 							<path
-								d="M24 10l-8 20"
-								stroke="var(--color-primary)"
-								stroke-width="2"
-								stroke-linecap="round"
-							/>
-						</svg>
-					</div>
-					<h3 class="feature-title">Developer Experience</h3>
-				</div>
-				<p class="feature-description">
-					Hot module replacement, TypeScript, ESLint, Prettier, and Git hooks configured. Build,
-					test, and deploy with confidence using best practices.
-				</p>
-			</div>
-
-			<!-- Feature 10: GitHub Copilot Ready -->
-			<div class="feature-card">
-				<div class="feature-header">
-					<div class="feature-icon">
-						<svg
-							width="40"
-							height="40"
-							viewBox="0 0 40 40"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<path
-								d="M20 4c-8.84 0-16 7.16-16 16 0 7.07 4.58 13.06 10.94 15.18.8.15 1.09-.35 1.09-.77 0-.38-.01-1.64-.02-2.97-4.45.97-5.39-1.89-5.39-1.89-.73-1.85-1.78-2.34-1.78-2.34-1.45-.99.11-.97.11-.97 1.61.11 2.45 1.65 2.45 1.65 1.43 2.45 3.75 1.74 4.66 1.33.15-1.04.56-1.74 1.02-2.14-3.56-.41-7.3-1.78-7.3-7.92 0-1.75.62-3.18 1.64-4.3-.16-.4-.71-2.03.16-4.23 0 0 1.34-.43 4.4 1.64 1.27-.35 2.64-.53 4-.54 1.36.01 2.73.19 4 .54 3.06-2.07 4.4-1.64 4.4-1.64.87 2.2.32 3.83.16 4.23 1.02 1.12 1.64 2.55 1.64 4.3 0 6.16-3.75 7.51-7.32 7.91.58.5 1.09 1.48 1.09 2.98 0 2.15-.02 3.89-.02 4.42 0 .43.29.93 1.1.77C31.42 33.06 36 27.07 36 20c0-8.84-7.16-16-16-16z"
-								fill="var(--color-primary)"
-							/>
-							<circle cx="28" cy="12" r="6" fill="var(--color-secondary)" />
-							<path
-								d="M28 9v6M25 12h6"
-								stroke="var(--color-background)"
-								stroke-width="1.5"
-								stroke-linecap="round"
-							/>
-						</svg>
-					</div>
-					<h3 class="feature-title">GitHub Copilot Ready</h3>
-				</div>
-				<p class="feature-description">
-					Pre-configured with comprehensive Copilot instructions for TDD workflows, architectural
-					patterns, and best practices. Accelerate development with AI-powered assistance.
-				</p>
-			</div>
-
-			<!-- Feature 11: Real-time Features -->
-			<div class="feature-card">
-				<div class="feature-header">
-					<div class="feature-icon">
-						<svg
-							width="40"
-							height="40"
-							viewBox="0 0 40 40"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<circle cx="20" cy="20" r="14" stroke="var(--color-primary)" stroke-width="2" />
-							<path
-								d="M20 10v10l6 6"
-								stroke="var(--color-primary)"
-								stroke-width="2"
-								stroke-linecap="round"
+								d="M22 30V20l5-4 5 4v10"
+								stroke="var(--color-secondary)"
+								stroke-width="2.5"
 								stroke-linejoin="round"
 							/>
-							<circle cx="32" cy="8" r="4" fill="var(--color-secondary)">
-								<animate
-									attributeName="opacity"
-									values="1;0.3;1"
-									dur="2s"
-									repeatCount="indefinite"
-								/>
-							</circle>
+							<path d="M5 30h30" stroke="var(--color-primary)" stroke-width="2.5" stroke-linecap="round" />
 						</svg>
 					</div>
-					<h3 class="feature-title">WebSocket & Real-time</h3>
+					<h3 class="feature-title">Build in public, in a small room</h3>
 				</div>
 				<p class="feature-description">
-					Built-in support for Cloudflare Durable Objects and WebSockets. Build real-time
-					applications like chat, notifications, and live updates with ease.
+					Post the ugly first version. Someone will try it within the hour and tell you what broke.
+					Most of the projects on this site started as one message in one channel.
 				</p>
 			</div>
 
-			<!-- Feature 12: API & Service Layer -->
 			<div class="feature-card">
 				<div class="feature-header">
 					<div class="feature-icon">
-						<svg
-							width="40"
-							height="40"
-							viewBox="0 0 40 40"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<rect
-								x="8"
-								y="8"
-								width="10"
-								height="10"
-								rx="2"
-								fill="var(--color-primary)"
-								opacity="0.3"
+						<svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+							<path
+								d="M20 6l4.2 11.6L36 20l-9.8 7.2L29 38l-9-6.6L11 38l2.8-10.8L4 20l11.8-2.4z"
+								stroke="var(--color-primary)"
+								stroke-width="2.5"
+								stroke-linejoin="round"
 							/>
-							<rect
-								x="22"
-								y="8"
-								width="10"
-								height="10"
-								rx="2"
-								fill="var(--color-primary)"
-								opacity="0.5"
-							/>
-							<rect
-								x="8"
-								y="22"
-								width="10"
-								height="10"
-								rx="2"
-								fill="var(--color-primary)"
-								opacity="0.7"
-							/>
-							<rect x="22" y="22" width="10" height="10" rx="2" fill="var(--color-primary)" />
-							<line
-								x1="18"
-								y1="13"
-								x2="22"
-								y2="13"
+							<path d="M20 13l2 8h-4z" fill="var(--color-secondary)" />
+						</svg>
+					</div>
+					<h3 class="feature-title">Hackathons and jams</h3>
+				</div>
+				<p class="feature-description">
+					Weekend events with a theme, a deadline and a demo at the end. Spacetime Clock came out of
+					one. So did half the arguments about how a clock should work.
+				</p>
+			</div>
+
+			<div class="feature-card">
+				<div class="feature-header">
+					<div class="feature-icon">
+						<svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+							<circle cx="20" cy="20" r="14" stroke="var(--color-primary)" stroke-width="2.5" />
+							<path
+								d="M6 20h28M20 6c4.5 5 4.5 23 0 28M20 6c-4.5 5-4.5 23 0 28"
 								stroke="var(--color-secondary)"
-								stroke-width="2"
-							/>
-							<line
-								x1="13"
-								y1="18"
-								x2="13"
-								y2="22"
-								stroke="var(--color-secondary)"
-								stroke-width="2"
-							/>
-							<line
-								x1="27"
-								y1="18"
-								x2="27"
-								y2="22"
-								stroke="var(--color-secondary)"
-								stroke-width="2"
+								stroke-width="2.5"
 							/>
 						</svg>
 					</div>
-					<h3 class="feature-title">RESTful API Architecture</h3>
+					<h3 class="feature-title">Everyone is welcome</h3>
 				</div>
 				<p class="feature-description">
-					Clean API design with SvelteKit endpoints. Type-safe request/response handling, middleware
-					support, and automatic validation for robust backend services.
+					Every timezone, every skill level, every discipline. Beginners get answers rather than
+					links to the manual, and nobody has to prove they belong before they can ask.
 				</p>
 			</div>
+		</div>
+	</div>
+</section>
+
+<!-- Featured projects -->
+<section class="shelf">
+	<div class="shelf-shell">
+		<div class="shelf-header">
+			<div>
+				<h2 class="shelf-title">Made here, lately</h2>
+				<p class="shelf-subtitle">A few of the things the community has shipped.</p>
+			</div>
+			<a class="shelf-link" href="/projects">All projects →</a>
+		</div>
+
+		<div class="shelf-grid">
+			{#each featuredProjects as project (project.id)}
+				<ProjectCard {project} />
+			{/each}
+		</div>
+	</div>
+</section>
+
+<!-- Sister spaces + the ask -->
+<section class="closing">
+	<div class="closing-shell">
+		<div class="closing-card">
+			<h2>Sister spaces</h2>
+			<p>
+				Making things is physical too. We are allied with workshops that have the lathes, the laser
+				cutters and the soldering stations we do not.
+			</p>
+			<a class="closing-link" href="/sister-spaces">Visit a sister space →</a>
+		</div>
+
+		<div class="closing-card closing-card-accent">
+			<h2>Pull up a chair</h2>
+			<p>
+				The server is free, it is open, and someone is almost certainly in a channel right now.
+			</p>
+			<a class="hero-join" href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
+				<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+					<path
+						d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.3.5c1.6.4 3 1 4.4 1.9a16.6 16.6 0 0 0-14.9 0c1.3-.9 2.8-1.6 4.4-1.9L8.6 3a19.8 19.8 0 0 0-4.9 1.4C.9 8.6.1 12.7.5 16.7A19.9 19.9 0 0 0 6.6 20l1.3-2c-1-.4-2-.9-2.9-1.6l.7-.5a14.2 14.2 0 0 0 12.6 0l.7.5c-.9.7-1.9 1.2-2.9 1.6l1.3 2a19.9 19.9 0 0 0 6.1-3.3c.5-4.7-.8-8.8-3.2-12.3zM8.5 14.3c-1.2 0-2.2-1.1-2.2-2.4 0-1.4 1-2.5 2.2-2.5s2.2 1.1 2.2 2.5c0 1.3-1 2.4-2.2 2.4zm7 0c-1.2 0-2.2-1.1-2.2-2.4 0-1.4 1-2.5 2.2-2.5s2.2 1.1 2.2 2.5c0 1.3-1 2.4-2.2 2.4z"
+					/>
+				</svg>
+				Join on Discord
+			</a>
 		</div>
 	</div>
 </section>
@@ -1583,19 +1217,198 @@
 		font-weight: 400;
 	}
 
-	.svelte-icon,
-	.cloudflare-icon,
-	.ai-icon {
-		display: inline-block;
-		vertical-align: middle;
-		margin: 0 0.25rem;
-		transform: translateY(-2px);
-	}
-
 	@media (min-width: 768px) {
 		.subtitle {
 			font-size: 1.35rem;
 			margin-bottom: 3rem;
+		}
+	}
+
+	.hero-tagline {
+		margin: calc(var(--spacing-lg) * -0.5) 0 var(--spacing-lg);
+		font-size: 1.25rem;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		color: var(--color-text);
+	}
+
+	@media (min-width: 768px) {
+		.hero-tagline {
+			font-size: 1.7rem;
+		}
+	}
+
+	.hero-count {
+		margin-bottom: var(--spacing-lg);
+	}
+
+	.hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: var(--spacing-md);
+		margin-bottom: var(--spacing-2xl);
+	}
+
+	/* Discord's own blurple, not a theme token — people recognise the button
+	   before they read it, and it has to look the same in both themes. */
+	.hero-join {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.85rem 1.6rem;
+		border-radius: var(--radius-md);
+		background: #5865f2;
+		color: #ffffff;
+		font-size: 1.05rem;
+		font-weight: 600;
+		text-decoration: none;
+		box-shadow: 0 8px 24px color-mix(in srgb, #5865f2 35%, transparent);
+		transition:
+			background var(--transition-fast),
+			transform var(--transition-fast);
+	}
+
+	.hero-join:hover,
+	.hero-join:focus-visible {
+		background: #4752c4;
+		transform: translateY(-2px);
+	}
+
+	.hero-secondary {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.85rem 1.6rem;
+		border: 1px solid color-mix(in srgb, var(--color-text) 25%, transparent);
+		border-radius: var(--radius-md);
+		background: color-mix(in srgb, var(--color-surface) 55%, transparent);
+		backdrop-filter: blur(12px);
+		color: var(--color-text);
+		font-size: 1.05rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition:
+			border-color var(--transition-fast),
+			background var(--transition-fast);
+	}
+
+	.hero-secondary:hover,
+	.hero-secondary:focus-visible {
+		border-color: var(--color-primary);
+		background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+	}
+
+	/* Featured project shelf */
+	.shelf {
+		padding: var(--spacing-2xl) var(--spacing-md);
+		background: var(--color-background);
+	}
+
+	.shelf-shell {
+		max-width: var(--layout-feature-grid-max-width);
+		margin: 0 auto;
+	}
+
+	.shelf-header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: var(--spacing-md);
+		margin-bottom: var(--spacing-xl);
+	}
+
+	.shelf-title {
+		margin: 0;
+		font-size: clamp(1.75rem, 4vw, 2.5rem);
+		font-weight: 800;
+		letter-spacing: -0.02em;
+	}
+
+	.shelf-subtitle {
+		margin: var(--spacing-xs) 0 0;
+		color: var(--color-text-secondary);
+	}
+
+	.shelf-link {
+		color: var(--color-primary);
+		font-weight: 600;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+
+	.shelf-link:hover,
+	.shelf-link:focus-visible {
+		text-decoration: underline;
+	}
+
+	.shelf-grid {
+		display: grid;
+		gap: var(--spacing-lg);
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+	}
+
+	/* Closing pair: sister spaces, and the ask */
+	.closing {
+		padding: var(--spacing-2xl) var(--spacing-md) calc(var(--spacing-2xl) * 1.5);
+		background: var(--color-background);
+	}
+
+	.closing-shell {
+		display: grid;
+		gap: var(--spacing-lg);
+		max-width: var(--layout-feature-grid-max-width);
+		margin: 0 auto;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+	}
+
+	.closing-card {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: var(--spacing-sm);
+		padding: var(--spacing-xl);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-xl);
+		background: var(--color-surface);
+	}
+
+	.closing-card-accent {
+		border-color: color-mix(in srgb, var(--color-primary) 45%, transparent);
+		background: linear-gradient(
+			135deg,
+			color-mix(in srgb, var(--color-primary) 10%, var(--color-surface)),
+			var(--color-surface)
+		);
+	}
+
+	.closing-card h2 {
+		margin: 0;
+		font-size: 1.6rem;
+		letter-spacing: -0.01em;
+	}
+
+	.closing-card p {
+		margin: 0 0 var(--spacing-sm);
+		line-height: 1.7;
+		color: var(--color-text-secondary);
+	}
+
+	.closing-link {
+		color: var(--color-primary);
+		font-weight: 600;
+		text-decoration: none;
+	}
+
+	.closing-link:hover,
+	.closing-link:focus-visible {
+		text-decoration: underline;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.hero-join:hover,
+		.hero-join:focus-visible {
+			transform: none;
 		}
 	}
 

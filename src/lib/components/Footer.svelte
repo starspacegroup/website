@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { DISCORD_INVITE } from '$lib/discord';
 	import { site, repoUrl } from '$lib/site.config';
 
 	const currentYear = new Date().getFullYear();
@@ -29,7 +30,7 @@
 						<path d="M2 17l10 5 10-5" />
 						<path d="M2 12l10 5 10-5" />
 					</svg>
-					<span>Powered by Cloudflare</span>
+					<span>Coworking on Discord</span>
 				</div>
 			</div>
 
@@ -39,21 +40,32 @@
 					<h3 class="footer-heading">Navigation</h3>
 					<ul class="footer-links">
 						<li><a href="/">Home</a></li>
+						<li><a href="/projects">Projects</a></li>
+						<li><a href="/sister-spaces">Sister Spaces</a></li>
 						<li><a href="/chat">Chat</a></li>
-						<li><a href="/auth/login">Sign In</a></li>
-						<li><a href="/auth/signup">Sign Up</a></li>
 					</ul>
 				</div>
 
 				<div class="footer-section">
-					<h3 class="footer-heading">Resources</h3>
+					<h3 class="footer-heading">Community</h3>
 					<ul class="footer-links">
 						<li>
-							<a href="/documentation">Documentation</a>
+							<a href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">Discord</a>
 						</li>
 						<li>
-							<a href={repoUrl} target="_blank" rel="noopener noreferrer"> GitHub </a>
+							<a href={repoUrl} target="_blank" rel="noopener noreferrer">GitHub</a>
 						</li>
+						<li>
+							<a href="https://www.instagram.com/starspace.group/" target="_blank" rel="noopener noreferrer">
+								Instagram
+							</a>
+						</li>
+						<li>
+							<a href="https://bsky.app/profile/starspace.group" target="_blank" rel="noopener noreferrer">
+								Bluesky
+							</a>
+						</li>
+						<li><a href="/documentation">Documentation</a></li>
 					</ul>
 				</div>
 

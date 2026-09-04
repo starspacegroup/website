@@ -212,7 +212,21 @@
 					</div>
 					<div class="mobile-menu-content">
 						<div class="mobile-menu-items">
-							{#if user}
+						<a
+							href="/projects"
+							class:active={$page.url.pathname.startsWith('/projects')}
+							on:click={closeMobileMenu}
+						>
+							Projects
+						</a>
+						<a
+							href="/sister-spaces"
+							class:active={$page.url.pathname.startsWith('/sister-spaces')}
+							on:click={closeMobileMenu}
+						>
+							Sister Spaces
+						</a>
+						{#if user}
 								{#if user.isOwner || user.isAdmin || user.isSuperAdmin}
 									<a
 										href="/admin"

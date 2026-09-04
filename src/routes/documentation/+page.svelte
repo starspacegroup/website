@@ -90,8 +90,7 @@ bun run deploy`;
 			<h2>Start Here</h2>
 			<p>
 				*Space is the website for the *Space Discord community: the front page with its live member
-				count, the <a href="/projects">project directory</a>, and the
-				<a href="/sister-spaces">sister spaces</a>. It is built on
+				count and the <a href="/projects">project directory</a>. It is built on
 				<a href="https://nebulakit.starspace.group/" target="_blank" rel="noopener noreferrer">
 					NebulaKit
 				</a>, the community's own SvelteKit and Cloudflare starter, so everything below about
@@ -161,9 +160,9 @@ bun run deploy`;
 		<section id="site-content" class="docs-section">
 			<h2>Site Content</h2>
 			<p>
-				The two public directories are checked-in TypeScript, not CMS entries. They change a few
-				times a year, a pull request is a fine review step for "we shipped a thing", and both pages
-				have to render on a clone that has never been pointed at a database.
+				The public directory is checked-in TypeScript, not CMS entries. It changes a few times a
+				year, a pull request is a fine review step for "we shipped a thing", and the page has to
+				render on a clone that has never been pointed at a database.
 			</p>
 			<ul>
 				<li>
@@ -171,15 +170,9 @@ bun run deploy`;
 					<code>featuredProjects</code> is the first three of the same list, so a new entry at the top
 					leads the home page and the directory at once.
 				</li>
-				<li>
-					<code>src/lib/data/sister-spaces.ts</code> — the
-					<a href="/sister-spaces">sister spaces</a>, each with a site link, an address and a map
-					link.
-				</li>
 			</ul>
 			<p>
-				Card artwork lives under <code>static/projects/</code> and
-				<code>static/sister-spaces/</code> as WebP, roughly 900px wide.
+				Card artwork lives under <code>static/projects/</code> as WebP, roughly 900px wide.
 				<code>tests/unit/site-content.test.ts</code> fails when an entry names a file that is not there,
 				so a renamed asset is caught before anyone sees a broken card.
 			</p>

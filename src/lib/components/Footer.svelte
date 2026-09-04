@@ -48,7 +48,6 @@
 					<ul class="footer-links">
 						<li><a href="/">Home</a></li>
 						<li><a href="/projects">Projects</a></li>
-						<li><a href="/sister-spaces">Sister Spaces</a></li>
 						<li><a href="/chat">Chat</a></li>
 					</ul>
 				</div>

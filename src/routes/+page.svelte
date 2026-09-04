@@ -50,7 +50,6 @@
 
 	function handleAction(action: string) {
 		if (action === 'projects') goto('/projects');
-		else if (action === 'sister-spaces') goto('/sister-spaces');
 		else if (action === 'chat') goto('/chat');
 	}
 
@@ -446,36 +445,10 @@
 					</button>
 
 					<button
-						class="command-option"
-						class:focused={focusedOption === 1}
-						on:click={() => handleAction('sister-spaces')}
-						on:mouseenter={() => (focusedOption = 1)}
-						on:mouseleave={() => (focusedOption = -1)}
-					>
-						<svg
-							class="option-icon"
-							width="20"
-							height="20"
-							viewBox="0 0 20 20"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<path
-								d="M10 18s6-5.2 6-9.4A6 6 0 0 0 4 8.6C4 12.8 10 18 10 18z"
-								stroke="currentColor"
-								stroke-width="1.8"
-								stroke-linejoin="round"
-							/>
-							<circle cx="10" cy="8.5" r="2.2" stroke="currentColor" stroke-width="1.8" />
-						</svg>
-						<span>Sister spaces</span>
-					</button>
-
-					<button
 						class="command-option ask"
-						class:focused={focusedOption === 2}
+						class:focused={focusedOption === 1}
 						on:click={() => handleAction('chat')}
-						on:mouseenter={() => (focusedOption = 2)}
+						on:mouseenter={() => (focusedOption = 1)}
 						on:mouseleave={() => (focusedOption = -1)}
 					>
 						<svg
@@ -735,18 +708,9 @@
 	</div>
 </section>
 
-<!-- Sister spaces + the ask -->
+<!-- The ask -->
 <section class="closing">
 	<div class="closing-shell">
-		<div class="closing-card">
-			<h2>Sister spaces</h2>
-			<p>
-				Making things is physical too. We are allied with workshops that have the lathes, the laser
-				cutters and the soldering stations we do not.
-			</p>
-			<a class="closing-link" href="/sister-spaces">Visit a sister space →</a>
-		</div>
-
 		<div class="closing-card closing-card-accent">
 			<h2>Pull up a chair</h2>
 			<p>The server is free, it is open, and someone is almost certainly in a channel right now.</p>
@@ -1442,29 +1406,27 @@
 		grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
 	}
 
-	/* Closing pair: sister spaces, and the ask */
+	/* Closing band: the ask */
 	.closing {
 		padding: var(--spacing-2xl) var(--spacing-md) calc(var(--spacing-2xl) * 1.5);
 		background: var(--color-background);
 	}
 
 	.closing-shell {
-		display: grid;
-		gap: var(--spacing-lg);
-		max-width: var(--layout-feature-grid-max-width);
+		max-width: 44rem;
 		margin: 0 auto;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
 	}
 
 	.closing-card {
 		display: flex;
 		flex-direction: column;
-		align-items: flex-start;
+		align-items: center;
 		gap: var(--spacing-sm);
-		padding: var(--spacing-xl);
+		padding: var(--spacing-2xl) var(--spacing-xl);
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-xl);
 		background: var(--color-surface);
+		text-align: center;
 	}
 
 	.closing-card-accent {
@@ -1486,17 +1448,6 @@
 		margin: 0 0 var(--spacing-sm);
 		line-height: 1.7;
 		color: var(--color-text-secondary);
-	}
-
-	.closing-link {
-		color: var(--color-primary);
-		font-weight: 600;
-		text-decoration: none;
-	}
-
-	.closing-link:hover,
-	.closing-link:focus-visible {
-		text-decoration: underline;
 	}
 
 	@media (prefers-reduced-motion: reduce) {

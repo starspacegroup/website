@@ -8,10 +8,10 @@ status: in progress
   NebulaKit platform, so the community site and the community's own starter stop being two
   unrelated pieces of work.
 - Done so far, and verified locally rather than claimed: the rebranding pass
-  (`INITIAL_CUSTOMIZATION_STATUS.md` is `status: complete`); the home page, `/projects` and
-  `/sister-spaces` built for this site; the *Space icon set and share card; the brand palette
-  clearing WCAG AA in both themes. `bun run check` is clean across 1,654 files, `bun run test` is
-  2,317 passing, and `bun run validate:contrast` passes both themes.
+  (`INITIAL_CUSTOMIZATION_STATUS.md` is `status: complete`); the home page and `/projects` built
+  for this site; the *Space icon set and share card; the brand palette clearing WCAG AA in both
+  themes. `bun run check` is clean across 1,651 files, `bun run test` is
+  2,316 passing, and `bun run validate:contrast` passes both themes.
 - **Not yet done, and blocking a deploy:** `wrangler.toml` still carries the template's
   placeholder D1 and KV identifiers. `bun run build` fails by design until real, project-owned
   resources exist — see `tasks/todo.md`. That is a deliberate guard, not a bug: six sibling

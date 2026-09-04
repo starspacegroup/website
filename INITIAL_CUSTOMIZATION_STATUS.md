@@ -31,8 +31,8 @@ there, on 2026-09-04:
    the new repo name contains the old slug, so every GitHub link was rewritten twice; and a name
    beginning with `*` lands inside regex literals, which turns `/NebulaKit/i` into an unclosed
    block comment.
-2. The home page, `/projects` and `/sister-spaces` were built for this site; the starter's
-   pitch for itself is gone from every public surface.
+2. The home page and `/projects` were built for this site; the starter's pitch for itself is
+   gone from every public surface.
 3. Brand assets are the *Space mark — favicons, app icons, and a share card generated from
    `static/og-image.svg`.
 4. The theme carries the brand coral, darkened in light mode to clear WCAG AA on

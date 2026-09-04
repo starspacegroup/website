@@ -3,7 +3,7 @@
 # *Space
 
 The website for [starspace.group](https://starspace.group) — the front page with its live
-Discord member count, the project directory, and the sister spaces.
+Discord member count, and the project directory.
 
 It is built on [NebulaKit](https://nebulakit.starspace.group/), the community's own SvelteKit
 and Cloudflare starter, and it keeps the whole platform: accounts, a command palette, a
@@ -19,7 +19,7 @@ It replaces `starspace-group-svelte`, the earlier flowbite build of the same sit
 ## What ships
 
 - **The public site:** the hero with a live member count read straight from Discord's public
-  invite endpoint, `/projects`, `/sister-spaces`, and share cards built from the *Space mark.
+  invite endpoint, `/projects`, and share cards built from the *Space mark.
 - **Content operations:** typed CMS schemas, rich-text embeds, tags, media uploads, public
   content routes, and guarded admin editing.
 - **Authentication:** email/password accounts plus GitHub and Discord OAuth, account linking,
@@ -51,18 +51,17 @@ data.
 
 ## Editing the site's content
 
-The two public directories are checked-in TypeScript, not CMS entries — they change a few times
-a year, and both pages have to render on a clone that has never been pointed at a database.
+The project directory is checked-in TypeScript, not CMS entries — it changes a few times a year,
+and the page has to render on a clone that has never been pointed at a database.
 
-| To change                                               | Edit                            |
-| ------------------------------------------------------- | ------------------------------- |
-| The projects grid, and the three the home page features | `src/lib/data/projects.ts`      |
-| The allied makerspaces                                  | `src/lib/data/sister-spaces.ts` |
-| The Discord invite, everywhere at once                  | `src/lib/discord.ts`            |
-| Name, tagline, URL, dev port, repo                      | `src/lib/site.config.ts`        |
+| To change                                               | Edit                       |
+| ------------------------------------------------------- | -------------------------- |
+| The projects grid, and the three the home page features | `src/lib/data/projects.ts` |
+| The Discord invite, everywhere at once                  | `src/lib/discord.ts`       |
+| Name, tagline, URL, dev port, repo                      | `src/lib/site.config.ts`   |
 
-Card artwork goes under `static/projects/` or `static/sister-spaces/` as WebP, around 900px
-wide. `tests/unit/site-content.test.ts` fails when an entry names a file that is not there, so a
+Card artwork goes under `static/projects/` as WebP, around 900px wide.
+`tests/unit/site-content.test.ts` fails when an entry names a file that is not there, so a
 renamed asset never reaches the page as a broken card.
 
 `featuredProjects` is the first three entries of the same list, so a new project at the top of

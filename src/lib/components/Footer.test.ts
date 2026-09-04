@@ -142,12 +142,8 @@ describe('Footer', () => {
 		expect(discord).toHaveAttribute('rel', 'noopener noreferrer');
 	});
 
-	it('should link the two public content pages', () => {
+	it('should link the projects page', () => {
 		render(Footer);
 		expect(screen.getByRole('link', { name: 'Projects' })).toHaveAttribute('href', '/projects');
-		expect(screen.getByRole('link', { name: 'Sister Spaces' })).toHaveAttribute(
-			'href',
-			'/sister-spaces'
-		);
 	});
 });

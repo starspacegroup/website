@@ -12,8 +12,8 @@ fail separately.
 - [x] Repair the two things `bun run customize` could not: the doubled slug in every GitHub link,
       and `*` landing inside regex literals. Verified: `bun run check`, 0 errors.
 - [x] Home page — hero, live Discord member count, join CTA, six-card explainer, featured project
-      shelf, closing pair.
-- [x] `/projects` and `/sister-spaces` over checked-in data in `src/lib/data/`. Verified:
+      shelf, closing CTA.
+- [x] `/projects` over checked-in data in `src/lib/data/`. Verified:
       `tests/unit/site-content.test.ts`, including that every named image is on disk.
 - [x] `src/lib/discord.ts` owns the invite code and the count fetch, and throws rather than
       rendering a blank number when Discord rate-limits or the invite is revoked. Verified:
@@ -21,7 +21,7 @@ fail separately.
 - [x] Brand palette in `src/app.css`. Verified: `bun run validate:contrast`, both themes AA.
 - [x] Icon set and share card from the *Space mark, all PNGs flattened to RGB. Verified:
       `tests/unit/product-identity.test.ts`.
-- [x] Nav, footer, command palette and `SITEMAP_ROUTES` all carry the two new routes. Verified:
+- [x] Nav, footer, command palette and `SITEMAP_ROUTES` all carry `/projects`. Verified:
       `tests/unit/agent-readiness.test.ts`, which fails when a public route is unregistered.
 - [x] `/documentation` describes this site, and documents where the content lives. Verified:
       `tests/unit/documentation-page.test.ts`.
@@ -43,6 +43,14 @@ fail separately.
       Acceptance: the live domain serves this build; the old repository's README says where the
       site moved.
 
+## Parked
+
+- [ ] `/sister-spaces` — the allied-makerspace directory (Arete.study). Built, then removed on
+      David's call on 2026-09-04 while it is not wanted on the site. It is not abandoned: the
+      route, `src/lib/data/sister-spaces.ts`, the card art and every link to them come back with
+      a revert of the commit that removed them. Restore it from git rather than rewriting it —
+      the address, map link and photo are already correct there.
+
 ## Next — worth doing, not blocking
 
 - [ ] Run `bun run test:e2e` and keep it green. Not run in this session; it needs
@@ -50,8 +58,7 @@ fail separately.
 - [ ] Re-scrape the share card in each platform's debugger after the first deploy. They cache the
       old card for days; a `?v=2` on the URL forces Discord and Slack immediately.
 - [ ] Decide whether the project directory should become a CMS content type once real bindings
-      exist. It is checked-in data today so both pages render without a database — a real
+      exist. It is checked-in data today so the page renders without a database — a real
       constraint, not laziness. Revisit only if non-developers need to edit it.
-- [ ] The old site had per-page share cards (`/og/projects.png`, `/og/sister-spaces.png`); this
-      one points every page at the single `og-image.png`. Worth restoring if the two content
-      pages get shared much.
+- [ ] The old site had per-page share cards (`/og/projects.png`); this one points every page at
+      the single `og-image.png`. Worth restoring if `/projects` gets shared much.

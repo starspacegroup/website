@@ -15,14 +15,13 @@ describe('Documentation Page', () => {
 		expect(section.textContent).not.toMatch(/starter template/i);
 	});
 
-	it('documents where the project and sister-space lists live', () => {
+	it('documents where the project list lives', () => {
 		render(Page);
 		const section = screen
 			.getByRole('heading', { name: /^Site Content$/i })
 			.closest('section') as HTMLElement;
 		const scoped = within(section);
 		expect(scoped.getByText('src/lib/data/projects.ts')).toBeTruthy();
-		expect(scoped.getByText('src/lib/data/sister-spaces.ts')).toBeTruthy();
 		expect(scoped.getByText('src/lib/discord.ts')).toBeTruthy();
 	});
 

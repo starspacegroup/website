@@ -105,13 +105,6 @@
 			icon: '🚀'
 		},
 		{
-			id: 'sister-spaces',
-			label: 'Sister Spaces',
-			description: 'Allied makerspaces you can visit in person',
-			action: () => goto('/sister-spaces'),
-			icon: '📍'
-		},
-		{
 			id: 'contact',
 			label: 'Contact',
 			description: 'Send a message to *Space',

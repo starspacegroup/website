@@ -233,13 +233,6 @@
 							>
 								Projects
 							</a>
-							<a
-								href="/sister-spaces"
-								class:active={$page.url.pathname.startsWith('/sister-spaces')}
-								on:click={closeMobileMenu}
-							>
-								Sister Spaces
-							</a>
 							{#if user}
 								{#if user.isOwner || user.isAdmin || user.isSuperAdmin}
 									<a

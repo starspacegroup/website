@@ -20,7 +20,7 @@ describe('Discord OAuth Init - Extended Branch Coverage', () => {
 						}
 					}
 				},
-				url: new URL('http://localhost:4277/api/auth/discord')
+				url: new URL('http://localhost:4203/api/auth/discord')
 			};
 
 			const { GET } = await import('../../src/routes/api/auth/discord/+server');
@@ -55,7 +55,7 @@ describe('Discord OAuth Init - Extended Branch Coverage', () => {
 						}
 					}
 				},
-				url: new URL('http://localhost:4277/api/auth/discord'),
+				url: new URL('http://localhost:4203/api/auth/discord'),
 				locals: {},
 				cookies: {
 					set: vi.fn(),
@@ -87,7 +87,7 @@ describe('Discord OAuth Init - Extended Branch Coverage', () => {
 						}
 					}
 				},
-				url: new URL('http://localhost:4277/api/auth/discord')
+				url: new URL('http://localhost:4203/api/auth/discord')
 			};
 
 			const { GET } = await import('../../src/routes/api/auth/discord/+server');
@@ -112,7 +112,7 @@ describe('Discord OAuth Init - Extended Branch Coverage', () => {
 						}
 					}
 				},
-				url: new URL('http://localhost:4277/api/auth/discord?role=admin')
+				url: new URL('http://localhost:4203/api/auth/discord?role=admin')
 			};
 
 			const { GET } = await import('../../src/routes/api/auth/discord/+server');
@@ -137,7 +137,7 @@ describe('Discord OAuth Init - Extended Branch Coverage', () => {
 						}
 					}
 				},
-				url: new URL('http://localhost:4277/api/auth/discord?mode=link')
+				url: new URL('http://localhost:4203/api/auth/discord?mode=link')
 			};
 
 			const { GET } = await import('../../src/routes/api/auth/discord/+server');
@@ -209,7 +209,7 @@ function configuredLinkEvent() {
 				DB: transactionDatabase()
 			}
 		},
-		url: new URL('http://localhost:4277/api/auth/discord?mode=link'),
+		url: new URL('http://localhost:4203/api/auth/discord?mode=link'),
 		locals: {},
 		cookies: { set: vi.fn(), get: vi.fn() }
 	};

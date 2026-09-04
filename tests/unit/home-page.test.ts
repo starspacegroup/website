@@ -25,7 +25,7 @@ describe.skip('Home Page Hero', () => {
 
 	it('should render the main title', () => {
 		render(Page);
-		const title = screen.getByText('NebulaKit');
+		const title = screen.getByText('*Space');
 		expect(title).toBeTruthy();
 	});
 

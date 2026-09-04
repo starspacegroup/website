@@ -11,7 +11,7 @@ export function requireUser(locals: App.Locals): AuthenticatedUser {
  * `isSuperAdmin` is honoured here for the same reason `stats-guard.ts` honours
  * it: downstream apps that add a superadmin tier sit ABOVE owner/admin, and
  * would otherwise pass the stats checks while being refused by every admin API.
- * These two files must agree. NebulaKit itself never sets the flag.
+ * These two files must agree. *Space itself never sets the flag.
  */
 export function requireAdmin(locals: App.Locals): AuthenticatedUser {
 	const user = requireUser(locals);

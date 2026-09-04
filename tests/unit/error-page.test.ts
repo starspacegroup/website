@@ -131,15 +131,15 @@ describe('Error Page', () => {
 		it('should generate correct page title for known errors', () => {
 			const status = 404;
 			const title = 'Lost in Space';
-			const expectedTitle = `${status} - ${title} | NebulaKit`;
-			expect(expectedTitle).toBe('404 - Lost in Space | NebulaKit');
+			const expectedTitle = `${status} - ${title} | *Space`;
+			expect(expectedTitle).toBe('404 - Lost in Space | *Space');
 		});
 
 		it('should generate correct page title for server errors', () => {
 			const status = 500;
 			const title = 'Server Error';
-			const expectedTitle = `${status} - ${title} | NebulaKit`;
-			expect(expectedTitle).toBe('500 - Server Error | NebulaKit');
+			const expectedTitle = `${status} - ${title} | *Space`;
+			expect(expectedTitle).toBe('500 - Server Error | *Space');
 		});
 	});
 

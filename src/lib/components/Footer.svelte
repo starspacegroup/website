@@ -71,10 +71,13 @@
 		<div class="footer-bottom">
 			<p class="footer-copyright">
 				© {currentYear}
-				{site.name}. Created by
-				<a href={site.authorUrl} target="_blank" rel="noopener noreferrer" class="starspace-link"
-					>{site.author}</a
-				>.
+				{site.name}.
+				{#if site.author !== site.name}
+					Created by
+					<a href={site.authorUrl} target="_blank" rel="noopener noreferrer" class="starspace-link"
+						>{site.author}</a
+					>.
+				{/if}
 			</p>
 			<div class="footer-social">
 				<a

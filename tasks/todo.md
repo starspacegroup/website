@@ -1,4 +1,4 @@
-# NebulaKit completion ledger
+# *Space completion ledger
 
 This file is the acceptance ledger for the current independent-product quality pass. A task is
 complete only when the implementation and its stated verification both pass. Local evidence,
@@ -22,7 +22,7 @@ GitHub merge state, and Cloudflare deployment evidence are tracked separately.
 
 - [x] Finish the independent-product conversion across code, Markdown, route copy, scripts, and
       comments; remove obsolete customization artifacts and broken links.
-- [x] Install the NebulaKit social card, GitHub repository callout, Apple touch icon, manifest, and
+- [x] Install the *Space social card, GitHub repository callout, Apple touch icon, manifest, and
       192/512 install icons; verify dimensions and metadata in tests.
 - [x] Reconcile public-content, WebMCP, model-selection, voice, and Turnstile behavior with the
       discovery catalog and user documentation.
@@ -71,8 +71,8 @@ Delivery evidence recorded on 2026-08-08 (second session):
 
 - Diff reviewed for publication safety across three independent audits: credential sweep, merge
   provenance, and hosted-check diagnosis. Doc corrections committed as `93a4624` and pushed to
-  `fork/cursor/nebulakit-quality-pass-20260808`. Draft PR
-  [#6](https://github.com/starspacegroup/NebulaKit/pull/6) already existed; its head now matches
+  `fork/cursor/starspace-group-quality-pass-20260808`. Draft PR
+  [#6](https://github.com/starspacegroup/starspace-group-nebulakit/pull/6) already existed; its head now matches
   local `HEAD` (16 commits, 223 files). Remote state verified.
 - Credential sweep: no live secret is introduced by `origin/main...HEAD`. The real D1/KV ids that
   appear in six intermediate `cms-v2-embeds` commits are the historically leaked ones already
@@ -82,20 +82,20 @@ Delivery evidence recorded on 2026-08-08 (second session):
 - **Blocked, not passing — hosted checks.** Workflow run `31245359440` for PR #6 concluded
   `action_required` with zero jobs, so no check run was ever created; that is why the PR reads
   `UNSTABLE` while `gh pr checks` reports none. Cause is the fork-PR approval gate: the PR head is
-  `donaldfilimon/NebulaKit` and `author_association` is `NONE`. Ruled out by direct query: workflow
+  `donaldfilimon/*Space` and `author_association` is `NONE`. Ruled out by direct query: workflow
   missing on base, trigger/branch filters, draft suppression, and Actions being disabled.
-- **Blocked, not passing — squash-merge.** `gh api repos/starspacegroup/NebulaKit` returns
+- **Blocked, not passing — squash-merge.** `gh api repos/starspacegroup/starspace-group-nebulakit` returns
   `permissions: {admin: false, maintain: false, push: false, triage: false, pull: true}` for
   `donaldfilimon`. Approving the parked run, merging PR #6, and pushing local `main` (15 commits
   ahead of `origin/main`) all require write access this account does not hold. A maintainer of
-  `starspacegroup/NebulaKit` must approve the run and perform the merge.
+  `starspacegroup/starspace-group-nebulakit` must approve the run and perform the merge.
 - Squash-merging collapses authorship: 6 of the 16 commits are authored by David Monaghan
   <monaghan.david@gmail.com> (the `cms-v2-embeds` lineage). The squash message needs a
   `Co-Authored-By:` trailer for them.
 - Disclosure decision resolved and actioned in `620f6e2`. `ROADMAP.md` and
   `docs/PAYMENTS_AND_PPP.md` had published absolute local filesystem paths, the names of four
   private or third-party downstream projects, three downstream commit shas, and one third party's
-  subscription pricing floor. Both `starspacegroup/NebulaKit` and `donaldfilimon/NebulaKit` report
+  subscription pricing floor. Both `starspacegroup/starspace-group-nebulakit` and `donaldfilimon/*Space` report
   `private: false`, so that content was readable at the pushed fork branch. The owner chose to
   scrub paths and third-party names; downstream sources are now identified by what they are rather
   than who owns them. Nabu keeps its name as a first-party sibling already cross-linked from
@@ -105,7 +105,7 @@ Delivery evidence recorded on 2026-08-08 (second session):
   in `src/lib/server/pii-mask.ts` and `src/lib/utils/contact-validation.ts` now credit a downstream
   app without naming it, and the shared-database incident table in `docs/CLOUDFLARE_SETUP.md`
   identifies the six affected projects by role; the forensics are unchanged. First-party names
-  (NebulaKit, Guides) stay, being already cross-linked from AGENTS.md.
+  (*Space, Guides) stay, being already cross-linked from AGENTS.md.
 - `.remember/` was untracked but not ignored, so `git add -A` could have committed session
   transcripts containing the identifiers being removed. Added to `.gitignore` in `8937376`.
 - **Still open, needs an owner decision.** `migrations/0006_contact_form_submissions.sql` keeps its
@@ -128,7 +128,7 @@ Delivery evidence recorded on 2026-08-08 (second session):
   the old names. The sequence was `0001_`–`0012_` as of that fix, next `0013_`; `0013_session_payload.sql`
   has since landed with the opaque-sessions merge, so the current next number is `0014_`. Doc references updated in
   `migrations/README.md`, `CLAUDE.md`, and here. Reported on the PR as
-  [issuecomment-5225548231](https://github.com/starspacegroup/NebulaKit/pull/6#issuecomment-5225548231).
+  [issuecomment-5225548231](https://github.com/starspacegroup/starspace-group-nebulakit/pull/6#issuecomment-5225548231).
 - **Resolved.** The Prettier drift is swept in `106c3ce`. 32 files carried it, including
   `.prettierrc` itself; `bunx prettier --check .` now passes across the whole repository for the
   first time. Formatting only, no hand edits. 12 `.svelte` files were included, so the sweep was
@@ -139,7 +139,7 @@ Delivery evidence recorded on 2026-08-08 (second session):
   deleting the covering test in the same commit without recording a reason, while `stats-guard.ts`
   kept honouring the flag — so a superadmin passed the stats guards and was refused by every admin
   API. The flag is now declared on `App.Locals` rather than only structurally in `stats-guard.ts`,
-  and the restored test asserts the two files agree so they cannot silently diverge again. NebulaKit
+  and the restored test asserts the two files agree so they cannot silently diverge again. *Space
   never sets the flag; the contract exists for downstream apps, which is what the deleted docstring
   said. Surfaced by the PR review at score 75 — below that workflow's reporting threshold, correctly,
   since in-repo impact is nil, but real and inherited by the siblings sharing this code.
@@ -171,13 +171,13 @@ Full-gate evidence recorded on 2026-08-08 (second session), after the doc and sc
 Merge attempt recorded on 2026-08-08 (third session):
 
 - The branch is merged into **local** `main` (fast-forward, now `106c3ce`) and pushed to
-  `fork/cursor/nebulakit-quality-pass-20260808`, which is PR #6's head.
+  `fork/cursor/starspace-group-quality-pass-20260808`, which is PR #6's head.
 - Publishing to `origin/main` is **impossible from this account**, confirmed empirically rather than
   inferred: `git push --dry-run origin main` returns
-  `remote: Permission to starspacegroup/NebulaKit.git denied to donaldfilimon` / HTTP 403. Local
+  `remote: Permission to starspacegroup/starspace-group-nebulakit.git denied to donaldfilimon` / HTTP 403. Local
   `main` was 29 commits ahead of `origin/main` at that time (35 as of 2026-08-09) and cannot be
   published. Squash-merging PR #6 needs the
-  same write permission, so it is blocked on a maintainer of `starspacegroup/NebulaKit`, as is
+  same write permission, so it is blocked on a maintainer of `starspacegroup/starspace-group-nebulakit`, as is
   approving the parked workflow run that leaves the PR `unstable` with zero checks.
 - No direct push to `origin/main` was attempted beyond the dry run. Even with permission it would
   bypass the PR the ledger specifies, and would publish 29 commits to a public default branch.
@@ -186,7 +186,7 @@ Agent-guidance drift corrected on 2026-08-09 (fourth session):
 
 - `CLAUDE.md` was last written at `2f3a4b0`; `db30a29` and `c7040ab` (the opaque-sessions merge)
   landed after it and falsified four statements. All four are fixed. Everything else in the file was
-  re-verified against source and still holds: the 95 thresholds in `vite.config.ts`, `devPort: 4277`,
+  re-verified against source and still holds: the 95 thresholds in `vite.config.ts`, `devPort: 4203`,
   the 14-file `git grep -ln "AGENTS.md §"` count, the CI job topology and `BUN_VERSION` pin, the
   `docs/` table, and the absence of a `lint`/`format` script.
 - The migration inventory said `0001_`–`0012_`, next `0013_`, in three places — `CLAUDE.md`, the
@@ -212,7 +212,7 @@ Agent-guidance drift corrected on 2026-08-09 (fourth session):
   clean, and `product-identity` + `agent-readiness` pass 53/53 — those are the suites that read these
   files off disk. No coverage or e2e claim is made, because nothing under coverage changed.
 - Delivered as `46a0247` on `docs/agent-guidance-drift-20260809`, pushed to
-  `fork/cursor/nebulakit-quality-pass-20260808` as a fast-forward from `c7040ab` — so **PR #6 now
+  `fork/cursor/starspace-group-quality-pass-20260808` as a fast-forward from `c7040ab` — so **PR #6 now
   carries it** and reports `MERGEABLE` / `mergeStateStatus: CLEAN` at head `46a0247`. A fresh PR was
   considered and rejected: the corrections only parse on top of the opaque-sessions work, which is
   not on `origin/main`, so a new PR would have shown 36 commits rather than four doc files. PR #6's
@@ -233,12 +233,12 @@ Agent-guidance drift corrected on 2026-08-09 (fourth session):
 Delivery evidence recorded on 2026-08-10 (sixth session):
 
 - The consolidation moved to a dedicated branch and PR: `consolidate/local-main-20260810` is PR
-  [#9](https://github.com/starspacegroup/NebulaKit/pull/9) (42 commits, head `8443b8b`, base
+  [#9](https://github.com/starspacegroup/starspace-group-nebulakit/pull/9) (42 commits, head `8443b8b`, base
   `main`), and the heads of PR #6 (`46a0247`), PR #7 (`security/opaque-sessions`), and PR #8
   (`cms-v2-embeds`) are all ancestors of that head — verified with `git merge-base --is-ancestor`,
   so merging #9 strictly contains all three.
 - **The hosted-checks blocker is resolved for PR #9.** A maintainer approved the fork-PR workflow
-  runs, and CI has now executed on `starspacegroup/NebulaKit` for the first time. Both jobs are
+  runs, and CI has now executed on `starspacegroup/starspace-group-nebulakit` for the first time. Both jobs are
   green at head `8443b8b`: Test & Coverage and E2E Tests, run `31439300377` (2026-08-10). PR #9
   reports `MERGEABLE` / `mergeStateStatus: CLEAN`. Getting there took two fixes this session:
   `e3b87b9` regenerated `bun.lock` with released Bun 1.3.14 (a canary had written
@@ -250,7 +250,7 @@ Delivery evidence recorded on 2026-08-10 (sixth session):
   ancestor of #9's, and pushing a lockfile commit to it would fork the lineage for a PR that #9
   supersedes. The failure is an argument for merging #9 and closing #6, not a regression to chase.
 - **Still blocked, re-verified today — publication.** `git push --dry-run origin main` returns
-  `Permission to starspacegroup/NebulaKit.git denied to donaldfilimon` (403), unchanged. The
+  `Permission to starspacegroup/starspace-group-nebulakit.git denied to donaldfilimon` (403), unchanged. The
   remaining acceptance step is a maintainer squash-merging PR #9 and closing the superseded PRs
   (#6, #7, and #8's content all land with it). The squash message still needs the
   `Co-Authored-By: David Monaghan <monaghan.david@gmail.com>` trailer for the `cms-v2-embeds`
@@ -261,7 +261,7 @@ Delivery evidence recorded on 2026-08-10 (sixth session):
 
 ## Explicitly outside this worktree
 
-- [~] After NebulaKit is merged, audit whether the same inherited fixes apply to Guides, nabu, and
+- [~] After *Space is merged, audit whether the same inherited fixes apply to Guides, nabu, and
   sortalizer in separate repository branches. Do not stage sibling-repository files here.
 - [ ] Record any remaining design decision or external blocker without claiming completion.
 
@@ -275,20 +275,20 @@ Sibling audit, read-only pass recorded on 2026-08-08 (fourth session):
   half of the audit is now **7 of 7** and complete. Propagation still waits on PR #6, so the item
   stays `[~]`.
 - `isSuperAdmin` (the `e0e509c` fix): **does not apply.** The identifier does not appear anywhere in
-  Guides, nabu, or sortalizer `src/`. It exists only in NebulaKit (`app.d.ts`, `auth-guards.ts`,
+  Guides, nabu, or sortalizer `src/`. It exists only in *Space (`app.d.ts`, `auth-guards.ts`,
   `stats-guard.ts`), so the guard-divergence it fixed cannot occur in the siblings.
 - Admin-users PII masking: **already present** in Guides and sortalizer — both use `requireAdmin`
-  plus `isPiiRevealed`/`maskEmail`/`maskGeneric`, matching NebulaKit. **nabu is not exposed and needs
+  plus `isPiiRevealed`/`maskEmail`/`maskGeneric`, matching *Space. **nabu is not exposed and needs
   no port:** it has no `pii-mask.ts` but gates all three admin-users endpoints on `requireOwner`,
-  which is strictly stronger than NebulaKit's `requireAdmin`-plus-mask (nabu's own `auth-guards.ts`
+  which is strictly stronger than *Space's `requireAdmin`-plus-mask (nabu's own `auth-guards.ts`
   defines `requireAdmin` as owner-or-admin and `requireOwner` as owner-only). The residual difference
-  is that NebulaKit masks by default even for the owner until an explicit reveal cookie is set; that
+  is that *Space masks by default even for the owner until an explicit reveal cookie is set; that
   is a hardening delta, not a leak.
 - Destructive reset and authentication-key administration: **owner-gated in all four repositories.**
   No gap.
 - **Open finding — Guides only.** `Guides/src/routes/api/admin/users/[id]/+server.ts` guards PATCH
   and DELETE with an inline `if (!locals.user.isOwner && !locals.user.isAdmin)`, so **any admin can
-  promote an arbitrary user to admin or delete users.** NebulaKit restricted both handlers to
+  promote an arbitrary user to admin or delete users.** *Space restricted both handlers to
   `requireOwner` in `924a5ac` ("Retire the template workflow; harden auth and the OAuth write path"),
   and nabu and sortalizer both use `requireOwner` there. Guides is the only outlier and never
   received the change — the sole commit touching that file is `4aefa9c`, unrelated. Verified not a
@@ -299,7 +299,7 @@ Sibling audit, read-only pass recorded on 2026-08-08 (fourth session):
 - The sibling `search/` and `[id]/` endpoints in Guides and sortalizer use inline
   authenticate-then-authorize blocks rather than the shared `auth-guards` helpers. Behaviour was read
   and matches `requireAdmin` in every case checked, so this is a divergence risk rather than a
-  defect — the same class of drift that `93bf6aa` caused in NebulaKit.
+  defect — the same class of drift that `93bf6aa` caused in *Space.
 - Guides is checked out on `cursor/guides-main-security-20260808` with a clean tree, but that branch
   is **empty**: `git log main..HEAD` and `git diff --stat main...HEAD` both return nothing. It does
   not already carry this fix.
@@ -317,7 +317,7 @@ sibling-repository file staged, edited, or committed — every result below is f
   all three are safe by construction. Two render `renderMarkdownToHtml`, a hand-rolled renderer that
   escapes its entire input first (`markdown.ts:147`) and routes every href through `sanitizeHref`;
   the third is a hardcoded SVG string literal (`profile/+page.svelte:214`). Guides stores Markdown
-  where NebulaKit stores rich-text HTML, so the NebulaKit sanitizer does not apply to it — different
+  where *Space stores rich-text HTML, so the *Space sanitizer does not apply to it — different
   content model, not a missing fix.
 - **One-time OAuth state: no gap.** All four repositories persist an `oauth_transactions` row and
   consume it with a single atomic statement — `UPDATE ... WHERE id = ? AND provider = ? AND
@@ -330,9 +330,9 @@ session_id` — then reject intent mismatch and, for `link`, require the row's `
   false positive** — a truncated `grep` had cut the `datetime(expires_at)` line, which is present.
 - **Open finding — nabu only. `vite.config.ts` excludes `src/hooks.server.ts` from coverage**
   ("Hooks are tested implicitly through integration tests"), which is precisely the P0 item
-  NebulaKit closed. NebulaKit, Guides, and sortalizer all measure it. The exclusion matters more in
+  *Space closed. *Space, Guides, and sortalizer all measure it. The exclusion matters more in
   nabu than the same line would elsewhere: nabu's `handle` is `sequence(authHandler)`, so that one
-  file **is** the entire authorization boundary, where NebulaKit's is one handler of four. It is not
+  file **is** the entire authorization boundary, where *Space's is one handler of four. It is not
   untested — `tests/unit/hooks-owner-admin.test.ts` covers owner-not-demoted, non-owner demoted,
   non-owner promoted, and a forged cookie — but its harness supplies `DB: { prepare }` in all four
   cases, so the `if (!db) throw new Error('Session database unavailable')` fail-closed branch is

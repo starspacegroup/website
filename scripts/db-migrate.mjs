@@ -2,9 +2,9 @@
 /**
  * Run D1 migrations against THIS project's database.
  *
- * Why this exists: an earlier NebulaKit release hardcoded these scripts to
- * `nebulakit-db`. Sibling products inherited that name, so
- * `db:migrate` either failed ("no database named nebulakit-db") or — for anyone
+ * Why this exists: an earlier *Space release hardcoded these scripts to
+ * `starspace-group-db`. Sibling products inherited that name, so
+ * `db:migrate` either failed ("no database named starspace-group-db") or — for anyone
  * who still had the historical leaked id in place — applied the project's
  * migrations into the SHARED database. That is how one D1 ended up with 28
  * tables and four projects' migrations interleaved. See docs/CLOUDFLARE_SETUP.md.
@@ -34,7 +34,7 @@ if (!['apply', 'list'].includes(action)) {
 
 // `--local` applies migrations to the miniflare SQLite file under .wrangler/ and
 // never contacts Cloudflare, so placeholder ids are harmless there — and must
-// stay harmless, or a fresh NebulaKit clone can't run its own e2e suite
+// stay harmless, or a fresh *Space clone can't run its own e2e suite
 // until someone provisions an account. Remote runs keep the hard guard: that
 // path is the one that writes to whatever the ids point at.
 const LOCAL = rest.includes('--local');

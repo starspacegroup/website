@@ -93,9 +93,15 @@ describe('Footer', () => {
 		expect(screen.getByText(new RegExp(`© ${currentYear}`, 'i'))).toBeInTheDocument();
 	});
 
-	it('should display the author attribution link', () => {
+	// The site credits its author only when the author is someone else. Here the
+	// site IS the author, so "© *Space. Created by *Space." would be noise.
+	it('credits the author only when the author is not the site itself', () => {
 		render(Footer);
-		const authorLink = screen.getByRole('link', { name: site.author });
+		const authorLink = screen.queryByRole('link', { name: site.author });
+		if (site.author === site.name) {
+			expect(authorLink).not.toBeInTheDocument();
+			return;
+		}
 		expect(authorLink).toHaveAttribute('href', site.authorUrl);
 		expect(authorLink).toHaveAttribute('target', '_blank');
 		expect(authorLink).toHaveAttribute('rel', 'noopener noreferrer');

@@ -2,7 +2,7 @@
   Callout — reference embed component.
 
   Reads props supplied from the embed's data-props. Styled entirely with the
-  kit's theme tokens so it looks native in any NebulaKit app, in light or dark.
+  kit's theme tokens so it looks native in any *Space app, in light or dark.
   Renders on the server (no onMount) so it paints with the page.
 -->
 <script lang="ts">

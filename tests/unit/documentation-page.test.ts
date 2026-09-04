@@ -5,7 +5,7 @@ import Page from '../../src/routes/documentation/+page.svelte';
 describe('Documentation Page', () => {
 	it('renders the primary documentation heading and intro', () => {
 		render(Page);
-		expect(screen.getByRole('heading', { name: /NebulaKit documentation/i })).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: /\*Space documentation/i })).toBeInTheDocument();
 		expect(
 			screen.getByText(/single source of truth for setup, development, and deployment/i)
 		).toBeInTheDocument();
@@ -125,15 +125,15 @@ describe('Documentation Page', () => {
 
 		expect(screen.getByRole('link', { name: /README/i })).toHaveAttribute(
 			'href',
-			'https://github.com/starspacegroup/NebulaKit/blob/main/README.md'
+			'https://github.com/starspacegroup/starspace-group-nebulakit/blob/main/README.md'
 		);
 		expect(screen.getByRole('link', { name: /Contributing Guide/i })).toHaveAttribute(
 			'href',
-			'https://github.com/starspacegroup/NebulaKit/blob/main/CONTRIBUTING.md'
+			'https://github.com/starspacegroup/starspace-group-nebulakit/blob/main/CONTRIBUTING.md'
 		);
 		expect(screen.getByRole('link', { name: /GitHub repository/i })).toHaveAttribute(
 			'href',
-			'https://github.com/starspacegroup/NebulaKit'
+			'https://github.com/starspacegroup/starspace-group-nebulakit'
 		);
 	});
 

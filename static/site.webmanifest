@@ -1,7 +1,7 @@
 {
-	"name": "NebulaKit",
-	"short_name": "NebulaKit",
-	"description": "A cosmic-grade SvelteKit starter powered by Cloudflare's full stack.",
+	"name": "*Space",
+	"short_name": "*Space",
+	"description": "An inclusive digital coworking space on Discord.",
 	"start_url": "/",
 	"display": "standalone",
 	"background_color": "#0b1026",

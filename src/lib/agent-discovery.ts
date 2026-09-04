@@ -98,7 +98,7 @@ export const CRAWLER_ALLOW: readonly string[] = ['/api/health'];
  * Content Signals (contentsignals.org) — how this site's content may be used
  * once it has been fetched, expressed alongside the crawl rules.
  *
- * NebulaKit's shipped default is fully permissive: its public open-source
+ * *Space's shipped default is fully permissive: its public open-source
  * content is meant to be found, quoted, and learned from.
  *
  *   search    — may be indexed and linked in search results

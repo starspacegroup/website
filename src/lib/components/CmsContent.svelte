@@ -12,7 +12,7 @@
   plain runs and embed segments; each embed resolves through the registry.
 
   An embed whose component is not registered renders nothing. The registry
-  ships empty, so "not registered" is NebulaKit's default state rather than
+  ships empty, so "not registered" is *Space's default state rather than
   an error worth surfacing to a visitor.
 -->
 <script lang="ts">

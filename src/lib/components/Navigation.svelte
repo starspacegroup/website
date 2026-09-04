@@ -39,7 +39,7 @@
 		avatarUrl?: string;
 		isOwner: boolean;
 		isAdmin?: boolean;
-		/** Downstream tier above owner; see auth-guards.ts. NebulaKit never sets it. */
+		/** Downstream tier above owner; see auth-guards.ts. *Space never sets it. */
 		isSuperAdmin?: boolean;
 		isPretend?: boolean;
 	} | null = null;

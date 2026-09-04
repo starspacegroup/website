@@ -18,7 +18,7 @@ export const GET: RequestHandler = async ({ url, locals, fetch, cookies }) => {
 			{
 				headers: {
 					Accept: 'application/vnd.github.v3+json',
-					'User-Agent': 'NebulaKit'
+					'User-Agent': '*Space'
 				}
 			}
 		);

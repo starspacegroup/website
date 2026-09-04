@@ -9,7 +9,7 @@ import { hashSessionToken } from './db';
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
-const DEV_FALLBACK_SECRET = 'nebulakit-dev-insecure-session-secret';
+const DEV_FALLBACK_SECRET = 'starspace-group-dev-insecure-session-secret';
 
 export function resolveSessionSecret(secret: string | undefined | null): string | null {
 	if (secret) return secret;

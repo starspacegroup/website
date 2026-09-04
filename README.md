@@ -1,8 +1,8 @@
-[![NebulaKit — a cosmic-grade SvelteKit starter](./static/og-image.png)](https://github.com/starspacegroup/NebulaKit)
+[![*Space — a cosmic-grade SvelteKit starter](./static/og-image.png)](https://github.com/starspacegroup/starspace-group-nebulakit)
 
-# NebulaKit
+# *Space
 
-NebulaKit is a cosmic-grade SvelteKit starter template powered by Cloudflare's full stack.
+*Space is a cosmic-grade SvelteKit starter template powered by Cloudflare's full stack.
 Publishing structured content, managing authenticated users, operating AI-assisted workflows,
 and observing the app without third-party analytics are all wired up and tested before you
 write a line. It runs on Cloudflare Pages with D1, KV, and R2 bindings.
@@ -31,10 +31,10 @@ Cloudflare resource names, and tells you what is left to do by hand.
   install metadata, automated WCAG AA contrast checks, and a widget board whose every pointer
   gesture has a keyboard equivalent.
 
-NebulaKit does **not** advertise an OAuth authorization server or an MCP server. Its discovery
+*Space does **not** advertise an OAuth authorization server or an MCP server. Its discovery
 metadata lists only routes implemented by this repository — keep that honest in your own app.
 
-Planned additions — including capabilities already proven in NebulaKit-derived projects — are tracked in [ROADMAP.md](./ROADMAP.md).
+Planned additions — including capabilities already proven in *Space-derived projects — are tracked in [ROADMAP.md](./ROADMAP.md).
 
 ## Requirements
 
@@ -65,7 +65,7 @@ bun run db:migrate:local
 bun run dev
 ```
 
-Open <http://localhost:4277>. Local migrations use Wrangler's local state and do not require
+Open <http://localhost:4203>. Local migrations use Wrangler's local state and do not require
 production Cloudflare identifiers.
 
 Useful commands:
@@ -83,14 +83,14 @@ The authoritative contribution and test workflow is in [CONTRIBUTING.md](./CONTR
 
 ## Cloudflare setup
 
-Authenticate Wrangler, select the intended Cloudflare account, then create NebulaKit-owned
+Authenticate Wrangler, select the intended Cloudflare account, then create *Space-owned
 resources:
 
 ```bash
 bunx wrangler login
 bun run setup:cf --dry-run
 bun run setup:cf
-bunx wrangler r2 bucket create nebulakit-files
+bunx wrangler r2 bucket create starspace-group-files
 bun run db:migrate
 ```
 

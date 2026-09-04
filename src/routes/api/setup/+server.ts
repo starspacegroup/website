@@ -75,7 +75,7 @@ export const POST: RequestHandler = async ({ request, platform, locals }) => {
 		const userResponse = await fetch(`https://api.github.com/users/${trimmedUsername}`, {
 			headers: {
 				Accept: 'application/vnd.github.v3+json',
-				'User-Agent': 'NebulaKit'
+				'User-Agent': '*Space'
 			}
 		});
 		if (!userResponse.ok) {

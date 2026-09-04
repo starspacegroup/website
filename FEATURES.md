@@ -1,4 +1,4 @@
-# NebulaKit feature map
+# *Space feature map
 
 This document maps what the starter template ships to where it is implemented. Everything below is
 working code in this repository, inherited by any app created from it with "Use this template"; it
@@ -19,7 +19,7 @@ types are not dynamically imported. See [docs/CMS_EMBEDS.md](./docs/CMS_EMBEDS.m
 
 ## Authentication and accounts
 
-NebulaKit implements its authentication boundary in the application rather than delegating it to
+*Space implements its authentication boundary in the application rather than delegating it to
 Auth.js.
 
 - Password signup and login with password hashing
@@ -34,7 +34,7 @@ Auth.js.
 The canonical implementation is under `src/routes/api/auth/`, `src/lib/utils/session.ts`,
 `src/lib/utils/passwords.ts`, and `src/lib/services/account-merge.ts`.
 
-NebulaKit is an OAuth **client**. It does not expose an OAuth authorization server or protected
+*Space is an OAuth **client**. It does not expose an OAuth authorization server or protected
 resource metadata.
 
 ## AI chat and voice
@@ -65,7 +65,7 @@ permission checks; see `src/routes/api/admin/pii-reveal/+server.ts`.
 
 ## First-party analytics
 
-NebulaKit stores bounded aggregate counters in D1:
+*Space stores bounded aggregate counters in D1:
 
 - Page and route views
 - Referrer and country buckets
@@ -90,7 +90,7 @@ third-party analytics script. Operators need `can_view_stats`. See
 | `Accept: text/markdown`                      | Markdown representation of public pages                 |
 | WebMCP tools                                 | Same-origin search, read, navigation, and theme actions |
 
-The discovery contract intentionally omits services NebulaKit does not implement. Route coverage is
+The discovery contract intentionally omits services *Space does not implement. Route coverage is
 enforced by `tests/unit/agent-readiness.test.ts`. See
 [docs/AGENT_READINESS.md](./docs/AGENT_READINESS.md).
 
@@ -102,7 +102,7 @@ Configured bindings:
 - `KV`: runtime configuration and secret-backed application state
 - `BUCKET`: R2 media storage
 
-Queue configuration is intentionally disabled in `wrangler.toml`; NebulaKit does not claim an active
+Queue configuration is intentionally disabled in `wrangler.toml`; *Space does not claim an active
 queue consumer or producer. Turnstile verification is available when the required secret is
 configured.
 

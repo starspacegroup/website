@@ -80,7 +80,7 @@ describe('GitHub Auth API', () => {
 			try {
 				await GET({
 					platform: withDatabase(mockPlatform),
-					url: new URL('http://localhost:4277/api/auth/github')
+					url: new URL('http://localhost:4203/api/auth/github')
 				} as any);
 				expect.fail('Should have thrown redirect');
 			} catch (err: any) {
@@ -103,7 +103,7 @@ describe('GitHub Auth API', () => {
 			try {
 				await GET({
 					platform: withDatabase(mockPlatform),
-					url: new URL('http://localhost:4277/api/auth/github'),
+					url: new URL('http://localhost:4203/api/auth/github'),
 					cookies: { set: vi.fn() },
 					locals: {}
 				} as any);
@@ -131,7 +131,7 @@ describe('GitHub Auth API', () => {
 			try {
 				await GET({
 					platform: withDatabase(mockPlatform),
-					url: new URL('http://localhost:4277/api/auth/github'),
+					url: new URL('http://localhost:4203/api/auth/github'),
 					cookies: { set: vi.fn() },
 					locals: {}
 				} as any);
@@ -149,7 +149,7 @@ describe('GitHub Auth API', () => {
 
 			try {
 				await GET({
-					url: new URL('http://localhost:4277/api/auth/github/callback'),
+					url: new URL('http://localhost:4203/api/auth/github/callback'),
 					cookies: { get: vi.fn(), set: vi.fn(), delete: vi.fn() },
 					platform: withDatabase({})
 				} as any);
@@ -173,7 +173,7 @@ describe('GitHub Auth API', () => {
 
 			try {
 				await GET({
-					url: new URL('http://localhost:4277/api/auth/github/callback?code=test-code'),
+					url: new URL('http://localhost:4203/api/auth/github/callback?code=test-code'),
 					cookies: { get: vi.fn(), set: vi.fn(), delete: vi.fn() },
 					platform: withDatabase(mockPlatform)
 				} as any);
@@ -202,7 +202,7 @@ describe('GitHub Auth API', () => {
 
 			try {
 				await GET({
-					url: new URL('http://localhost:4277/api/auth/github/callback?code=invalid-code'),
+					url: new URL('http://localhost:4203/api/auth/github/callback?code=invalid-code'),
 					cookies: { get: vi.fn(), set: vi.fn(), delete: vi.fn() },
 					platform: withDatabase(mockPlatform)
 				} as any);
@@ -230,7 +230,7 @@ describe('GitHub Auth API', () => {
 
 			try {
 				await GET({
-					url: new URL('http://localhost:4277/api/auth/github/callback?code=test-code'),
+					url: new URL('http://localhost:4203/api/auth/github/callback?code=test-code'),
 					cookies: { get: vi.fn(), set: vi.fn(), delete: vi.fn() },
 					platform: withDatabase(mockPlatform)
 				} as any);
@@ -265,7 +265,7 @@ describe('GitHub Auth API', () => {
 
 			try {
 				await GET({
-					url: new URL('http://localhost:4277/api/auth/github/callback?code=test-code'),
+					url: new URL('http://localhost:4203/api/auth/github/callback?code=test-code'),
 					cookies: { get: vi.fn(), set: vi.fn(), delete: vi.fn() },
 					platform: withDatabase(mockPlatform)
 				} as any);
@@ -311,14 +311,14 @@ describe('GitHub Auth API', () => {
 			const { GET } = await import('../../src/routes/api/auth/github/callback/+server');
 
 			const response = await GET({
-				url: new URL('http://localhost:4277/api/auth/github/callback?code=test-code'),
+				url: new URL('http://localhost:4203/api/auth/github/callback?code=test-code'),
 				cookies: mockCookies,
 				platform: withDatabase(mockPlatform)
 			} as any);
 
 			// Should return a redirect response with cookie header
 			expect(response.status).toBe(302);
-			expect(response.headers.get('Location')).toBe('http://localhost:4277/admin'); // Owner goes to admin
+			expect(response.headers.get('Location')).toBe('http://localhost:4203/admin'); // Owner goes to admin
 			expect(response.headers.get('Set-Cookie')).toContain('session=');
 			expect(response.headers.get('Set-Cookie')).toContain('Path=/');
 			expect(response.headers.get('Set-Cookie')).toContain('HttpOnly');
@@ -359,14 +359,14 @@ describe('GitHub Auth API', () => {
 			const { GET } = await import('../../src/routes/api/auth/github/callback/+server');
 
 			const response = await GET({
-				url: new URL('http://localhost:4277/api/auth/github/callback?code=test-code'),
+				url: new URL('http://localhost:4203/api/auth/github/callback?code=test-code'),
 				cookies: mockCookies,
 				platform: withDatabase(mockPlatform)
 			} as any);
 
 			// Should return a redirect response
 			expect(response.status).toBe(302);
-			expect(response.headers.get('Location')).toBe('http://localhost:4277/'); // Non-owner goes to home
+			expect(response.headers.get('Location')).toBe('http://localhost:4203/'); // Non-owner goes to home
 		});
 
 		it('should store user in database when available', async () => {
@@ -412,7 +412,7 @@ describe('GitHub Auth API', () => {
 			const { GET } = await import('../../src/routes/api/auth/github/callback/+server');
 
 			const response = await GET({
-				url: new URL('http://localhost:4277/api/auth/github/callback?code=test-code'),
+				url: new URL('http://localhost:4203/api/auth/github/callback?code=test-code'),
 				cookies: mockCookies,
 				platform: withDatabase(mockPlatform)
 			} as any);
@@ -475,7 +475,7 @@ describe('GitHub Auth API', () => {
 			const { GET } = await import('../../src/routes/api/auth/github/callback/+server');
 
 			const response = await GET({
-				url: new URL('http://localhost:4277/api/auth/github/callback?code=test-code'),
+				url: new URL('http://localhost:4203/api/auth/github/callback?code=test-code'),
 				cookies: mockCookies,
 				platform: withDatabase(mockPlatform)
 			} as any);
@@ -525,7 +525,7 @@ describe('GitHub Auth API', () => {
 			const { GET } = await import('../../src/routes/api/auth/github/callback/+server');
 
 			const response = await GET({
-				url: new URL('http://localhost:4277/api/auth/github/callback?code=test-code'),
+				url: new URL('http://localhost:4203/api/auth/github/callback?code=test-code'),
 				cookies: mockCookies,
 				platform: withDatabase(mockPlatform)
 			} as any);

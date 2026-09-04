@@ -1,10 +1,10 @@
-# NebulaKit Development Quick Reference
+# *Space Development Quick Reference
 
 ## 🚀 Essential Commands
 
 ```bash
 # Development
-bun run dev              # Start dev server (port 4277)
+bun run dev              # Start dev server (port 4203)
 bun run build            # Build for production
 bun run preview          # Preview production build
 bun run check            # TypeScript type checking

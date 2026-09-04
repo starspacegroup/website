@@ -281,7 +281,7 @@ describe('/auth.md', () => {
 	});
 
 	it('states plainly that there is no agent registration or OAuth server', async () => {
-		// NebulaKit deliberately does NOT publish oauth-authorization-server or
+		// *Space deliberately does NOT publish oauth-authorization-server or
 		// oauth-protected-resource, because it is an OAuth client. If someone later
 		// adds a real authorization server, this expectation should be updated
 		// alongside the new metadata — not deleted to make the test pass.

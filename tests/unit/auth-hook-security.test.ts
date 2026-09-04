@@ -48,8 +48,8 @@ function eventFor(cookie: string | undefined, db: ReturnType<typeof database>, o
 			env: { DB: db, GITHUB_OWNER_ID: ownerId, SESSION_SECRET: 'test-session-secret' }
 		},
 		locals: {},
-		url: new URL('https://nebulakit.example/admin'),
-		request: new Request('https://nebulakit.example/admin'),
+		url: new URL('https://starspace-group.example/admin'),
+		request: new Request('https://starspace-group.example/admin'),
 		route: { id: '/admin' }
 	};
 }
@@ -135,7 +135,7 @@ describe('server-authenticated session hook', () => {
 			}),
 			null
 		);
-		const event = eventFor('pretend-session-token', db); // nebulakit.example
+		const event = eventFor('pretend-session-token', db); // starspace-group.example
 		(event.platform.env as Record<string, unknown>).DEV_AUTH_BYPASS = 'true';
 
 		await runAuth(event);

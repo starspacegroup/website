@@ -7,8 +7,8 @@ import { site } from '../../src/lib/site.config';
 const root = resolve(import.meta.dirname, '../..');
 const read = (path: string) => readFileSync(resolve(root, path), 'utf8');
 
-describe('NebulaKit product identity', () => {
-	it('presents NebulaKit as a starter template, consistently', () => {
+describe('*Space product identity', () => {
+	it('presents *Space as a starter template, consistently', () => {
 		const publicSurfaces = [
 			read('README.md'),
 			read('FEATURES.md'),
@@ -18,7 +18,7 @@ describe('NebulaKit product identity', () => {
 
 		expect(publicSurfaces).toMatch(/starter template/i);
 		expect(publicSurfaces).toMatch(/use this template/i);
-		// The marketing site sells NebulaKit as a template. If this repository ever
+		// The marketing site sells *Space as a template. If this repository ever
 		// describes itself as a finished product instead, the two disagree and a
 		// visitor who follows the site to the repo is told the opposite thing.
 		expect(publicSurfaces).not.toMatch(/independent Cloudflare-native platform/i);
@@ -68,15 +68,15 @@ describe('NebulaKit product identity', () => {
 		};
 
 		expect(readme).toMatch(
-			/\[!\[NebulaKit[^\]]*\]\(\.\/static\/og-image\.png\)\]\(https:\/\/github\.com\/starspacegroup\/NebulaKit\)/i
+			/\[!\[\*Space[^\]]*\]\(\.\/static\/og-image\.png\)\]\(https:\/\/github\.com\/starspacegroup\/starspace-group-nebulakit\)/i
 		);
 		expect(footer).toContain('aria-label="GitHub Repository"');
 		expect(html).toContain('rel="apple-touch-icon"');
 		expect(html).toContain('rel="manifest"');
 		expect(html).toContain('name="apple-mobile-web-app-title"');
 		expect(html).toContain('name="theme-color"');
-		expect(manifest.name).toBe('NebulaKit');
-		expect(manifest.short_name).toBe('NebulaKit');
+		expect(manifest.name).toBe('*Space');
+		expect(manifest.short_name).toBe('*Space');
 		expect(manifest.description).toBe(site.tagline);
 		expect(manifest.display).toBe('standalone');
 		expect(manifest.start_url).toBe('/');

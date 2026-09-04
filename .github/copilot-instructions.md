@@ -1,4 +1,4 @@
-# GitHub Copilot Instructions for NebulaKit
+# GitHub Copilot Instructions for *Space
 
 **Refer to [AGENTS.md](../AGENTS.md) for the canonical constraints and rules.**
 
@@ -10,10 +10,10 @@ All tool-agnostic rules (testing, migrations, theming, scratch files, and produc
 
 When using Copilot Chat locally:
 
-- Assume `bun run dev` is already running in a separate terminal on port 4277
+- Assume `bun run dev` is already running in a separate terminal on port 4203
 - Do NOT start the dev server when performing tasks
 - Do NOT run `bun run dev`, `vite dev`, or similar commands
-- When testing locally, assume the app is already accessible at `http://localhost:4277`
+- When testing locally, assume the app is already accessible at `http://localhost:4203`
 - If you need to verify the app is running, check the existing terminal output rather than starting a new instance
 
 When using the Copilot Coding Agent (remote):

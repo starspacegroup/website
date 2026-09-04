@@ -11,7 +11,7 @@
  *   token from Cloudflare Zero Trust → Networks → Tunnels):
  *     TUNNEL_TOKEN=<token> bun run tunnel
  *
- * Override the local port (default: 4277, matches the dev server):
+ * Override the local port (default: 4203, matches the dev server):
  *   PORT=3000 bun run tunnel
  *
  * Run dev server + tunnel together (two processes, one terminal):
@@ -26,7 +26,7 @@
 
 import { spawn } from 'child_process';
 
-const PORT = process.env.PORT ?? '4277';
+const PORT = process.env.PORT ?? '4203';
 const TOKEN = process.env.TUNNEL_TOKEN;
 
 let args;

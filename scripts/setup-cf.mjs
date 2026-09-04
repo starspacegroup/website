@@ -3,7 +3,7 @@
  * Create this project's own Cloudflare resources and write their ids into
  * wrangler.toml.
  *
- * Why this exists: NebulaKit now ships `REPLACE_ME_*` placeholders because an
+ * Why this exists: *Space now ships `REPLACE_ME_*` placeholders because an
  * earlier release shipped REAL ids, and six sibling products inherited them —
  * one D1 and one KV shared between all of them, including OAuth secrets and a GitHub PAT.
  * See docs/CLOUDFLARE_SETUP.md. The remaining risk after placeholders is the
@@ -153,7 +153,7 @@ if (check.status !== 0) process.exit(check.status ?? 1);
 console.log(`
   Next:
     bun run db:migrate      # create the tables
-    bun run dev             # http://localhost:4277
+    bun run dev             # http://localhost:4203
 
   R2 (only if you use it):  bunx wrangler r2 bucket create ${slug}-files
 `);

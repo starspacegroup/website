@@ -1,10 +1,10 @@
 ---
 status: pending
-app_name: NebulaKit
+app_name: *Space
 branding_updated: false
 share_assets_updated: false
 template_documentation_removed: false
-credential_fields_unique: false
+credential_fields_unique: true
 last_updated: 2026-04-11
 ---
 
@@ -15,11 +15,11 @@ This file is the shared source of truth for humans and AI assistants.
 ## Current State
 
 - Status: pending
-- App name: NebulaKit
+- App name: *Space
 - Branding updated: no
 - Share assets updated: no
 - Template documentation removed or replaced: no
-- Credential fields unique: no
+- Credential fields unique: yes
 
 ## How To Finish This
 

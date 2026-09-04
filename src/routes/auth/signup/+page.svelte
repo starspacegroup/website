@@ -16,7 +16,7 @@
 	let error = '';
 
 	// Site-unique field identifiers so a password manager does not confuse this
-	// signup with another NebulaKit deployment's.
+	// signup with another *Space deployment's.
 	const nameField = fieldName('name');
 	const emailField = fieldName('email');
 	const passwordField = fieldName('password');
@@ -87,7 +87,7 @@
 	}
 </script>
 
-<SharingMeta title="Sign Up" description="Create your NebulaKit account" />
+<SharingMeta title="Sign Up" description="Create your *Space account" />
 
 <div class="auth-page">
 	<div class="auth-container">

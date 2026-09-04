@@ -16,7 +16,7 @@ import { site } from '$lib/site.config';
  */
 export const fieldPrefix = site.slug;
 
-/** Site-unique `id`/`name` for a form field, e.g. `nebulakit-password`. */
+/** Site-unique `id`/`name` for a form field, e.g. `starspace-group-password`. */
 export function fieldName(base: string): string {
 	return `${fieldPrefix}-${base}`;
 }

@@ -1,6 +1,6 @@
 # Admin Stats — first-party, cookie-free analytics
 
-NebulaKit ships its own analytics rather than a third-party tag. Everything is a
+*Space ships its own analytics rather than a third-party tag. Everything is a
 **daily aggregate counter in D1**: no raw request rows, no cookies, no
 identifiers, no IP addresses, and therefore nothing to put a consent banner in
 front of.

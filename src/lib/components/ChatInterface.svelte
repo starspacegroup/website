@@ -678,7 +678,7 @@
 </script>
 
 <svelte:head>
-	<title>AI Chat - NebulaKit</title>
+	<title>AI Chat - *Space</title>
 </svelte:head>
 
 <div class="chat-interface">

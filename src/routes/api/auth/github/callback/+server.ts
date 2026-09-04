@@ -87,7 +87,7 @@ export const GET: RequestHandler = async ({ url, cookies, platform, locals }) =>
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
 				Accept: 'application/vnd.github.v3+json',
-				'User-Agent': 'NebulaKit'
+				'User-Agent': '*Space'
 			}
 		});
 		if (!userResponse.ok) throw redirect(302, '/auth/login?error=user_fetch_failed');

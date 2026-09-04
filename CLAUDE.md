@@ -11,7 +11,7 @@ AGENTS.md also opens by requiring `tasks/goals.md` and `tasks/todo.md` be read b
 Package manager is **Bun** — `bun.lock` is the sole lockfile, CI installs with `bun install --frozen-lockfile`, and package-script orchestration uses `bun run`/`bunx` throughout.
 
 ```bash
-bun run dev              # dev server on port 4277 (from src/lib/site.config.ts)
+bun run dev              # dev server on port 4203 (from src/lib/site.config.ts)
 bun run build            # → .svelte-kit/cloudflare
 bun run build:ci         # local CI compile; warns on intentional placeholder bindings
 bun run check            # svelte-kit sync && svelte-check
@@ -25,9 +25,9 @@ bun run deploy           # build + wrangler pages deploy
 
 Single test: `bunx vitest run tests/unit/cms-service.test.ts` or `bunx vitest run -t "creates a content item"`.
 
-There is **no `lint` or `format` script**. Prettier + `prettier-plugin-svelte` are installed with `.prettierrc`/`.prettierignore` in place — run `bunx prettier --write .` or `bunx prettier --check .` directly. The workspace table also lists this project's dev port as "default"; it is **4277**, set in `site.config.ts` and read by both Vite and Playwright.
+There is **no `lint` or `format` script**. Prettier + `prettier-plugin-svelte` are installed with `.prettierrc`/`.prettierignore` in place — run `bunx prettier --write .` or `bunx prettier --check .` directly. The workspace table also lists this project's dev port as "default"; it is **4203**, set in `site.config.ts` and read by both Vite and Playwright.
 
-`.github/copilot-instructions.md` defers to AGENTS.md and adds one rule of its own — assume a dev server is already running on 4277, don't start another. That rule is scoped to Copilot Chat, not to Claude Code; start the dev server yourself when you need it, after checking 4277 is free.
+`.github/copilot-instructions.md` defers to AGENTS.md and adds one rule of its own — assume a dev server is already running on 4203, don't start another. That rule is scoped to Copilot Chat, not to Claude Code; start the dev server yourself when you need it, after checking 4203 is free.
 
 Setup / maintenance scripts (`scripts/`): `setup:cf` (create the Cloudflare D1/KV/R2 resources and write real ids into `wrangler.toml`), `check:bindings`, `db:migrate` / `db:migrate:local` / `db:migrate:list`, `palette:scan`, `tunnel` / `dev:tunnel` (cloudflared).
 
@@ -43,7 +43,7 @@ Setup / maintenance scripts (`scripts/`): `setup:cf` (create the Cloudflare D1/K
 - **`e2e`** — `bunx playwright install --with-deps`, then `bun run test:e2e`. E2E is meant to gate in CI, not only locally.
 - **No deploy job.** Cloudflare Pages auto-deploy is disabled for this repository, because the placeholder ids in `wrangler.toml` make a production build fail by design (see `docs/CLOUDFLARE_SETUP.md`).
 
-This describes the workflow's _intended_ gates. Per AGENTS.md's Verification rule, don't report them as passing without observing a run. The workflow now has observed runs on `starspacegroup/NebulaKit`: both jobs passed on PR #7's head (2026-08-08, run `31262364171`) and on PR #9's head `8443b8b` (2026-08-10, run `31439300377`). Before 2026-08-08 it had never executed — the fork-PR approval gate parked fork-PR runs at `action_required` with zero jobs, and that gate still applies to each new fork-PR push until a maintainer approves the run. The canary-lockfile trap above is not hypothetical: PR #6's head still carries a `lockfileVersion: 2` `bun.lock` and fails both jobs at install (run `31434971833`); the regenerated lockfile landed on PR #9's branch as `e3b87b9`.
+This describes the workflow's _intended_ gates. Per AGENTS.md's Verification rule, don't report them as passing without observing a run. The workflow now has observed runs on `starspacegroup/starspace-group-nebulakit`: both jobs passed on PR #7's head (2026-08-08, run `31262364171`) and on PR #9's head `8443b8b` (2026-08-10, run `31439300377`). Before 2026-08-08 it had never executed — the fork-PR approval gate parked fork-PR runs at `action_required` with zero jobs, and that gate still applies to each new fork-PR push until a maintainer approves the run. The canary-lockfile trap above is not hypothetical: PR #6's head still carries a `lockfileVersion: 2` `bun.lock` and fails both jobs at install (run `31434971833`); the regenerated lockfile landed on PR #9's branch as `e3b87b9`.
 
 `bun run validate:all` is **not** the CI gate. It runs `test`, not `test:coverage`, so the 95% floor never fires under it, and it skips `build:ci` and E2E entirely. To reproduce CI locally, run the four `test`-job commands in order and then `bun run test:e2e`.
 
@@ -51,7 +51,7 @@ This describes the workflow's _intended_ gates. Per AGENTS.md's Verification rul
 
 SvelteKit 2 + **Svelte 5** (`^5.56.8`) + TypeScript run on Cloudflare Pages (`@sveltejs/adapter-cloudflare`). Existing components largely use Svelte's legacy-compatible `export let`, `$:`, and store syntax; match the surrounding file unless a deliberate migration is in scope. Bindings come in through `event.platform.env`: `DB` (D1), `KV`, and `BUCKET` (R2). There is no ORM; database access uses parameterized D1 statements (`src/lib/utils/db.ts`).
 
-**`src/lib/site.config.ts` is the single source of truth for identity.** Name, slug, tagline, `devPort: 4277`, production URL, repo, author. `vite.config.ts` and `playwright.config.ts` both import it directly, which is why the file must stay dependency-free (no `$app`, no Node APIs) — adding an import there breaks the build config. Surfaces that _can't_ import it (`wrangler.toml`, tests, docs, `src/app.html`, `static/site.webmanifest`) are kept in sync by `bun run customize` (`scripts/customize.mjs`), which is the rebranding pass a downstream app runs once — see [CUSTOMIZE.md](CUSTOMIZE.md). `tests/unit/product-identity.test.ts` reads README, FEATURES, `site.config.ts`, `/documentation`, `app.html`, and the manifest off disk and fails when they drift; that failure is intentional.
+**`src/lib/site.config.ts` is the single source of truth for identity.** Name, slug, tagline, `devPort: 4203`, production URL, repo, author. `vite.config.ts` and `playwright.config.ts` both import it directly, which is why the file must stay dependency-free (no `$app`, no Node APIs) — adding an import there breaks the build config. Surfaces that _can't_ import it (`wrangler.toml`, tests, docs, `src/app.html`, `static/site.webmanifest`) are kept in sync by `bun run customize` (`scripts/customize.mjs`), which is the rebranding pass a downstream app runs once — see [CUSTOMIZE.md](CUSTOMIZE.md). `tests/unit/product-identity.test.ts` reads README, FEATURES, `site.config.ts`, `/documentation`, `app.html`, and the manifest off disk and fails when they drift; that failure is intentional.
 
 **`src/hooks.server.ts` — the sequence order is load-bearing.**
 
@@ -126,5 +126,5 @@ Numbering is the part that actually goes wrong here, twice now. An earlier state
 
 - **Task tracking:** use `TaskCreate` / `TaskUpdate` / `TaskList` for multi-step work — mark in-progress before starting and completed immediately after, not in batches.
 - **Scratch files** go to `.llm-outputs/` (AGENTS.md §4). The directory exists and is gitignored.
-- **NebulaKit is a starter template** (AGENTS.md §5). Apps are created from it with "Use this template" and made their own with `bun run customize`. Keep that path working — the script, `CUSTOMIZE.md`, `docs/INITIAL_CUSTOMIZATION.md`, and the `INITIAL_CUSTOMIZATION_STATUS.md` ledger — and describe the repository that way in docs. `nebulakit-site` is the marketing site for it, in its own repository.
+- ***Space is a starter template** (AGENTS.md §5). Apps are created from it with "Use this template" and made their own with `bun run customize`. Keep that path working — the script, `CUSTOMIZE.md`, `docs/INITIAL_CUSTOMIZATION.md`, and the `INITIAL_CUSTOMIZATION_STATUS.md` ledger — and describe the repository that way in docs. `starspace-group-site` is the marketing site for it, in its own repository.
 - **Shared history with siblings:** `Guides`, `nabu`, and `sortalizer` share historical code with this repo. A security or correctness fix here likely applies there too and may warrant an explicit cross-repository audit; see Related Projects in AGENTS.md.

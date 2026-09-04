@@ -2,7 +2,7 @@
 
 ## Overview
 
-NebulaKit now supports GitHub OAuth authentication. Once configured, users can sign in with their GitHub account, and the OAuth app owner will have access to the admin panel.
+*Space now supports GitHub OAuth authentication. Once configured, users can sign in with their GitHub account, and the OAuth app owner will have access to the admin panel.
 
 ## Setup Process
 
@@ -13,9 +13,9 @@ NebulaKit now supports GitHub OAuth authentication. Once configured, users can s
 1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
 2. Click **"New OAuth App"**
 3. Fill in the application details:
-   - **Application name**: NebulaKit (or your preferred name)
-   - **Homepage URL**: `http://localhost:4277` (for development)
-   - **Authorization callback URL**: `http://localhost:4277/api/auth/github/callback`
+   - **Application name**: *Space (or your preferred name)
+   - **Homepage URL**: `http://localhost:4203` (for development)
+   - **Authorization callback URL**: `http://localhost:4203/api/auth/github/callback`
 4. Click **"Register application"**
 5. You'll see your **Client ID** on the next page
 6. Click **"Generate a new client secret"** to get your **Client Secret**

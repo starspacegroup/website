@@ -12,17 +12,17 @@ There is no error, no warning, nothing in the dashboard that looks wrong.
 A wrong _name_ is loud: `wrangler d1 migrations apply <name>` fails immediately.
 A wrong _id_ is silent.
 
-An earlier NebulaKit release shipped **real** ids. Six sibling products inherited
+An earlier *Space release shipped **real** ids. Six sibling products inherited
 the same `database_id`, the same KV `id`, and the same KV `preview_id`:
 
 | project            | what it thought it had | what it actually bound |
 | ------------------ | ---------------------- | ---------------------- |
-| NebulaKit          | `nebulakit-db`         | `nebulakit-db`         |
-| Guides             | `guides-db`            | `nebulakit-db`         |
-| derived app A      | `nebulakit-db`         | `nebulakit-db`         |
-| derived app B      | `nebulakit-db`         | `nebulakit-db`         |
-| derived app C      | its own db             | `nebulakit-db`         |
-| derived app C (v2) | its own db             | `nebulakit-db`         |
+| *Space          | `starspace-group-db`         | `starspace-group-db`         |
+| Guides             | `guides-db`            | `starspace-group-db`         |
+| derived app A      | `starspace-group-db`         | `starspace-group-db`         |
+| derived app B      | `starspace-group-db`         | `starspace-group-db`         |
+| derived app C      | its own db             | `starspace-group-db`         |
+| derived app C (v2) | its own db             | `starspace-group-db`         |
 
 The result: one D1 with 28 tables and four projects' migrations interleaved in a
 single `d1_migrations` table, numbering collided (two `0004`s, two `0005`s…).
@@ -80,7 +80,7 @@ bun run db:migrate
 ## The database name
 
 `db:migrate` reads `database_name` from `wrangler.toml` rather than hardcoding
-one. Earlier NebulaKit scripts used to say `nebulakit-db`, so a sibling product
+one. Earlier *Space scripts used to say `starspace-group-db`, so a sibling product
 either failed outright or, if it still had the leaked id in
 place, applied its migrations **into the shared database**. That is how one D1
 ended up with four projects' migrations interleaved. Name and id now come from
@@ -105,7 +105,7 @@ Point it at any config to audit another repo:
 bun scripts/check-bindings.mjs ../other-project/wrangler.toml
 ```
 
-Warnings were not enough here — that historical NebulaKit release _did_ carry a comment
+Warnings were not enough here — that historical *Space release _did_ carry a comment
 saying "replace the database_id below with the actual ID", and six projects
 skipped it anyway. That is why this exits non-zero.
 

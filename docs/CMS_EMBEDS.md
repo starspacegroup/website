@@ -1,6 +1,6 @@
 # CMS Svelte Embeds
 
-NebulaKit's CMS lets authors drop **live, interactive Svelte components** into
+*Space's CMS lets authors drop **live, interactive Svelte components** into
 richtext content. Embeds are stored inside the HTML as inert placeholders, so
 content stays plain, sanitizable HTML in D1:
 

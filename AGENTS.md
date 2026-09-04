@@ -1,4 +1,4 @@
-# NebulaKit Rules
+# *Space Rules
 
 Canonical constraints for coding agents. Read `tasks/goals.md` and `tasks/todo.md`, inspect the
 current implementation and tests, and run `git status --short --branch` before editing. Existing
@@ -14,7 +14,7 @@ the command list, repository map, and architecture explanation.
 - Use theme tokens from `src/app.css`, not hardcoded colors. Add light and dark values together and
   run contrast validation. See `docs/THEME_SYSTEM.md`.
 - Put logs, generated analysis, debug traces, and temporary files in ignored `.llm-outputs/`.
-- NebulaKit is a starter template; apps are created from it with "Use this template". Keep the
+- *Space is a starter template; apps are created from it with "Use this template". Keep the
   customization path working — `bun run customize`, `CUSTOMIZE.md`,
   `INITIAL_CUSTOMIZATION_STATUS.md`, and `docs/INITIAL_CUSTOMIZATION.md` — and keep the branding
   ledger honest rather than deleting it.
@@ -24,7 +24,7 @@ the command list, repository map, and architecture explanation.
 - User-visible route, setup, command, binding, environment, integration, shortcut, or admin changes
   must update `/documentation` and its focused test in the same change. Internal refactors do not.
 - Keep robots, sitemap, API catalog, agent skills, `auth.md`, Markdown negotiation, and WebMCP honest.
-  Add public pages to `SITEMAP_ROUTES` or explicitly exclude them. NebulaKit is an OAuth client, not
+  Add public pages to `SITEMAP_ROUTES` or explicitly exclude them. *Space is an OAuth client, not
   an OAuth or MCP server. Keep `[x+2e]well-known`; the escape preserves TypeScript inclusion.
 
 ## Security Boundaries

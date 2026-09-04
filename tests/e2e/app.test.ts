@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test.describe('Homepage', () => {
 	test('should load homepage successfully', async ({ page }) => {
 		await page.goto('/');
-		await expect(page).toHaveTitle(/NebulaKit/);
+		await expect(page).toHaveTitle(/\*Space/);
 	});
 
 	test('should navigate to documentation page via command palette', async ({ page }) => {

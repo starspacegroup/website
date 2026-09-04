@@ -55,7 +55,7 @@ Private surfaces (`/admin/`, `/api/`, `/auth/`, `/profile`, `/reset`, `/setup`,
 `status` link stays reachable.
 
 > **Content Signals default is fully permissive:** `search=yes, ai-input=yes,
-ai-train=yes`. That matches NebulaKit's public open-source content. **Before
+ai-train=yes`. That matches *Space's public open-source content. **Before
 > publishing proprietary content, change
 > `CONTENT_SIGNAL` in `src/lib/agent-discovery.ts` before launch.** Setting
 > `ai-train=no` is a one-word edit that every robots.txt group picks up.
@@ -126,7 +126,7 @@ files are absent instead of probing for them.
 
 ## Still to do by hand: DNS-AID records
 
-DNS records live in your DNS provider, not this repo, so NebulaKit cannot publish
+DNS records live in your DNS provider, not this repo, so *Space cannot publish
 them from the application.
 
 [DNS for AI Discovery](https://datatracker.ietf.org/doc/draft-mozleywilliams-dnsop-dnsaid/)
@@ -182,7 +182,7 @@ bun run test -- agent-readiness html-to-markdown markdown-negotiation webmcp
 Against a running site (`bun run dev`, or a deployed URL):
 
 ```sh
-BASE=http://localhost:4277
+BASE=http://localhost:4203
 
 curl -s $BASE/robots.txt | head -20
 curl -s $BASE/sitemap.xml | head -20

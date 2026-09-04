@@ -1,4 +1,4 @@
-# NebulaKit Setup Guide
+# *Space Setup Guide
 
 ## Prerequisites
 
@@ -9,11 +9,11 @@
 
 ## Installation
 
-Clone the NebulaKit product repository directly:
+Clone the *Space product repository directly:
 
 ```bash
-git clone https://github.com/starspacegroup/NebulaKit.git
-cd NebulaKit
+git clone https://github.com/starspacegroup/starspace-group-nebulakit.git
+cd *Space
 ```
 
 ## Next Steps
@@ -56,7 +56,7 @@ Use one value for `SESSION_SECRET` and the other for `SETUP_SECRET`. The first s
 tokens whose digests are stored in D1; the second authorizes initial owner bootstrap only.
 
 5. Optional extras:
-   - R2 bucket, if you use file storage: `bunx wrangler r2 bucket create nebulakit-files`
+   - R2 bucket, if you use file storage: `bunx wrangler r2 bucket create starspace-group-files`
    - Turnstile, at https://dash.cloudflare.com/
 
 ## Development
@@ -67,7 +67,7 @@ Start the development server:
 bun run dev
 ```
 
-The app will be available at `http://localhost:4277`
+The app will be available at `http://localhost:4203`
 
 ## Building
 
@@ -163,7 +163,7 @@ For production, set these in Cloudflare Pages settings.
 ## Project Structure
 
 ```
-NebulaKit/
+*Space/
 ├── src/
 │   ├── lib/
 │   │   ├── components/     # Reusable UI components

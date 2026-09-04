@@ -84,7 +84,7 @@ Style constraints that apply to this page like any other: CSS variables only, no
 
 ## If The Route Doesn't Exist
 
-If `/documentation` is accidentally removed, recreate the route with NebulaKit's current product
+If `/documentation` is accidentally removed, recreate the route with *Space's current product
 documentation:
 
 ```svelte
@@ -124,6 +124,6 @@ disappear again.
 
 ## Product Alignment
 
-The page must describe NebulaKit's current name, features, deploy target, and executable commands.
+The page must describe *Space's current name, features, deploy target, and executable commands.
 Retired workflows and removed features must disappear from the route in the same change. Every
 user-visible feature continues to ship with its documentation.

@@ -1,4 +1,4 @@
-name = "nebulakit"
+name = "starspace-group"
 compatibility_date = "2024-01-01"
 pages_build_output_dir = ".svelte-kit/cloudflare"
 
@@ -11,7 +11,7 @@ pages_build_output_dir = ".svelte-kit/cloudflare"
 # *name* is loud (`d1 migrations apply <name>` fails fast); a wrong *id* binds
 # cleanly to somebody else's database and looks perfectly healthy.
 #
-# An earlier NebulaKit release shipped real ids. Six sibling products inherited
+# An earlier *Space release shipped real ids. Six sibling products inherited
 # them and all read/wrote one D1 + one KV — including shared OAuth secrets and a
 # GitHub PAT. Hence placeholders that fail loudly. See docs/CLOUDFLARE_SETUP.md.
 # ─────────────────────────────────────────────────────────────────────────────
@@ -32,15 +32,15 @@ binding = "KV"
 id = "REPLACE_ME_RUN_SETUP_CF"
 preview_id = "REPLACE_ME_RUN_SETUP_CF_PREVIEW"
 # R2 Bucket
-# Create with: wrangler r2 bucket create nebulakit-files
+# Create with: wrangler r2 bucket create starspace-group-files
 [[r2_buckets]]
 binding = "BUCKET"
-bucket_name = "nebulakit-files"
+bucket_name = "starspace-group-files"
 
 # Queue (disabled - enable Queues at https://dash.cloudflare.com before uncommenting)
 # [[queues.producers]]
 # binding = "QUEUE"
-# queue = "nebulakit-queue"
+# queue = "starspace-group-queue"
 
 # Note: queues.consumers is not supported by Cloudflare Pages
 # If you need queue consumers, use a separate Cloudflare Worker

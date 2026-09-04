@@ -8,13 +8,13 @@
 
 ## Getting Started
 
-[![Use this template](https://img.shields.io/badge/Use%20this%20template-238636?style=for-the-badge&logo=github&logoColor=white)](https://github.com/new?template_name=NebulaKit&template_owner=starspacegroup)
+[![Use this template](https://img.shields.io/badge/Use%20this%20template-238636?style=for-the-badge&logo=github&logoColor=white)](https://github.com/new?template_name=*Space&template_owner=starspacegroup)
 
-Click the button above to create your own repository from the NebulaKit template, then follow the setup instructions below.
+Click the button above to create your own repository from the *Space template, then follow the setup instructions below.
 
 ---
 
-NebulaKit can work **without any pre-configured environment variables**. Instead of relying on `.env` files or manually set secrets, all configuration is done through a web-based setup flow and stored securely in Cloudflare KV.
+*Space can work **without any pre-configured environment variables**. Instead of relying on `.env` files or manually set secrets, all configuration is done through a web-based setup flow and stored securely in Cloudflare KV.
 
 Before running this setup flow in a template-derived project, complete [INITIAL_CUSTOMIZATION.md](./INITIAL_CUSTOMIZATION.md) so the app name, sharing assets, and documentation links are updated first.
 
@@ -66,7 +66,7 @@ ADMIN_GITHUB_ID=zzz
 - Different secrets for each environment
 - Onboarding friction for new developers
 
-**NebulaKit's approach:**
+***Space's approach:**
 
 - ✅ Zero secrets in code or environment
 - ✅ Web-based configuration at runtime
@@ -101,8 +101,8 @@ Once the designated admin user logs in for the first time, the setup page is per
 1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
 2. Click **"New OAuth App"**
 3. Fill in the form:
-   - **Application name:** NebulaKit (or your choice)
-   - **Homepage URL:** `https://your-app.pages.dev` (or `http://localhost:4277` for local dev)
+   - **Application name:** *Space (or your choice)
+   - **Homepage URL:** `https://your-app.pages.dev` (or `http://localhost:4203` for local dev)
    - **Authorization callback URL:** `https://your-app.pages.dev/api/auth/github/callback`
 4. Click **"Register application"**
 5. Copy the **Client ID**
@@ -217,7 +217,7 @@ if (resetDisabled === 'true') {
 1. **Apply database migrations:**
 
    ```bash
-   wrangler d1 execute nebulakit-db --local --file=migrations/schema.sql
+   wrangler d1 execute starspace-group-db --local --file=migrations/schema.sql
    ```
 
 2. **Create KV namespaces** (for persistent local storage):
@@ -241,11 +241,11 @@ if (resetDisabled === 'true') {
    npm run dev
    ```
 
-2. Navigate to `http://localhost:4277/setup`
+2. Navigate to `http://localhost:4203/setup`
 
 3. Create a GitHub OAuth App with:
-   - **Homepage URL:** `http://localhost:4277`
-   - **Callback URL:** `http://localhost:4277/api/auth/github/callback`
+   - **Homepage URL:** `http://localhost:4203`
+   - **Callback URL:** `http://localhost:4203/api/auth/github/callback`
 
 4. Complete the setup form and log in
 

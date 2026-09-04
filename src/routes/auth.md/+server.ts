@@ -6,7 +6,7 @@
  * HONESTY RULE (AGENTS.md §8): this document says plainly that the site is an
  * OAuth *client* (it signs users in with GitHub/Discord), not an authorization
  * server, and that there is no automated agent-credential issuance. That is why
- * NebulaKit does NOT publish /.well-known/oauth-authorization-server or
+ * *Space does NOT publish /.well-known/oauth-authorization-server or
  * /.well-known/oauth-protected-resource: those documents would advertise token
  * endpoints that do not exist, and an agent following them would fail in ways
  * that look like an outage.

@@ -51,13 +51,13 @@ bun run deploy`;
 
 <SharingMeta
 	title="Documentation"
-	description="NebulaKit documentation: accurate setup, development, testing, and deployment guidance for every user."
+	description="*Space documentation: accurate setup, development, testing, and deployment guidance for every user."
 />
 
 <main class="docs-page">
 	<div class="docs-container">
 		<header class="docs-header">
-			<h1>NebulaKit Documentation</h1>
+			<h1>*Space Documentation</h1>
 			<p class="docs-intro">
 				Single source of truth for setup, development, and deployment. This page is intentionally
 				detailed so you can move from first run to production without guesswork.
@@ -88,7 +88,7 @@ bun run deploy`;
 		<section id="start-here" class="docs-section">
 			<h2>Start Here</h2>
 			<p>
-				NebulaKit is a SvelteKit starter template for Cloudflare. Create your own repository with
+				*Space is a SvelteKit starter template for Cloudflare. Create your own repository with
 				<strong>Use this template</strong>, then run <code>bun run customize</code> to rename the
 				app, the slug, the dev port, and the Cloudflare resource names in one pass —
 				<code>CUSTOMIZE.md</code> covers the steps a script cannot do.
@@ -113,7 +113,7 @@ bun run deploy`;
 
 			<p class="quickstart-recommendation">
 				<a href="https://bun.sh" target="_blank" rel="noopener noreferrer">Bun</a> is the recommended
-				default for this repository. Run the commands below, then open http://localhost:4277.
+				default for this repository. Run the commands below, then open http://localhost:4203.
 			</p>
 
 			<div class="quickstart-shell">
@@ -156,7 +156,7 @@ bun run deploy`;
 		<section id="feature-overview" class="docs-section">
 			<h2>What You Get Out of the Box</h2>
 			<p>
-				NebulaKit integrates its main product surfaces as one Cloudflare-native application:
+				*Space integrates its main product surfaces as one Cloudflare-native application:
 				identity, content management, AI workflows, administration, analytics, and agent-ready
 				publishing.
 			</p>
@@ -373,8 +373,8 @@ bun run deploy`;
 				<div class="callout-card">
 					<h3>Development</h3>
 					<ul>
-						<li><code>bun run dev</code> runs on host 0.0.0.0, port 4277.</li>
-						<li><code>bun run preview</code> previews the production build on port 4277.</li>
+						<li><code>bun run dev</code> runs on host 0.0.0.0, port 4203.</li>
+						<li><code>bun run preview</code> previews the production build on port 4203.</li>
 						<li><code>bun run check</code> runs Svelte sync plus svelte-check.</li>
 					</ul>
 				</div>
@@ -400,9 +400,9 @@ bun run deploy`;
 
 		<section id="cloudflare-bindings" class="docs-section">
 			<h2>Cloudflare Bindings</h2>
-			<p>NebulaKit is configured for Cloudflare Pages with these bindings in wrangler.toml:</p>
+			<p>*Space is configured for Cloudflare Pages with these bindings in wrangler.toml:</p>
 			<ul>
-				<li><code>DB</code> as D1 database binding (database name: nebulakit-db).</li>
+				<li><code>DB</code> as D1 database binding (database name: starspace-group-db).</li>
 				<li><code>KV</code> as KV namespace for runtime config and flags.</li>
 				<li><code>BUCKET</code> as R2 bucket binding.</li>
 				<li>Queue producer binding is documented but commented out by default.</li>
@@ -563,7 +563,7 @@ bun run db:migrate:list</code
 		<section id="testing" class="docs-section">
 			<h2>Testing and Quality Gates</h2>
 			<p>
-				NebulaKit follows Test-Driven Development. Write failing tests first, then implementation,
+				*Space follows Test-Driven Development. Write failing tests first, then implementation,
 				then refactor.
 			</p>
 			<pre><code
@@ -591,7 +591,7 @@ bun run test:all</code
 		<section id="project-structure" class="docs-section">
 			<h2>Project Structure</h2>
 			<pre><code
-					>NebulaKit/
+					>*Space/
 ├── .github/              # Copilot and workflow instructions
 ├── src/
 │   ├── lib/
@@ -725,7 +725,7 @@ bun run test:all</code
 			<p>
 				The shipped default is fully permissive — <code>search=yes, ai-input=yes, ai-train=yes</code
 				>
-				— which matches NebulaKit's public open-source content. Change
+				— which matches *Space's public open-source content. Change
 				<code>CONTENT_SIGNAL</code> in <code>src/lib/agent-discovery.ts</code> before publishing any proprietary
 				content; every robots.txt group picks the change up automatically.
 			</p>
@@ -741,35 +741,35 @@ bun run test:all</code
 			<ul>
 				<li>
 					<a
-						href="https://github.com/starspacegroup/NebulaKit"
+						href="https://github.com/starspacegroup/starspace-group-nebulakit"
 						target="_blank"
 						rel="noopener noreferrer">GitHub repository</a
 					>
 				</li>
 				<li>
 					<a
-						href="https://github.com/starspacegroup/NebulaKit/blob/main/README.md"
+						href="https://github.com/starspacegroup/starspace-group-nebulakit/blob/main/README.md"
 						target="_blank"
 						rel="noopener noreferrer">README</a
 					>
 				</li>
 				<li>
 					<a
-						href="https://github.com/starspacegroup/NebulaKit/blob/main/CONTRIBUTING.md"
+						href="https://github.com/starspacegroup/starspace-group-nebulakit/blob/main/CONTRIBUTING.md"
 						target="_blank"
 						rel="noopener noreferrer">Contributing Guide</a
 					>
 				</li>
 				<li>
 					<a
-						href="https://github.com/starspacegroup/NebulaKit/blob/main/docs/CLOUDFLARE_SETUP.md"
+						href="https://github.com/starspacegroup/starspace-group-nebulakit/blob/main/docs/CLOUDFLARE_SETUP.md"
 						target="_blank"
 						rel="noopener noreferrer">Cloudflare Setup</a
 					>
 				</li>
 				<li>
 					<a
-						href="https://github.com/starspacegroup/NebulaKit/blob/main/docs/THEME_SYSTEM.md"
+						href="https://github.com/starspacegroup/starspace-group-nebulakit/blob/main/docs/THEME_SYSTEM.md"
 						target="_blank"
 						rel="noopener noreferrer">Theme System</a
 					>
@@ -800,8 +800,8 @@ bun run test:all</code
 
 		<footer class="docs-footer">
 			<p>
-				If NebulaKit helps your workflow, consider giving the project a star on <a
-					href="https://github.com/starspacegroup/NebulaKit"
+				If *Space helps your workflow, consider giving the project a star on <a
+					href="https://github.com/starspacegroup/starspace-group-nebulakit"
 					target="_blank"
 					rel="noopener noreferrer">GitHub</a
 				>!

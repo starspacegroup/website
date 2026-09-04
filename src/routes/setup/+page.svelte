@@ -18,7 +18,7 @@
 	let checkingConfig = true;
 
 	// Site-unique field identifiers so a password manager does not confuse these
-	// secret fields with another NebulaKit deployment's.
+	// secret fields with another *Space deployment's.
 	const setupSecretField = fieldName('setup-secret');
 	const clientIdField = fieldName('client-id');
 	const clientSecretField = fieldName('client-secret');
@@ -173,7 +173,7 @@
 				<li>
 					Fill in the form:
 					<ul>
-						<li><strong>Application name:</strong> NebulaKit (or your choice)</li>
+						<li><strong>Application name:</strong> *Space (or your choice)</li>
 						<li><strong>Homepage URL:</strong> <code>{$page.url.origin}</code></li>
 						<li>
 							<strong>Authorization callback URL:</strong>

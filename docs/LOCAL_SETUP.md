@@ -1,4 +1,4 @@
-# Local Development Setup for NebulaKit
+# Local Development Setup for *Space
 
 ## Database Migrations
 
@@ -20,7 +20,7 @@ This creates:
 Verify tables were created:
 
 ```bash
-bunx wrangler d1 execute nebulakit-db --local --command="SELECT name FROM sqlite_master WHERE type='table';"
+bunx wrangler d1 execute starspace-group-db --local --command="SELECT name FROM sqlite_master WHERE type='table';"
 ```
 
 ## KV Namespace Setup
@@ -42,12 +42,12 @@ bunx wrangler kv namespace create "KV" --preview
 After running the commands above, you'll get output like:
 
 ```
-🌀 Creating namespace with title "nebulakit-KV"
+🌀 Creating namespace with title "starspace-group-KV"
 ✨ Success!
 Add the following to your configuration file in your kv_namespaces array:
 { binding = "KV", id = "abc123..." }
 
-🌀 Creating namespace with title "nebulakit-KV_preview"
+🌀 Creating namespace with title "starspace-group-KV_preview"
 ✨ Success!
 Add the following to your configuration file in your kv_namespaces array:
 { binding = "KV", preview_id = "xyz789..." }
@@ -74,7 +74,7 @@ Now when you save GitHub OAuth credentials via `/setup`, they'll be stored in yo
 
 ### 4. Verify It's Working
 
-1. Go to `http://localhost:4277/setup`
+1. Go to `http://localhost:4203/setup`
 2. Enter your GitHub OAuth credentials
 3. Check the console - you should see: `✓ Saved auth config to KV`
 4. Try logging in with GitHub - it should work!

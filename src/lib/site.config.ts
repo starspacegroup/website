@@ -1,6 +1,11 @@
 /**
  * Single source of truth for app identity, branding, and local-dev config.
  *
+ * When you spin up a new app from this template, DO NOT hand-edit the scattered
+ * references. Run `bun run customize` (see CUSTOMIZE.md at the repo root), which
+ * rewrites this file and syncs the surfaces that cannot import it — wrangler.toml
+ * (Cloudflare resource names), tests, and docs.
+ *
  * Everything that runs (Vite, Playwright, and every Svelte component) imports its
  * name/port/URL from here, so these values live in exactly one place.
  *
@@ -9,25 +14,25 @@
  */
 export const site = {
 	/** Product name shown in the UI, page titles, and social meta. */
-	name: 'NebulaKit',
+	name: '*Space',
 	/** Short name for tight spaces (browser tab, PWA `short_name`). */
-	shortName: 'NebulaKit',
+	shortName: '*Space',
 	/** One-line tagline for the footer and hero. */
-	tagline: "A cosmic-grade SvelteKit starter powered by Cloudflare's full stack.",
+	tagline: 'An inclusive digital coworking space on Discord.',
 	/** Longer description for the meta description and OG/Twitter cards. */
-	description:
-		'NebulaKit is a production-ready SvelteKit starter template for Cloudflare. Content management, authentication, AI chat, first-party analytics, and agent-ready publishing are wired up and tested from day one.',
+	description: '*Space is an inclusive digital coworking space on Discord. Work around rock star makers, creators, artists, and innovators who are creativity and productivity driven.',
 	/**
 	 * URL-safe slug. Drives the Cloudflare resource names in wrangler.toml
-	 * (`<slug>-db`, `<slug>-files`, `<slug>-queue`).
+	 * (`<slug>-db`, `<slug>-files`, `<slug>-queue`). Those files can't import this
+	 * module, so `bun run customize` keeps them in sync — don't edit them by hand.
 	 */
-	slug: 'nebulakit',
+	slug: 'starspace-group',
 	/** Local dev + preview port. Owned here; Vite and Playwright both read it. */
-	devPort: 4277,
+	devPort: 4203,
 	/** Production URL, no trailing slash. Used for canonical + OG URLs. */
-	url: 'https://nebulakit.pages.dev',
+	url: 'https://starspace.group',
 	/** GitHub repository in `owner/name` form. */
-	repo: 'starspacegroup/NebulaKit',
+	repo: 'starspacegroup/starspace-group-nebulakit',
 	/** Attribution shown in the footer. */
 	author: '*Space',
 	/** URL for the footer attribution link. */

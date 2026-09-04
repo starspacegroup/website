@@ -5,7 +5,7 @@
  * Why this exists: Cloudflare binds D1 and KV by **id**. `database_name` is a
  * label wrangler never checks against the account. So a copied id silently
  * attaches your app to another project's database and every query succeeds.
- * An earlier NebulaKit release shipped real ids; six sibling products inherited
+ * An earlier *Space release shipped real ids; six sibling products inherited
  * them and shared one D1 + one KV, including OAuth secrets and a GitHub PAT.
  *
  * Three failure modes, all silent without this check:
@@ -24,7 +24,7 @@ import { dirname, join } from 'node:path';
 //
 // --warn reports the same problems but exits 0. Use it for commands that cannot
 // reach a remote resource (the dev server), where an unconfigured clone is a
-// legitimate state: a fresh NebulaKit clone must be able to run
+// legitimate state: a fresh *Space clone must be able to run
 // `bun run dev` and the e2e suite before anyone has a Cloudflare account. Any
 // command that WRITES to, or reads from, a real remote resource keeps the hard
 // failure — that is the whole point of the guard.
@@ -36,7 +36,7 @@ const CONFIG = pathArg ? pathArg : join(root, 'wrangler.toml');
 
 // Ids leaked by that historical release. They are no longer legitimate anywhere.
 const QUARANTINED = new Map([
-	['bd776be3-9823-4763-abb1-c18b40931456', 'shared nebulakit-db (D1)'],
+	['bd776be3-9823-4763-abb1-c18b40931456', 'shared starspace-group-db (D1)'],
 	['12a6576334dd4e16bf1e08d5cc1fac4a', 'shared KV namespace'],
 	['e9b0a93432b1406786dc7b9b334da90d', 'shared KV preview namespace']
 ]);
@@ -73,7 +73,7 @@ lines.forEach((raw, i) => {
 		problems.push(
 			`${at}  ${key} points at the ${QUARANTINED.get(value)}.\n` +
 				`             That id belongs to no single project — it is the one this\n` +
-				`             historical NebulaKit release leaked. Create your own resource instead.`
+				`             historical *Space release leaked. Create your own resource instead.`
 		);
 		return;
 	}

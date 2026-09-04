@@ -15,7 +15,7 @@ describe('SharingMeta', () => {
 			props: { title: 'Test Page' }
 		});
 		const title = document.querySelector('title');
-		expect(title?.textContent).toBe('Test Page - NebulaKit');
+		expect(title?.textContent).toBe('Test Page - *Space');
 	});
 
 	it('should render title without suffix when siteName is empty', () => {
@@ -129,7 +129,7 @@ describe('SharingMeta', () => {
 			props: { title: 'Test' }
 		});
 		const ogSiteName = document.querySelector('meta[property="og:site_name"]');
-		expect(ogSiteName?.getAttribute('content')).toBe('NebulaKit');
+		expect(ogSiteName?.getAttribute('content')).toBe('*Space');
 	});
 
 	it('should render og:locale', () => {
@@ -199,10 +199,10 @@ describe('SharingMeta', () => {
 
 	it('should render twitter:site when twitterSite is provided', () => {
 		render(SharingMeta, {
-			props: { title: 'Test', twitterSite: '@nebulakit' }
+			props: { title: 'Test', twitterSite: '@starspace-group' }
 		});
 		const twitterSite = document.querySelector('meta[name="twitter:site"]');
-		expect(twitterSite?.getAttribute('content')).toBe('@nebulakit');
+		expect(twitterSite?.getAttribute('content')).toBe('@starspace-group');
 	});
 
 	it('should render twitter:creator when twitterCreator is provided', () => {

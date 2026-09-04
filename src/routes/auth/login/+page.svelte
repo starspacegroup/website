@@ -16,7 +16,7 @@
 	let selectedPretendRole: PretendRole = 'user';
 
 	// Site-unique field identifiers so a password manager does not confuse this
-	// login with another NebulaKit deployment's.
+	// login with another *Space deployment's.
 	const emailField = fieldName('email');
 	const passwordField = fieldName('password');
 
@@ -84,7 +84,7 @@
 	}
 </script>
 
-<SharingMeta title="Sign In" description="Sign in to your NebulaKit account" />
+<SharingMeta title="Sign In" description="Sign in to your *Space account" />
 
 <div class="auth-page">
 	<div class="auth-container">

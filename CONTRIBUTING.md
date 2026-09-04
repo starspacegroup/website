@@ -1,6 +1,6 @@
-# Contributing to NebulaKit
+# Contributing to *Space
 
-Thank you for your interest in contributing to NebulaKit! This guide will help you understand our development process and standards.
+Thank you for your interest in contributing to *Space! This guide will help you understand our development process and standards.
 
 ## 🎯 Development Philosophy
 
@@ -25,8 +25,8 @@ Thank you for your interest in contributing to NebulaKit! This guide will help y
 
 ```bash
 # Clone the repository
-git clone https://github.com/starspacegroup/NebulaKit.git
-cd NebulaKit
+git clone https://github.com/starspacegroup/starspace-group-nebulakit.git
+cd *Space
 
 # Install dependencies
 bun install --frozen-lockfile
@@ -35,7 +35,7 @@ bun install --frozen-lockfile
 bun run dev
 ```
 
-Visit `http://localhost:4277` to verify everything works.
+Visit `http://localhost:4203` to verify everything works.
 
 ## 🧪 Testing Requirements
 

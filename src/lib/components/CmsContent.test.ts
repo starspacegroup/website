@@ -74,7 +74,7 @@ describe('CmsContent — embeds', () => {
 	});
 
 	it('renders nothing for an embed with no registered component', () => {
-		// The registry ships empty, so this is NebulaKit's default state and
+		// The registry ships empty, so this is *Space's default state and
 		// must not leave a stray element or throw.
 		const { container } = render(CmsContent, { html: placeholder('never-registered') });
 

@@ -61,7 +61,18 @@ and the page has to render on a clone that has never been pointed at a database.
 | Name, tagline, URL, dev port, repo                      | `src/lib/site.config.ts`                               |
 | The logo, and every icon and card derived from it       | `brand/starspace-mark.png`, then `bun run build:brand` |
 
-Card artwork goes under `static/projects/` as WebP, around 900px wide.
+Card artwork goes under `static/projects/` as WebP, around 900px wide. `bun run
+capture:projects` refreshes it — every project is somebody else's live site and they redesign
+without telling us:
+
+```bash
+bun run capture:projects              # all of them
+bun run capture:projects athena game  # just these
+```
+
+It only replaces the pictures. When a site has been redesigned the copy beside it is usually
+stale too, so read the page and fix the entry by hand — a card whose picture and words disagree
+is worse than an old picture.
 `tests/unit/site-content.test.ts` fails when an entry names a file that is not there, so a
 renamed asset never reaches the page as a broken card.
 

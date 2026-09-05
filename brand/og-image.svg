@@ -1,14 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="*Space — an inclusive digital coworking space on Discord">
 	<title>*Space</title>
 	<!--
-		The share card. 1200x630 is the 1.91:1 every platform crops toward.
+		Share-card SOURCE. 1200x630 is the 1.91:1 every platform crops toward.
 
-		Rendered to og-image.png with rsvg-convert; the PNG is what ships, because
-		no scraper fetches an SVG og:image. Rebuild both together — see the "Share
-		cards" section of README.md.
+		`{{MARK}}` is replaced with brand/starspace-mark.png as a data URI by
+		scripts/build-brand.mjs, which then renders static/og-image.png — the file
+		that actually ships, because no scraper fetches an SVG og:image. Edit the
+		wording here and re-run `bun run build:brand`.
 
-		The starfield is seeded (20260904), so re-running the build produces the
-		same card rather than a gratuitous binary diff.
+		The starfield is seeded (20260904), so a rebuild is not a binary diff for
+		its own sake.
 	-->
 	<defs>
 		<radialGradient id="sky" cx="30%" cy="35%" r="85%">
@@ -143,14 +144,14 @@
 		<circle cx="236.3" cy="259.3" r="1.0" fill="#ffffff" opacity="0.27" />
 	</g>
 
-	<!-- The mark, from design/logos/icon.svg, scaled into the left third. -->
-	<g transform="translate(300 315) scale(0.62) translate(-256 -230)">
-		<path
-			d="M256,30 L309,178 L466,183 L342,279 L386,430 L256,342 L126,430 L170,279 L46,183 L203,178 Z"
-			fill="#e0a063"
-		/>
-		<path d="M256,74 L347,346 L165,346 Z" fill="#0b1026" />
-	</g>
+	<image
+		x="100"
+		y="105"
+		width="420"
+		height="420"
+		preserveAspectRatio="xMidYMid meet"
+		href="{{MARK}}"
+	/>
 
 	<g font-family="Noto Sans, DejaVu Sans, sans-serif">
 		<text x="560" y="285" font-size="120" font-weight="700" fill="#ffffff" letter-spacing="-3">*Space</text>

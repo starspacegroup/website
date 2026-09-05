@@ -54,11 +54,12 @@ data.
 The project directory is checked-in TypeScript, not CMS entries — it changes a few times a year,
 and the page has to render on a clone that has never been pointed at a database.
 
-| To change                                               | Edit                       |
-| ------------------------------------------------------- | -------------------------- |
-| The projects grid, and the three the home page features | `src/lib/data/projects.ts` |
-| The Discord invite, everywhere at once                  | `src/lib/discord.ts`       |
-| Name, tagline, URL, dev port, repo                      | `src/lib/site.config.ts`   |
+| To change                                               | Edit                                                   |
+| ------------------------------------------------------- | ------------------------------------------------------ |
+| The projects grid, and the three the home page features | `src/lib/data/projects.ts`                             |
+| The Discord invite, everywhere at once                  | `src/lib/discord.ts`                                   |
+| Name, tagline, URL, dev port, repo                      | `src/lib/site.config.ts`                               |
+| The logo, and every icon and card derived from it       | `brand/starspace-mark.png`, then `bun run build:brand` |
 
 Card artwork goes under `static/projects/` as WebP, around 900px wide.
 `tests/unit/site-content.test.ts` fails when an entry names a file that is not there, so a

@@ -12,12 +12,14 @@
 			<div class="footer-brand">
 				<a href="/" class="footer-logo">
 					<span class="logo-icon" aria-hidden="true">
-						<svg width="22" height="22" viewBox="0 0 512 512" fill="none">
-							<path
-								d="M256,30 L309,178 L466,183 L342,279 L386,430 L256,342 L126,430 L170,279 L46,183 L203,178 Z"
-								fill="currentColor"
-							/>
-						</svg>
+						<img
+							class="logo-mark"
+							src="/brand/starspace-mark.webp"
+							alt=""
+							width="24"
+							height="24"
+							decoding="async"
+						/>
 					</span>
 					<span class="logo-text">{site.name}</span>
 				</a>
@@ -167,7 +169,14 @@
 	.logo-icon {
 		display: inline-flex;
 		align-items: center;
-		color: var(--color-secondary);
+	}
+
+	/* The carved-wood mark, from brand/starspace-mark.png via
+	   `bun run build:brand`. It carries its own colour, so unlike the flat star
+	   it replaced it does not follow the link's hover state. */
+	.logo-mark {
+		width: 1.35rem;
+		height: auto;
 	}
 
 	.footer-tagline {

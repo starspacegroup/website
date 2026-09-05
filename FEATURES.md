@@ -11,8 +11,10 @@ inherited from NebulaKit. It is not a catalog of hypothetical integrations.
 - Discord invite, and the counts fetched from it: `src/lib/discord.ts`
 - Project directory and cards: `src/routes/projects/`, `src/lib/components/ProjectCard.svelte`,
   `src/lib/data/projects.ts`
-- Brand assets and the share card: `static/favicon*.svg`, `static/icon-*.png`,
-  `static/og-image.svg`
+- Brand assets and the share card: `brand/starspace-mark.png` is the master, and
+  `scripts/build-brand.mjs` generates `static/favicon*.svg`, `static/icon-*.png`,
+  `static/apple-touch-icon.png`, `static/og-image.png` and `static/brand/starspace-mark.webp`
+  from it. See [brand/README.md](./brand/README.md).
 
 The directory is checked-in data rather than CMS entries, so the page renders on a clone with no
 database. `tests/unit/site-content.test.ts` holds it to that.

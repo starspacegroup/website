@@ -20,9 +20,12 @@ the command list, repository map, and architecture explanation.
 customize`, `CUSTOMIZE.md`, `INITIAL_CUSTOMIZATION_STATUS.md`, `docs/INITIAL_CUSTOMIZATION.md`
   — and the ledger stays honest rather than deleted. The public directories are checked-in data
   (`src/lib/data/`), not CMS entries, so both pages render without a database.
-- Preserve the complete logo-derived install set: Apple touch icon, 192/512 manifest icons,
-  `site.webmanifest`, light/dark tab favicons, and the declarations in `src/app.html`. Installed-app
-  icons are static; only tab favicons switch theme.
+- Every brand asset is generated from `brand/starspace-mark.png` by `bun run build:brand` — icons,
+  favicons, the share card, the in-page mark. Change the master, re-run the script, commit the
+  output; never hand-edit a file in `static/` that the script writes, and never redraw the mark.
+  Preserve the complete install set: Apple touch icon, 192/512 manifest icons, `site.webmanifest`,
+  light/dark tab favicons, and the declarations in `src/app.html`. Installed-app icons are static;
+  only tab favicons switch theme.
 - User-visible route, setup, command, binding, environment, integration, shortcut, or admin changes
   must update `/documentation` and its focused test in the same change. Internal refactors do not.
 - Keep robots, sitemap, API catalog, agent skills, `auth.md`, Markdown negotiation, and WebMCP honest.

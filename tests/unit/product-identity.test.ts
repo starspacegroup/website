@@ -75,7 +75,12 @@ describe('*Space product identity', () => {
 		expect(readme).toMatch(
 			/\[!\[\*Space[^\]]*\]\(\.\/static\/og-image\.png\)\]\(https:\/\/github\.com\/starspacegroup\/starspace-group-nebulakit\)/i
 		);
-		expect(footer).toContain('aria-label="GitHub Repository"');
+		// The footer's GitHub icon link stays labelled, and points at the GitHub
+		// organisation rather than this repository — see `orgUrl` in
+		// src/lib/site.config.ts for why the visitor-facing links are the org.
+		expect(footer).toContain('aria-label="{site.name} on GitHub"');
+		expect(footer).toContain('href={orgUrl}');
+		expect(footer).not.toContain('repoUrl');
 		expect(html).toContain('rel="apple-touch-icon"');
 		expect(html).toContain('rel="manifest"');
 		expect(html).toContain('name="apple-mobile-web-app-title"');

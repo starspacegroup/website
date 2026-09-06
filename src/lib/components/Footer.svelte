@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { DISCORD_INVITE } from '$lib/discord';
-	import { site, repoUrl } from '$lib/site.config';
+	import { site, orgUrl } from '$lib/site.config';
 
 	const currentYear = new Date().getFullYear();
 </script>
@@ -61,7 +61,7 @@
 							<a href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">Discord</a>
 						</li>
 						<li>
-							<a href={repoUrl} target="_blank" rel="noopener noreferrer">GitHub</a>
+							<a href={orgUrl} target="_blank" rel="noopener noreferrer">GitHub</a>
 						</li>
 						<li>
 							<a
@@ -109,10 +109,10 @@
 			</p>
 			<div class="footer-social">
 				<a
-					href={repoUrl}
+					href={orgUrl}
 					target="_blank"
 					rel="noopener noreferrer"
-					aria-label="GitHub Repository"
+					aria-label="{site.name} on GitHub"
 					class="social-link"
 				>
 					<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">

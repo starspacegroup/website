@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
 import Footer from './Footer.svelte';
 import { DISCORD_INVITE } from '$lib/discord';
-import { site, repoUrl } from '$lib/site.config';
+import { site, orgUrl } from '$lib/site.config';
 
 describe('Footer', () => {
 	it('should render the footer element', () => {
@@ -74,7 +74,10 @@ describe('Footer', () => {
 		const resourcesLink = githubLinks.find((link) =>
 			link.textContent?.toLowerCase().includes('github')
 		);
-		expect(resourcesLink).toHaveAttribute('href', repoUrl);
+		// The org home, not this site's own repository — the community is several
+		// repositories and a visitor should land where all of them are.
+		expect(resourcesLink).toHaveAttribute('href', orgUrl);
+		expect(orgUrl).not.toContain(site.repo);
 	});
 
 	it('should contain privacy policy link', () => {

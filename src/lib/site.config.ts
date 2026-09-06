@@ -42,3 +42,15 @@ export const site = {
 
 /** Full GitHub URL, derived from {@link site.repo}. */
 export const repoUrl = `https://github.com/${site.repo}`;
+
+/**
+ * The GitHub organisation this site belongs to, derived from the owner half of
+ * {@link site.repo} so `bun run customize` keeps it in step with everything else.
+ *
+ * This, not {@link repoUrl}, is what a visitor-facing "GitHub" link points at.
+ * The community is several repositories; this site's own is one of them, and
+ * landing a first-time visitor inside it hides the rest. Deep links that name a
+ * specific file (the References list on /documentation) still use `repoUrl` —
+ * they are about this repository and would be wrong anywhere else.
+ */
+export const orgUrl = `https://github.com/${site.repo.split('/')[0]}`;

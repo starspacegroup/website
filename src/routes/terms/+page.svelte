@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SharingMeta from '$lib/components/SharingMeta.svelte';
+	import { orgUrl } from '$lib/site.config';
 	const currentYear = new Date().getFullYear();
 	const lastUpdated = 'January 1, 2026';
 </script>
@@ -138,9 +139,9 @@
 			<h2>Contact Us</h2>
 			<p>
 				If you have any questions about these Terms of Service, please contact us through our <a
-					href="https://github.com/starspacegroup/starspace-group-nebulakit"
+					href={orgUrl}
 					target="_blank"
-					rel="noopener noreferrer">GitHub repository</a
+					rel="noopener noreferrer">GitHub organization</a
 				>.
 			</p>
 			<p>

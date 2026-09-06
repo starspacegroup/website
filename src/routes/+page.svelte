@@ -3,6 +3,7 @@
 	import MemberCount from '$lib/components/MemberCount.svelte';
 	import ProjectCard from '$lib/components/ProjectCard.svelte';
 	import SharingMeta from '$lib/components/SharingMeta.svelte';
+	import VoiceChannelDemo from '$lib/components/VoiceChannelDemo.svelte';
 	import { featuredProjects } from '$lib/data/projects';
 	import { DISCORD_INVITE } from '$lib/discord';
 	import { site } from '$lib/site.config';
@@ -57,40 +58,46 @@
 <div class="hero">
 	<div class="container">
 		<div class="hero-content" class:mounted>
-			<img
-				class="hero-mark"
-				src="/brand/starspace-mark.webp"
-				alt=""
-				width="120"
-				height="120"
-				decoding="async"
-			/>
+			<div class="hero-copy">
+				<img
+					class="hero-mark"
+					src="/brand/starspace-mark.webp"
+					alt=""
+					width="120"
+					height="120"
+					decoding="async"
+				/>
 
-			<h1 class="main-title">{site.name}</h1>
+				<h1 class="main-title">{site.name}</h1>
 
-			<p class="hero-tagline">Work, create and collaborate — with chaos and fun.</p>
+				<p class="hero-tagline">Work, create and collaborate — with chaos and fun.</p>
 
-			<!-- The count is the short, striking part, so on a phone it sits above
-			     the body copy rather than below five lines of it. -->
-			<div class="hero-count">
-				<MemberCount />
+				<!-- The count is the short, striking part, so on a phone it sits above
+				     the body copy rather than below five lines of it. -->
+				<div class="hero-count">
+					<MemberCount />
+				</div>
+
+				<p class="subtitle">
+					An inclusive digital coworking space on Discord, where everyone is welcome. Work around
+					makers, creators, artists and trailblazers who are creativity and productivity driven.
+				</p>
+
+				<div class="hero-actions">
+					<a class="hero-join" href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+							<path
+								d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.3.5c1.6.4 3 1 4.4 1.9a16.6 16.6 0 0 0-14.9 0c1.3-.9 2.8-1.6 4.4-1.9L8.6 3a19.8 19.8 0 0 0-4.9 1.4C.9 8.6.1 12.7.5 16.7A19.9 19.9 0 0 0 6.6 20l1.3-2c-1-.4-2-.9-2.9-1.6l.7-.5a14.2 14.2 0 0 0 12.6 0l.7.5c-.9.7-1.9 1.2-2.9 1.6l1.3 2a19.9 19.9 0 0 0 6.1-3.3c.5-4.7-.8-8.8-3.2-12.3zM8.5 14.3c-1.2 0-2.2-1.1-2.2-2.4 0-1.4 1-2.5 2.2-2.5s2.2 1.1 2.2 2.5c0 1.3-1 2.4-2.2 2.4zm7 0c-1.2 0-2.2-1.1-2.2-2.4 0-1.4 1-2.5 2.2-2.5s2.2 1.1 2.2 2.5c0 1.3-1 2.4-2.2 2.4z"
+							/>
+						</svg>
+						Join on Discord
+					</a>
+					<a class="hero-secondary" href="/projects">See what we build</a>
+				</div>
 			</div>
 
-			<p class="subtitle">
-				An inclusive digital coworking space on Discord, where everyone is welcome. Work around
-				makers, creators, artists and trailblazers who are creativity and productivity driven.
-			</p>
-
-			<div class="hero-actions">
-				<a class="hero-join" href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
-					<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-						<path
-							d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.3.5c1.6.4 3 1 4.4 1.9a16.6 16.6 0 0 0-14.9 0c1.3-.9 2.8-1.6 4.4-1.9L8.6 3a19.8 19.8 0 0 0-4.9 1.4C.9 8.6.1 12.7.5 16.7A19.9 19.9 0 0 0 6.6 20l1.3-2c-1-.4-2-.9-2.9-1.6l.7-.5a14.2 14.2 0 0 0 12.6 0l.7.5c-.9.7-1.9 1.2-2.9 1.6l1.3 2a19.9 19.9 0 0 0 6.1-3.3c.5-4.7-.8-8.8-3.2-12.3zM8.5 14.3c-1.2 0-2.2-1.1-2.2-2.4 0-1.4 1-2.5 2.2-2.5s2.2 1.1 2.2 2.5c0 1.3-1 2.4-2.2 2.4zm7 0c-1.2 0-2.2-1.1-2.2-2.4 0-1.4 1-2.5 2.2-2.5s2.2 1.1 2.2 2.5c0 1.3-1 2.4-2.2 2.4z"
-						/>
-					</svg>
-					Join on Discord
-				</a>
-				<a class="hero-secondary" href="/projects">See what we build</a>
+			<div class="hero-demo">
+				<VoiceChannelDemo />
 			</div>
 		</div>
 	</div>
@@ -349,7 +356,6 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		min-height: 72vh;
 		padding: var(--spacing-2xl) var(--spacing-md);
 		background: var(--color-background);
 	}
@@ -357,11 +363,13 @@
 	.container {
 		position: relative;
 		width: 100%;
-		max-width: 48rem;
+		max-width: 64rem;
 		margin: 0 auto;
 	}
 
 	.hero-content {
+		display: grid;
+		gap: var(--spacing-2xl);
 		text-align: center;
 		opacity: 0;
 		transform: translateY(12px);
@@ -387,8 +395,33 @@
 
 	@media (min-width: 768px) {
 		.hero-mark {
-			width: 128px;
-			height: 128px;
+			width: 112px;
+			height: 112px;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.hero-content {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+			align-items: center;
+			text-align: left;
+		}
+
+		.hero-mark {
+			margin-left: 0;
+		}
+
+		.hero-actions {
+			justify-content: flex-start;
+		}
+
+		.hero-count {
+			--member-count-align: left;
+			--member-count-justify: flex-start;
+		}
+
+		.subtitle {
+			margin-left: 0;
 		}
 	}
 
@@ -602,7 +635,6 @@
 	/* Responsive adjustments */
 	@media (max-width: 768px) {
 		.hero {
-			min-height: 0;
 			padding: var(--spacing-2xl) var(--spacing-md);
 		}
 

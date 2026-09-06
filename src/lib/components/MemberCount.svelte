@@ -62,8 +62,11 @@
 </div>
 
 <style>
+	/* Alignment is the caller's, because the home hero centres this on a phone
+	   and left-aligns it beside the voice-channel panel on a wide screen. Custom
+	   properties cross the component boundary; a `:global` reach-in would not. */
 	.member-count {
-		text-align: center;
+		text-align: var(--member-count-align, center);
 	}
 
 	.member-label {
@@ -90,7 +93,7 @@
 	.member-online {
 		display: flex;
 		align-items: center;
-		justify-content: center;
+		justify-content: var(--member-count-justify, center);
 		gap: 0.5rem;
 		margin: 0.25rem 0 0;
 		font-size: 1rem;

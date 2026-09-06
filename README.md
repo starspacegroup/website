@@ -1,4 +1,4 @@
-[![*Space — an inclusive digital coworking space on Discord](./static/og-image.png)](https://github.com/starspacegroup/starspace-group-nebulakit)
+[![*Space — an inclusive digital coworking space on Discord](./static/og-image.png)](https://github.com/starspacegroup/website)
 
 # *Space
 

@@ -12,7 +12,7 @@
 Clone the *Space product repository directly:
 
 ```bash
-git clone https://github.com/starspacegroup/starspace-group-nebulakit.git
+git clone https://github.com/starspacegroup/website.git
 cd *Space
 ```
 

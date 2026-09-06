@@ -73,7 +73,7 @@ describe('*Space product identity', () => {
 		};
 
 		expect(readme).toMatch(
-			/\[!\[\*Space[^\]]*\]\(\.\/static\/og-image\.png\)\]\(https:\/\/github\.com\/starspacegroup\/starspace-group-nebulakit\)/i
+			/\[!\[\*Space[^\]]*\]\(\.\/static\/og-image\.png\)\]\(https:\/\/github\.com\/starspacegroup\/website\)/i
 		);
 		// The footer's GitHub icon link stays labelled, and points at the GitHub
 		// organisation rather than this repository — see `orgUrl` in

@@ -33,7 +33,7 @@ export const site = {
 	/** Production URL, no trailing slash. Used for canonical + OG URLs. */
 	url: 'https://starspace.group',
 	/** GitHub repository in `owner/name` form. */
-	repo: 'starspacegroup/starspace-group-nebulakit',
+	repo: 'starspacegroup/website',
 	/** Attribution shown in the footer. */
 	author: '*Space',
 	/** URL for the footer attribution link. */

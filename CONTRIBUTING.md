@@ -25,7 +25,7 @@ Thank you for your interest in contributing to *Space! This guide will help you 
 
 ```bash
 # Clone the repository
-git clone https://github.com/starspacegroup/starspace-group-nebulakit.git
+git clone https://github.com/starspacegroup/website.git
 cd *Space
 
 # Install dependencies

@@ -795,35 +795,35 @@ bun run test:all</code
 			<ul>
 				<li>
 					<a
-						href="https://github.com/starspacegroup/starspace-group-nebulakit"
+						href="https://github.com/starspacegroup/website"
 						target="_blank"
 						rel="noopener noreferrer">GitHub repository</a
 					>
 				</li>
 				<li>
 					<a
-						href="https://github.com/starspacegroup/starspace-group-nebulakit/blob/main/README.md"
+						href="https://github.com/starspacegroup/website/blob/main/README.md"
 						target="_blank"
 						rel="noopener noreferrer">README</a
 					>
 				</li>
 				<li>
 					<a
-						href="https://github.com/starspacegroup/starspace-group-nebulakit/blob/main/CONTRIBUTING.md"
+						href="https://github.com/starspacegroup/website/blob/main/CONTRIBUTING.md"
 						target="_blank"
 						rel="noopener noreferrer">Contributing Guide</a
 					>
 				</li>
 				<li>
 					<a
-						href="https://github.com/starspacegroup/starspace-group-nebulakit/blob/main/docs/CLOUDFLARE_SETUP.md"
+						href="https://github.com/starspacegroup/website/blob/main/docs/CLOUDFLARE_SETUP.md"
 						target="_blank"
 						rel="noopener noreferrer">Cloudflare Setup</a
 					>
 				</li>
 				<li>
 					<a
-						href="https://github.com/starspacegroup/starspace-group-nebulakit/blob/main/docs/THEME_SYSTEM.md"
+						href="https://github.com/starspacegroup/website/blob/main/docs/THEME_SYSTEM.md"
 						target="_blank"
 						rel="noopener noreferrer">Theme System</a
 					>
@@ -855,7 +855,7 @@ bun run test:all</code
 		<footer class="docs-footer">
 			<p>
 				If *Space helps your workflow, consider giving the project a star on <a
-					href="https://github.com/starspacegroup/starspace-group-nebulakit"
+					href="https://github.com/starspacegroup/website"
 					target="_blank"
 					rel="noopener noreferrer">GitHub</a
 				>!

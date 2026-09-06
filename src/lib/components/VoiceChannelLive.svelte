@@ -1,20 +1,24 @@
 <script lang="ts">
 	import type { VoiceMember } from '$lib/server/voice-channel';
 
-	/** Real people, from `/api/voice`. Only ever three or more — see the server module. */
+	/**
+	 * Real people, from `/api/voice`. Only ever three or more, and only ever
+	 * faces: the server sends no names, usernames or ids (see
+	 * `$lib/server/voice-channel`). Someone who recognises a face knows who is in
+	 * the room; the page does not publish a roster to everyone else.
+	 */
 	export let members: VoiceMember[] = [];
 	/** The channel's own name, as Discord has it. */
 	export let channel = 'Ten Forward';
 
-	/** Two letters for someone with no avatar set, matching the simulated panel. */
-	function initials(name: string): string {
-		return name.replace(/[^\p{L}\p{N}]/gu, '').slice(0, 2) || '??';
-	}
-
-	$: sharing = members.filter((member) => member.streaming);
+	$: sharing = members.filter((member) => member.streaming).length;
 </script>
 
-<figure class="vc">
+<figure
+	class="vc"
+	role="img"
+	aria-label="{members.length} people are in the {channel} voice channel right now."
+>
 	<div class="vc-panel">
 		<div class="vc-header">
 			<svg
@@ -44,33 +48,39 @@
 		</div>
 
 		<ul class="vc-seats">
-			{#each members as member (member.name)}
+			<!-- Keyed by index on purpose. There is no id to key on, which is the
+			     point, and the whole list is replaced on every poll anyway. -->
+			{#each members as member, i (i)}
 				<li class="vc-seat">
 					{#if member.avatar}
 						<img
-							class="vc-avatar vc-photo"
+							class="vc-avatar"
 							class:vc-muted={member.muted}
 							src={member.avatar}
 							alt=""
-							width="36"
-							height="36"
+							width="40"
+							height="40"
 							loading="lazy"
 							decoding="async"
 							referrerpolicy="no-referrer"
 						/>
 					{:else}
-						<span class="vc-avatar" class:vc-muted={member.muted}>{initials(member.name)}</span>
+						<span class="vc-avatar vc-anon" class:vc-muted={member.muted} aria-hidden="true">
+							<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+								<circle cx="10" cy="7" r="3.4" fill="currentColor" />
+								<path d="M3.6 17.2c0-3.2 2.9-5.2 6.4-5.2s6.4 2 6.4 5.2" fill="currentColor" />
+							</svg>
+						</span>
 					{/if}
-					<span class="vc-handle">{member.name}</span>
 				</li>
 			{/each}
 		</ul>
 
 		<p class="vc-status">
-			{#if sharing.length === 1}
-				{sharing[0].name} is sharing a screen
-			{:else if sharing.length > 1}
-				{sharing.length} people are sharing screens
+			{#if sharing === 1}
+				somebody is sharing a screen
+			{:else if sharing > 1}
+				{sharing} people are sharing screens
 			{:else}
 				nobody is sharing a screen right now
 			{/if}
@@ -145,17 +155,16 @@
 		list-style: none;
 	}
 
+	/* Height is pinned to the simulated tile's, which carries a handle under its
+	   avatar. Without it the panel would shrink the moment the channel went live
+	   and grow back when it emptied, shoving the page around twice a minute. */
 	.vc-seat {
 		display: flex;
-		flex-direction: column;
 		align-items: center;
-		gap: 0.3rem;
+		justify-content: center;
 		width: 6.25rem;
+		height: 4.625rem;
 		margin-inline: 0.2rem;
-		/* Real display names are long and arbitrary, unlike the demo's six short
-		   handles, so the tile keeps a little side padding for the ellipsis to
-		   land inside its own edge. */
-		padding: 0.5rem 0.35rem;
 		border-radius: var(--radius-md);
 		background: var(--color-background);
 		box-shadow: inset 0 0 0 1px var(--color-border);
@@ -164,14 +173,18 @@
 	.vc-avatar {
 		display: grid;
 		place-items: center;
-		width: 2.25rem;
-		height: 2.25rem;
+		width: 2.5rem;
+		height: 2.5rem;
 		border-radius: 50%;
 		background: color-mix(in srgb, var(--color-secondary) 22%, transparent);
 		color: var(--color-secondary);
-		font-size: 0.8rem;
-		font-weight: 700;
 		object-fit: cover;
+	}
+
+	/* Somebody with no avatar set. A silhouette, not initials — initials are a
+	   name in two letters, and the whole point is that the names stay off. */
+	.vc-anon {
+		color: color-mix(in srgb, var(--color-text) 45%, transparent);
 	}
 
 	/* A muted person is dimmed rather than badged: at this size a mic glyph is
@@ -180,17 +193,14 @@
 		opacity: 0.45;
 	}
 
-	.vc-handle {
-		max-width: 100%;
-		overflow: hidden;
-		font-size: 0.7rem;
-		font-weight: 600;
-		color: var(--color-text-secondary);
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
+	/* Same box, same 7.5rem, as the simulated panel's screen-share slot. Discord
+	   does not hand out the picture, so where the simulation shows a fake window
+	   this shows a line of text — but it has to take up the same room, or the
+	   whole page jumps 90px every time the channel crosses three people. */
 	.vc-status {
+		display: grid;
+		place-items: center;
+		height: 7.5rem;
 		margin: var(--spacing-sm) 0 0;
 		padding: 0.55rem;
 		border: 1px dashed var(--color-border);
@@ -224,8 +234,8 @@
 
 	@media (max-width: 480px) {
 		.vc-avatar {
-			width: 2rem;
-			height: 2rem;
+			width: 2.25rem;
+			height: 2.25rem;
 		}
 	}
 </style>

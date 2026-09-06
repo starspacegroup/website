@@ -12,12 +12,22 @@ const CONFIG = {
 	channel: 'Ten Forward'
 };
 
+/**
+ * A Discord avatar URL carries a user id and a hash, never a name. The fixture
+ * mirrors that, so the "nothing identifying reaches the wire" test below is
+ * checking the mapper rather than an artefact of these fixtures.
+ */
+function avatarFor(name: string) {
+	const id = [...name].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+	return `https://cdn.example/avatars/${id}/9f8e7d.png`;
+}
+
 function member(name: string, extra: Record<string, unknown> = {}) {
 	return {
 		userId: `u-${name}`,
 		userName: name,
 		displayName: name,
-		avatarUrl: `https://cdn.example/${name}.png`,
+		avatarUrl: avatarFor(name),
 		...extra
 	};
 }
@@ -108,7 +118,7 @@ describe('fetchVoiceSnapshot', () => {
 		expect(url).toBe('https://spacebot.example/api/v1/voice?channel=Ten%20Forward');
 	});
 
-	it('maps the flags the panel draws, and falls back to the username', async () => {
+	it('returns faces and voice flags, and no identity of any kind', async () => {
 		const fetcher = fetcherFor({
 			channels: [
 				{
@@ -116,7 +126,7 @@ describe('fetchVoiceSnapshot', () => {
 					members: [
 						member('nova', { streaming: true }),
 						member('quill', { selfVideo: true, selfMute: true }),
-						{ userName: 'orbit', displayName: '  ', avatarUrl: '', serverMute: true }
+						member('orbit', { avatarUrl: '', serverMute: true })
 					]
 				}
 			]
@@ -125,16 +135,14 @@ describe('fetchVoiceSnapshot', () => {
 		if (!result.live) throw new Error('expected live');
 
 		expect(result.members[0]).toEqual({
-			name: 'nova',
-			avatar: 'https://cdn.example/nova.png',
+			avatar: avatarFor('nova'),
 			streaming: true,
 			video: false,
 			muted: false
 		});
 		expect(result.members[1]).toMatchObject({ video: true, muted: true });
-		// Blank display name falls back to the username; empty avatar becomes null.
+		// An empty avatar becomes null, and a server mute counts as muted.
 		expect(result.members[2]).toEqual({
-			name: 'orbit',
 			avatar: null,
 			streaming: false,
 			video: false,
@@ -142,7 +150,25 @@ describe('fetchVoiceSnapshot', () => {
 		});
 	});
 
-	it('drops a nameless row rather than rendering somebody as Unknown', async () => {
+	it('never lets a name, username or user id reach the response', async () => {
+		// The privacy rule, asserted over the whole serialised payload rather than
+		// field by field: adding a name back to the mapper has to fail here.
+		const fetcher = fetcherFor(snapshotOf(4));
+		const result = await fetchVoiceSnapshot(CONFIG, fetcher);
+		const wire = JSON.stringify(result);
+
+		expect(wire).not.toContain('person0');
+		expect(wire).not.toContain('u-person0');
+		expect(wire).not.toContain('displayName');
+		expect(wire).not.toContain('userName');
+		expect(wire).not.toContain('userId');
+		if (!result.live) throw new Error('expected live');
+		for (const person of result.members) {
+			expect(Object.keys(person).sort()).toEqual(['avatar', 'muted', 'streaming', 'video']);
+		}
+	});
+
+	it('drops a row that is not a member — SpaceBot never sends one without a user id', async () => {
 		const fetcher = fetcherFor({
 			channels: [
 				{
@@ -154,7 +180,6 @@ describe('fetchVoiceSnapshot', () => {
 		const result = await fetchVoiceSnapshot(CONFIG, fetcher);
 		if (!result.live) throw new Error('expected live');
 		expect(result.members).toHaveLength(3);
-		expect(result.members.map((m) => m.name)).toEqual(['a', 'b', 'c']);
 	});
 
 	it('drops below the threshold when the unusable rows are what made up the count', async () => {

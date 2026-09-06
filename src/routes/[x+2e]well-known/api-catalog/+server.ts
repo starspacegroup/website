@@ -79,9 +79,10 @@ export const GET: RequestHandler = ({ url }) => {
 			status: [status]
 		},
 		{
-			// Public, unauthenticated: who is in the #Ten Forward voice channel, and
-			// only when three or more people are in it. Below that it answers
-			// `{"live":false}` with no member data at all.
+			// Public, unauthenticated: how many people are in the #Ten Forward voice
+			// channel and their avatars, and only when three or more are in it.
+			// Never their names. Below the threshold it answers `{"live":false}`
+			// with no member data at all.
 			anchor: abs('/api/voice'),
 			'service-doc': [docs],
 			status: [status]

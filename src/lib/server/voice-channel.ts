@@ -12,8 +12,14 @@
  * and NO member data at all — not a trimmed list, not a count. Two people in a
  * voice channel on a Saturday night is a fact about those two people, and a
  * public home page is not the place to publish it. The threshold is enforced
- * here rather than in the component so the names never reach the browser in the
- * first place.
+ * here rather than in the component so nothing about them reaches the browser in
+ * the first place.
+ *
+ * **Faces, not names.** Above the threshold this returns avatars and voice flags
+ * and nothing else — no display name, no username, no user id. The hero shows
+ * that the room is busy and who is in it to anyone who recognises a face; it does
+ * not publish a roster of who was online at what hour, which is what a list of
+ * names on a public page amounts to. Names are dropped HERE, not hidden in CSS.
  *
  * **It fails to the simulation.** A missing key, an unreachable bot, a timeout,
  * a shape that does not parse: every one of them returns `live: false`, and the
@@ -32,9 +38,7 @@ const REQUEST_TIMEOUT_MS = 2500;
 
 /** One person in the channel, reduced to what the page actually draws. */
 export type VoiceMember = {
-	/** Server nickname, or username when they have not set one. */
-	name: string;
-	/** Discord CDN avatar URL, or `null` for the lettered fallback. */
+	/** Discord CDN avatar URL, or `null` for the anonymous placeholder. */
 	avatar: string | null;
 	/** Sharing a screen right now. */
 	streaming: boolean;
@@ -68,8 +72,7 @@ export function readVoiceConfig(platform: App.Platform | undefined): VoiceConfig
 }
 
 type RawMember = {
-	displayName?: unknown;
-	userName?: unknown;
+	userId?: unknown;
 	avatarUrl?: unknown;
 	streaming?: unknown;
 	selfVideo?: unknown;
@@ -78,22 +81,18 @@ type RawMember = {
 };
 
 /**
- * Take one member out of SpaceBot's snapshot, or `null` if the row is unusable.
+ * Take one member out of SpaceBot's snapshot, or `null` if the row is not a
+ * person.
  *
- * A nameless row is dropped rather than rendered as "Unknown": an anonymous
- * avatar in a lineup of real people reads as a bug, and it is one row of six.
+ * `userId` is the test because SpaceBot itself skips any row without one, so its
+ * absence means a malformed row rather than a member — and it is deliberately
+ * read but not returned. A user id is an identifier, and this response carries
+ * no identifiers beyond whatever a Discord avatar URL already contains.
  */
 function toMember(raw: RawMember): VoiceMember | null {
-	const name =
-		typeof raw.displayName === 'string' && raw.displayName.trim()
-			? raw.displayName.trim()
-			: typeof raw.userName === 'string' && raw.userName.trim()
-				? raw.userName.trim()
-				: null;
-	if (!name) return null;
+	if (typeof raw.userId !== 'string' || !raw.userId) return null;
 
 	return {
-		name,
 		avatar: typeof raw.avatarUrl === 'string' && raw.avatarUrl ? raw.avatarUrl : null,
 		streaming: Boolean(raw.streaming),
 		video: Boolean(raw.selfVideo),

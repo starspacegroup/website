@@ -238,9 +238,10 @@ bun run deploy`;
 					<h3>Live Voice on the Home Page</h3>
 					<p>
 						The hero shows who is really in the <code>#Ten Forward</code> voice channel when three
-						or more people are in it, and a simulated channel otherwise. It reads SpaceBot's
-						<code>GET /api/v1/voice</code> from the server, through
-						<code>/api/voice</code> here, so the key never reaches the browser.
+						or more people are in it, and a simulated channel otherwise. It shows
+						<strong>avatars only</strong> — no display names, usernames or user ids ever reach the
+						browser. It reads SpaceBot's <code>GET /api/v1/voice</code> from the server, through
+						<code>/api/voice</code> here, so the key never reaches the browser either.
 					</p>
 					<p>
 						Set <code>SPACEBOT_API_URL</code> and <code>SPACEBOT_API_KEY</code> (a SpaceBot key with

@@ -16,7 +16,7 @@ import { GET } from '../../src/routes/api/voice/+server';
 const LIVE = {
 	live: true,
 	channel: 'Ten Forward',
-	members: [{ name: 'nova', avatar: null, streaming: false, video: false, muted: false }],
+	members: [{ avatar: null, streaming: false, video: false, muted: false }],
 	updatedAt: null
 };
 

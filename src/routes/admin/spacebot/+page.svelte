@@ -157,6 +157,29 @@
 
 	<section class="card" aria-labelledby="connect-heading">
 		<h2 id="connect-heading">{status.source === 'kv' ? 'Replace the key' : 'Connect'}</h2>
+
+		{#if data.outcome}
+			<p class="outcome" class:failed={data.outcome.failed}>{data.outcome.message}</p>
+		{/if}
+
+		{#if data.connectAvailable}
+			<div class="one-click">
+				<a class="btn btn-primary" href="/admin/spacebot/connect" data-sveltekit-reload>
+					Connect with SpaceBot
+				</a>
+				<p class="note">
+					Opens SpaceBot, where you pick the server and approve
+					<code>voice:read</code> and <code>stats:read</code>. The key comes back
+					between the two servers — it never passes through this browser.
+				</p>
+			</div>
+		{/if}
+
+		<!-- Balanced markup rather than an {#if} wrapping a half-open <details>:
+		     when one-click is unavailable this is simply open by default. -->
+		<details class="manual" open={!data.connectAvailable}>
+			<summary>{data.connectAvailable ? 'Or paste a key by hand' : 'Paste a key'}</summary>
+
 		<ol class="steps">
 			<li>
 				Open SpaceBot, pick the *Space server, and go to <strong>API keys</strong>.
@@ -196,6 +219,7 @@
 				{busy ? 'Connecting…' : 'Connect'}
 			</button>
 		</form>
+		</details>
 
 		<p class="note">
 			The key is stored on the server and never sent to a browser again — this page only ever shows
@@ -405,6 +429,34 @@
 		background: var(--color-background);
 		color: var(--color-text);
 		font-size: 0.9rem;
+	}
+
+	.one-click {
+		margin-bottom: 1.25rem;
+	}
+
+	.one-click .note {
+		margin-top: 0.5rem;
+	}
+
+	.manual summary {
+		cursor: pointer;
+		font-size: 0.9rem;
+		opacity: 0.85;
+		margin-bottom: 0.75rem;
+	}
+
+	.outcome {
+		margin: 0 0 1rem;
+		padding: 0.6rem 0.8rem;
+		border-radius: 6px;
+		border: 1px solid currentColor;
+		font-size: 0.9rem;
+		opacity: 0.9;
+	}
+
+	.outcome.failed {
+		color: #ef4444;
 	}
 
 	.form button {

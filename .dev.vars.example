@@ -45,5 +45,15 @@ DEV_AUTH_BYPASS=true
 # SPACEBOT_API_KEY=sb_live_your_voice_read_key_here
 # SPACEBOT_VOICE_CHANNEL=Ten Forward
 
+# One-click Connect. With these set, /admin/spacebot offers a button that sends
+# the owner to SpaceBot's consent screen instead of asking them to mint and paste
+# a key. Register the site under SpaceBot's Superadmin -> Connect Apps, listing
+# https://<this site>/admin/spacebot/callback as a redirect URI; the secret is
+# shown once there and stored only as a hash. Without them the button is not
+# rendered at all and the paste-a-key form is the whole page.
+# SPACEBOT_CONNECT_URL=https://spacebot.starspace.group
+# SPACEBOT_CONNECT_CLIENT_ID=starspace-website
+# SPACEBOT_CONNECT_CLIENT_SECRET=sbcs_issued_once_at_registration
+
 # Note: .dev.vars is gitignored and should never be committed
 # These values are used by `wrangler dev` for local development

@@ -17,7 +17,7 @@ export const site = {
 	name: '*Space',
 	/** Short name for tight spaces (browser tab, PWA `short_name`). */
 	shortName: '*Space',
-	/** One-line tagline for the footer and hero. */
+	/** One-line tagline for the footer and the share-card alt text. The hero carries its own line. */
 	tagline: 'An inclusive digital coworking space on Discord.',
 	/** Longer description for the meta description and OG/Twitter cards. */
 	description:

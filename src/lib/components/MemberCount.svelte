@@ -48,17 +48,20 @@
 		{#if loading}
 			<span class="member-loading" aria-label="Loading the member count"></span>
 		{:else if failed || members === null}
-			<span title="Discord did not answer">&mdash;</span>
+			<span aria-hidden="true">&mdash;</span>
+			<span class="sr-only">Member count unavailable right now</span>
 		{:else}
 			{format(members)}
 		{/if}
 	</p>
-	{#if online !== null}
-		<p class="member-online">
+	<!-- Always in the flow, even while loading, so the copy under the count does
+	     not drop a line when the presence figure arrives. -->
+	<p class="member-online">
+		{#if online !== null}
 			<span class="online-dot" aria-hidden="true"></span>
 			{format(online)} online now
-		</p>
-	{/if}
+		{/if}
+	</p>
 </div>
 
 <style>
@@ -95,6 +98,7 @@
 		align-items: center;
 		justify-content: var(--member-count-justify, center);
 		gap: 0.5rem;
+		min-height: 1.5rem;
 		margin: 0.25rem 0 0;
 		font-size: 1rem;
 		color: var(--color-text-secondary);

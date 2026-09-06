@@ -9,7 +9,6 @@
 	import { site } from '$lib/site.config';
 	import { onMount } from 'svelte';
 
-	let mounted = false;
 	let toastMessage = '';
 	let showToast = false;
 
@@ -21,8 +20,6 @@
 	};
 
 	onMount(() => {
-		mounted = true;
-
 		// Check for error in URL and show toast
 		const errorCode = $page.url.searchParams.get('error');
 		if (errorCode && errorMessages[errorCode]) {
@@ -57,7 +54,7 @@
 
 <div class="hero">
 	<div class="container">
-		<div class="hero-content" class:mounted>
+		<div class="hero-content">
 			<div class="hero-copy">
 				<img
 					class="hero-mark"
@@ -367,20 +364,27 @@
 		margin: 0 auto;
 	}
 
+	/* The fade-in is a CSS animation, not a class toggled from onMount. The old
+	   way server-rendered the hero at opacity 0 and waited for hydration to
+	   reveal it — so with JavaScript off, blocked, or merely slow, the first
+	   thing on the site was a blank space. An animation runs the moment the
+	   stylesheet does, script or no script. */
 	.hero-content {
 		display: grid;
 		gap: var(--spacing-2xl);
 		text-align: center;
-		opacity: 0;
-		transform: translateY(12px);
-		transition:
-			opacity 0.5s ease,
-			transform 0.5s ease;
+		animation: hero-in 0.5s ease both;
 	}
 
-	.hero-content.mounted {
-		opacity: 1;
-		transform: none;
+	@keyframes hero-in {
+		from {
+			opacity: 0;
+			transform: translateY(12px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
 	}
 
 	/* The carved-wood star, straight from brand/starspace-mark.png via
@@ -620,9 +624,7 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.hero-content {
-			opacity: 1;
-			transform: none;
-			transition: none;
+			animation: none;
 		}
 
 		.hero-join:hover,
@@ -632,12 +634,7 @@
 	}
 
 	/* Responsive adjustments */
-	/* Responsive adjustments */
 	@media (max-width: 768px) {
-		.hero {
-			padding: var(--spacing-2xl) var(--spacing-md);
-		}
-
 		.main-title {
 			font-size: 2.5rem;
 		}

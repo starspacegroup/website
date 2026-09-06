@@ -34,9 +34,11 @@ DEV_AUTH_BYPASS=true
 # The hero shows who is really in #Ten Forward when three or more people are in
 # it, and the simulated channel otherwise. Leave these unset and it just keeps
 # simulating; nothing breaks.
-# SPACEBOT_API_KEY is a SpaceBot API key carrying the `voice:read` scope, issued
-# from that server's own /admin/<serverId>/api-keys page. It is a server-side
-# secret: the browser only ever sees this site's /api/voice.
+# SPACEBOT_API_KEY is a SpaceBot API key issued from that server's own
+# /admin/<serverId>/api-keys page, carrying `voice:read` for the panel and
+# `stats:read` for the member-count trend under the hero's number. It is a
+# server-side secret: the browser only ever sees this site's /api/voice and
+# /api/members/history.
 # SPACEBOT_API_URL=https://spacebot.starspace.group
 # SPACEBOT_API_KEY=sb_live_your_voice_read_key_here
 # SPACEBOT_VOICE_CHANNEL=Ten Forward

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import MemberCount from '$lib/components/MemberCount.svelte';
+	import MemberTrend from '$lib/components/MemberTrend.svelte';
 	import ProjectCard from '$lib/components/ProjectCard.svelte';
 	import SharingMeta from '$lib/components/SharingMeta.svelte';
 	import VoiceChannel from '$lib/components/VoiceChannel.svelte';
@@ -73,6 +74,7 @@
 				     the body copy rather than below five lines of it. -->
 				<div class="hero-count">
 					<MemberCount />
+					<MemberTrend />
 				</div>
 
 				<p class="subtitle">
@@ -422,6 +424,7 @@
 		.hero-count {
 			--member-count-align: left;
 			--member-count-justify: flex-start;
+			--member-trend-inline: 0;
 		}
 
 		.subtitle {

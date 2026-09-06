@@ -285,6 +285,18 @@ describe('Documentation Page', () => {
 			expect(section.textContent).toMatch(/three\s+or\s+more people/i);
 			expect(section.textContent).toMatch(/"live":false/);
 		});
+
+		it('documents the member-count trend and the scope it needs', () => {
+			render(Page);
+			const section = screen
+				.getByRole('heading', { name: /What You Get Out of the Box/i })
+				.closest('section') as HTMLElement;
+
+			expect(section.textContent).toMatch(/stats:read/);
+			expect(section.textContent).toMatch(/\/api\/members\/history/);
+			// Whitespace-tolerant throughout: prettier re-wraps this paragraph freely.
+			expect(section.textContent).toMatch(/one\s+point\s+per\s+day\s+for\s+30\s+days/i);
+		});
 	});
 
 	// AGENTS.md §8 — the agent-discovery surfaces are user-visible features, so

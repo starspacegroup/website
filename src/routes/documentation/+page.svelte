@@ -251,6 +251,12 @@ bun run deploy`;
 						SpaceBot is unreachable, or when fewer than three people are in the channel. Below that
 						threshold the endpoint answers <code>{'{'}"live":false{'}'}</code> and no member data at all.
 					</p>
+					<p>
+						The same key, carrying <code>stats:read</code> as well, draws the member-count trend
+						under the hero's number: SpaceBot's <code>GET /api/v1/stats/members</code>, one point
+						per day for 30 days, through <code>/api/members/history</code> here and cached for ten minutes.
+						Aggregate totals only. Without the scope the count shows on its own.
+					</p>
 				</div>
 				<div class="callout-card">
 					<h3>Analytics and Operations</h3>

@@ -85,8 +85,9 @@
 		font-size: clamp(3.5rem, 12vw, 6rem);
 		font-weight: 200;
 		line-height: 1.05;
-		/* Tabular figures so the number does not jitter when it ticks over. */
-		font-variant-numeric: tabular-nums;
+		/* Proportional digits on purpose. Tabular figures give every digit the
+		   width of a 0, which makes a display-size number look loose — and this
+		   one loads once, it does not tick, so there is nothing to keep steady. */
 		background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
 		-webkit-background-clip: text;
 		background-clip: text;

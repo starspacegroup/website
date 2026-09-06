@@ -88,6 +88,13 @@ export const GET: RequestHandler = ({ url }) => {
 			status: [status]
 		},
 		{
+			// Public, unauthenticated: the last month of member counts, one point
+			// per day — aggregate totals only, nothing about any member.
+			anchor: abs('/api/members/history'),
+			'service-doc': [docs],
+			status: [status]
+		},
+		{
 			// Owner/admin-session authenticated CMS type management.
 			anchor: abs('/api/cms/types'),
 			'service-doc': [docs],

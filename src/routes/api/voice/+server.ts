@@ -1,6 +1,6 @@
+import { getSpaceBotConfig } from '$lib/server/spacebot-connection';
 import {
 	fetchVoiceSnapshot,
-	readVoiceConfig,
 	VOICE_CACHE_SECONDS,
 	type VoiceSnapshot
 } from '$lib/server/voice-channel';
@@ -37,7 +37,7 @@ export const GET: RequestHandler = async ({ platform }) => {
 		}
 	}
 
-	const snapshot = await fetchVoiceSnapshot(readVoiceConfig(platform));
+	const snapshot = await fetchVoiceSnapshot(await getSpaceBotConfig(platform));
 
 	if (kv) {
 		const entry: CacheEntry = { at: Date.now(), snapshot };

@@ -1,7 +1,6 @@
 import {
 	fetchVoiceSnapshot,
 	LIVE_MEMBER_THRESHOLD,
-	readVoiceConfig,
 	VOICE_CACHE_SECONDS
 } from '$lib/server/voice-channel';
 import { describe, expect, it, vi } from 'vitest';
@@ -54,29 +53,6 @@ function fetcherFor(body: unknown, init: { ok?: boolean; status?: number } = {})
 		json: async () => body
 	})) as unknown as typeof fetch;
 }
-
-describe('readVoiceConfig', () => {
-	it('reads the three settings off the platform env', () => {
-		const config = readVoiceConfig({
-			env: {
-				SPACEBOT_API_URL: 'https://bot.example',
-				SPACEBOT_API_KEY: 'sb_live_x',
-				SPACEBOT_VOICE_CHANNEL: 'Engineering'
-			}
-		} as never);
-		expect(config).toEqual({
-			apiUrl: 'https://bot.example',
-			apiKey: 'sb_live_x',
-			channel: 'Engineering'
-		});
-	});
-
-	it('defaults the channel to Ten Forward and tolerates no platform at all', () => {
-		expect(readVoiceConfig(undefined).channel).toBe('Ten Forward');
-		expect(readVoiceConfig({ env: {} } as never).channel).toBe('Ten Forward');
-		expect(readVoiceConfig(undefined).apiKey).toBeUndefined();
-	});
-});
 
 describe('fetchVoiceSnapshot', () => {
 	it('goes live once the channel holds the threshold', async () => {

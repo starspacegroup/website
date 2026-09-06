@@ -36,16 +36,11 @@ export type MemberHistory = {
 	points: MemberPoint[];
 };
 
+/** The SpaceBot credentials, resolved by `$lib/server/spacebot-connection`. */
 export type MemberHistoryConfig = {
 	apiUrl?: string;
 	apiKey?: string;
 };
-
-/** The SpaceBot settings, shared with the voice panel. */
-export function readMemberHistoryConfig(platform: App.Platform | undefined): MemberHistoryConfig {
-	const env = (platform?.env ?? {}) as Record<string, string | undefined>;
-	return { apiUrl: env.SPACEBOT_API_URL, apiKey: env.SPACEBOT_API_KEY };
-}
 
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 

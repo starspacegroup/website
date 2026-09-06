@@ -246,10 +246,12 @@ bun run deploy`;
 					<p>
 						Set <code>SPACEBOT_API_URL</code> and <code>SPACEBOT_API_KEY</code> (a SpaceBot key with
 						the <code>voice:read</code> scope) to enable it, and
-						<code>SPACEBOT_VOICE_CHANNEL</code> to watch a channel other than Ten Forward. Leave
-						them unset and the hero simply keeps showing the simulation — as it does whenever
-						SpaceBot is unreachable, or when fewer than three people are in the channel. Below that
-						threshold the endpoint answers <code>{'{'}"live":false{'}'}</code> and no member data at all.
+						<code>SPACEBOT_VOICE_CHANNEL</code> to watch a channel other than Ten Forward without
+						the admin page — environment variables are the fallback, used when nothing is connected
+						there. Leave them unset and the hero simply keeps showing the simulation — as it does
+						whenever SpaceBot is unreachable, or when fewer than three people are in the channel.
+						Below that threshold the endpoint answers <code>{'{'}"live":false{'}'}</code> and no member
+						data at all.
 					</p>
 					<p>
 						The same key, carrying <code>stats:read</code> as well, draws the member-count trend

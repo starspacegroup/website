@@ -52,24 +52,21 @@ export type VoiceSnapshot =
 	| { live: false }
 	| { live: true; channel: string; members: VoiceMember[]; updatedAt: string | null };
 
+/**
+ * What this module needs, which is a subset of the connection record that
+ * `$lib/server/spacebot-connection` resolves — from KV first, then env. There
+ * used to be a second env reader here; two readers meant the admin page could
+ * connect SpaceBot and the voice panel would carry on reading env and never
+ * notice.
+ */
 export type VoiceConfig = {
 	/** SpaceBot's origin, e.g. `https://spacebot.starspace.group`. */
 	apiUrl?: string;
 	/** An `sb_live_…` key with the `voice:read` scope. */
 	apiKey?: string;
-	/** Channel name to look for. Defaults to `Ten Forward`. */
+	/** Channel name to look for. */
 	channel?: string;
 };
-
-/** Read the SpaceBot settings off the Cloudflare env, if they are configured. */
-export function readVoiceConfig(platform: App.Platform | undefined): VoiceConfig {
-	const env = (platform?.env ?? {}) as Record<string, string | undefined>;
-	return {
-		apiUrl: env.SPACEBOT_API_URL,
-		apiKey: env.SPACEBOT_API_KEY,
-		channel: env.SPACEBOT_VOICE_CHANNEL || 'Ten Forward'
-	};
-}
 
 type RawMember = {
 	userId?: unknown;

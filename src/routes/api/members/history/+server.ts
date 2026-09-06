@@ -1,9 +1,9 @@
 import {
 	fetchMemberHistory,
 	HISTORY_CACHE_SECONDS,
-	readMemberHistoryConfig,
 	type MemberHistory
 } from '$lib/server/member-history';
+import { getSpaceBotConfig } from '$lib/server/spacebot-connection';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
@@ -34,7 +34,7 @@ export const GET: RequestHandler = async ({ platform }) => {
 		}
 	}
 
-	const history = await fetchMemberHistory(readMemberHistoryConfig(platform));
+	const history = await fetchMemberHistory(await getSpaceBotConfig(platform));
 
 	if (kv) {
 		const entry: CacheEntry = { at: Date.now(), history };

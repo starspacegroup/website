@@ -1,8 +1,7 @@
 import {
 	fetchMemberHistory,
 	HISTORY_CACHE_SECONDS,
-	HISTORY_PERIOD,
-	readMemberHistoryConfig
+	HISTORY_PERIOD
 } from '$lib/server/member-history';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -19,17 +18,6 @@ function fetcherFor(body: unknown, init: { ok?: boolean; status?: number } = {})
 		json: async () => body
 	})) as unknown as typeof fetch;
 }
-
-describe('readMemberHistoryConfig', () => {
-	it('shares the SpaceBot settings with the voice panel', () => {
-		expect(
-			readMemberHistoryConfig({
-				env: { SPACEBOT_API_URL: 'https://bot.example', SPACEBOT_API_KEY: 'sb_live_x' }
-			} as never)
-		).toEqual({ apiUrl: 'https://bot.example', apiKey: 'sb_live_x' });
-		expect(readMemberHistoryConfig(undefined)).toEqual({ apiUrl: undefined, apiKey: undefined });
-	});
-});
 
 describe('fetchMemberHistory', () => {
 	it('asks for a month of daily points, with the key in the header', async () => {

@@ -30,7 +30,9 @@ DEV_AUTH_BYPASS=true
 # with `Authorization: Bearer <this>`. Unset means those endpoints answer 503.
 # CRON_SECRET=your_long_random_secret_here
 
-# SpaceBot — live voice on the home hero.
+# SpaceBot — live voice and the member graph on the home hero.
+# Prefer Admin → SpaceBot, which verifies the key and stores it in KV. These
+# variables are the fallback, used when nothing is connected there.
 # The hero shows who is really in #Ten Forward when three or more people are in
 # it, and the simulated channel otherwise. Leave these unset and it just keeps
 # simulating; nothing breaks.

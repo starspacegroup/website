@@ -3,7 +3,7 @@
 	import MemberCount from '$lib/components/MemberCount.svelte';
 	import ProjectCard from '$lib/components/ProjectCard.svelte';
 	import SharingMeta from '$lib/components/SharingMeta.svelte';
-	import VoiceChannelDemo from '$lib/components/VoiceChannelDemo.svelte';
+	import VoiceChannel from '$lib/components/VoiceChannel.svelte';
 	import { featuredProjects } from '$lib/data/projects';
 	import { DISCORD_INVITE } from '$lib/discord';
 	import { site } from '$lib/site.config';
@@ -97,7 +97,7 @@
 			</div>
 
 			<div class="hero-demo">
-				<VoiceChannelDemo />
+				<VoiceChannel />
 			</div>
 		</div>
 	</div>

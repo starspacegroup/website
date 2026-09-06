@@ -269,6 +269,22 @@ describe('Documentation Page', () => {
 			expect(section.textContent).toMatch(/partial configuration fails closed/i);
 			expect(section.textContent).toMatch(/voice transcripts[\s\S]*same conversation history/i);
 		});
+
+		it('documents the SpaceBot voice integration, its env vars and its threshold', () => {
+			render(Page);
+			const section = screen
+				.getByRole('heading', { name: /What You Get Out of the Box/i })
+				.closest('section') as HTMLElement;
+
+			expect(section.textContent).toMatch(/SPACEBOT_API_URL/);
+			expect(section.textContent).toMatch(/SPACEBOT_API_KEY/);
+			expect(section.textContent).toMatch(/SPACEBOT_VOICE_CHANNEL/);
+			expect(section.textContent).toMatch(/voice:read/);
+			// The threshold and the fail-to-simulation behaviour are the two things
+			// an operator has to know before wondering why the hero looks fake.
+			expect(section.textContent).toMatch(/three\s+or\s+more people/i);
+			expect(section.textContent).toMatch(/"live":false/);
+		});
 	});
 
 	// AGENTS.md §8 — the agent-discovery surfaces are user-visible features, so

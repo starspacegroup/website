@@ -91,9 +91,11 @@ export const CRAWLER_DISALLOW: readonly string[] = [
  *
  * RFC 9309 §2.2.2 resolves conflicts by longest match, so `/api/health` wins
  * over `/api/`. The health endpoint is the `status` link in the API catalog, so
- * it has to stay reachable for the catalog to be honest.
+ * it has to stay reachable for the catalog to be honest — and `/api/voice` is
+ * catalogued and genuinely public for the same reason. Everything else under
+ * `/api/` needs a session and stays disallowed.
  */
-export const CRAWLER_ALLOW: readonly string[] = ['/api/health'];
+export const CRAWLER_ALLOW: readonly string[] = ['/api/health', '/api/voice'];
 
 /**
  * Content Signals (contentsignals.org) — how this site's content may be used

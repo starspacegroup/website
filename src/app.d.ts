@@ -52,6 +52,13 @@ declare global {
 				DEV_AUTH_BYPASS?: string;
 				/** Shared bearer secret for /api/cron/* scheduler endpoints. */
 				CRON_SECRET?: string;
+				/** SpaceBot's origin, e.g. https://spacebot.starspace.group. Unset
+				 *  means the home hero shows the simulated voice channel. */
+				SPACEBOT_API_URL?: string;
+				/** SpaceBot API key with the `voice:read` scope. Server-only. */
+				SPACEBOT_API_KEY?: string;
+				/** Voice channel to show. Defaults to "Ten Forward". */
+				SPACEBOT_VOICE_CHANNEL?: string;
 			};
 			/** Cloudflare request metadata. `cf.country` is the edge-provided ISO
 			 *  3166-1 alpha-2 code used by page-view stats — undefined locally. */

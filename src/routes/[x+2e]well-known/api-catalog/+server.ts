@@ -79,6 +79,14 @@ export const GET: RequestHandler = ({ url }) => {
 			status: [status]
 		},
 		{
+			// Public, unauthenticated: who is in the #Ten Forward voice channel, and
+			// only when three or more people are in it. Below that it answers
+			// `{"live":false}` with no member data at all.
+			anchor: abs('/api/voice'),
+			'service-doc': [docs],
+			status: [status]
+		},
+		{
 			// Owner/admin-session authenticated CMS type management.
 			anchor: abs('/api/cms/types'),
 			'service-doc': [docs],

@@ -186,8 +186,8 @@
 					</div>
 				</div>
 				<p class="feature-description">
-					Weekend events with a theme, a deadline and a demo at the end. We have not run one yet.
-					When we do, it will be announced in the server first.
+					Weekend events with a theme, a deadline and a demo at the end. We have run one, and they
+					are not a regular thing yet. The next is announced in the server first.
 				</p>
 			</div>
 

@@ -176,11 +176,14 @@
 							<path d="M20 13l2 8h-4z" fill="var(--color-secondary)" />
 						</svg>
 					</div>
-					<h3 class="feature-title">Hackathons and jams</h3>
+					<div class="feature-heading">
+						<h3 class="feature-title">Hackathons and jams</h3>
+						<span class="feature-soon">Coming soon</span>
+					</div>
 				</div>
 				<p class="feature-description">
-					Weekend events with a theme, a deadline and a demo at the end. Spacetime Clock came out of
-					one. So did half the arguments about how a clock should work.
+					Weekend events with a theme, a deadline and a demo at the end. We have not run one yet.
+					When we do, it will be announced in the server first.
 				</p>
 			</div>
 
@@ -827,6 +830,31 @@
 
 	.feature-card:hover .feature-icon svg {
 		filter: drop-shadow(0 4px 8px color-mix(in srgb, var(--color-primary) 40%, transparent));
+	}
+
+	/* One card describes something the community intends to run rather than
+	   something it already does. The heading wraps so the pill can sit beside
+	   the title without the icon's gap pushing it to the far edge, and the copy
+	   says so in words as well — the pill alone is easy to miss. Take both out
+	   together on the day the first jam is scheduled. */
+	.feature-heading {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--spacing-sm);
+	}
+
+	.feature-soon {
+		display: inline-block;
+		padding: 0.15rem 0.55rem;
+		border: 1px solid color-mix(in srgb, var(--color-secondary) 45%, transparent);
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--color-secondary) 14%, transparent);
+		color: var(--color-secondary);
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.01em;
+		white-space: nowrap;
 	}
 
 	.feature-title {

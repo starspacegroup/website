@@ -237,6 +237,13 @@
 							>
 								Projects
 							</a>
+							<a
+								href="/guide"
+								class:active={$page.url.pathname.startsWith('/guide')}
+								on:click={closeMobileMenu}
+							>
+								Guide
+							</a>
 							{#if user}
 								{#if user.isOwner || user.isAdmin || user.isSuperAdmin}
 									<a

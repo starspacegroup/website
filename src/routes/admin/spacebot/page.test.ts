@@ -22,8 +22,12 @@ function status(over: Partial<SpaceBotStatus> = {}): SpaceBotStatus {
 		connectedAt: null,
 		voice: 'unconfigured',
 		stats: 'unconfigured',
+		channels: 'unconfigured',
+		commands: 'unconfigured',
 		inVoice: null,
 		historyDays: null,
+		channelCount: null,
+		commandCount: null,
 		checkedAt: null,
 		...over
 	};

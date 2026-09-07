@@ -105,6 +105,13 @@
 			icon: '🚀'
 		},
 		{
+			id: 'guide',
+			label: 'Server guide',
+			description: 'Channels, commands and how to make a room',
+			action: () => goto('/guide'),
+			icon: '🧭'
+		},
+		{
 			id: 'contact',
 			label: 'Contact',
 			description: 'Send a message to *Space',

@@ -18,8 +18,18 @@
  *   code against.
  */
 
-/** What the hero needs: the live panel and the member graph. */
-export const CONNECT_SCOPES = ['voice:read', 'stats:read'] as const;
+/**
+ * Everything this site reads from SpaceBot: the hero's live panel and member
+ * graph, and the server guide's channel directory and command list. All four are
+ * read-only. A key granted fewer still works — each surface fails to nothing on
+ * its own rather than taking the others down.
+ */
+export const CONNECT_SCOPES = [
+	'voice:read',
+	'stats:read',
+	'channels:read',
+	'commands:read'
+] as const;
 
 /** Where the CSRF state lives between the redirect out and the callback. */
 export const STATE_COOKIE = 'spacebot_connect_state';

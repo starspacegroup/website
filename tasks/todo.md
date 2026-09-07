@@ -48,6 +48,16 @@ fail separately.
       `bun run check`, full coverage, and `tests/unit/agent-readiness.test.ts`, which now
       asserts the catalog advertises no `service-doc` at all.
 
+- [x] `/guide` — the server guide: every public channel and what it is for, every command
+      SpaceBot answers to, and how to make your own room. Read from SpaceBot rather than
+      written here, and cached in KV for a day (`src/lib/server/guild-directory.ts`,
+      `src/routes/guide/`). Needed two SpaceBot changes, committed there as `94bfef3`: a
+      `guild_channels` table with a gateway sync and `GET /api/v1/channels` behind a new
+      `channels:read` scope, and a fix to `/api/v1/commands`, which filtered on the real
+      guild id and so never returned the built-ins. Verified: unit and component tests
+      cover the populated page; the running site can only show the fallback, because no
+      SpaceBot key is configured locally.
+
 ## Next — before this can be deployed
 
 - [ ] Create this site's own Cloudflare resources and write the real ids into `wrangler.toml`:
@@ -74,6 +84,11 @@ fail separately.
       the address, map link and photo are already correct there.
 
 ## Next — worth doing, not blocking
+
+- [ ] Reconnect SpaceBot after deploying. The Connect handshake now asks for `channels:read`
+      and `commands:read` as well, and a key issued before this change carries neither, so
+      `/guide` will show its "not available" notice until the owner reconnects.
+      `/admin/spacebot` reports each scope separately and says which half is missing.
 
 - [ ] Run `bun run test:e2e` and keep it green. Not run in this session; it needs
       `bunx playwright install` and a local D1 migration first.

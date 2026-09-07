@@ -131,6 +131,32 @@
 						{/if}
 					</em>
 				</li>
+				<li class:scope-ok={status.channels === 'ok'}>
+					<code>channels:read</code>
+					<span>{SCOPE_COPY[status.channels]}</span>
+					<em>
+						{#if status.channels === 'ok'}
+							Channel list on. {status.channelCount ?? 0} public channel{status.channelCount === 1
+								? ''
+								: 's'}.
+						{:else}
+							<a href="/guide">The server guide</a> cannot list the channels.
+						{/if}
+					</em>
+				</li>
+				<li class:scope-ok={status.commands === 'ok'}>
+					<code>commands:read</code>
+					<span>{SCOPE_COPY[status.commands]}</span>
+					<em>
+						{#if status.commands === 'ok'}
+							Command list on. {status.commandCount ?? 0} command{status.commandCount === 1
+								? ''
+								: 's'}.
+						{:else}
+							<a href="/guide">The server guide</a> cannot list the commands.
+						{/if}
+					</em>
+				</li>
 			</ul>
 		{:else}
 			<p class="empty">
@@ -168,9 +194,8 @@
 					Connect with SpaceBot
 				</a>
 				<p class="note">
-					Opens SpaceBot, where you pick the server and approve
-					<code>voice:read</code> and <code>stats:read</code>. The key comes back between the two
-					servers — it never passes through this browser.
+					Opens SpaceBot, where you pick the server and approve all four read-only scopes. The key
+					comes back between the two servers — it never passes through this browser.
 				</p>
 			</div>
 		{/if}
@@ -190,7 +215,8 @@
 					{/if}
 				</li>
 				<li>
-					Create a key with both <code>voice:read</code> and <code>stats:read</code>.
+					Create a key with <code>voice:read</code>, <code>stats:read</code>,
+					<code>channels:read</code> and <code>commands:read</code>.
 				</li>
 				<li>Paste it here.</li>
 			</ol>

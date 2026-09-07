@@ -139,10 +139,18 @@ export type SpaceBotStatus = {
 	voice: ScopeCheck | 'unconfigured';
 	/** `stats:read` — the member-count trend. */
 	stats: ScopeCheck | 'unconfigured';
+	/** `channels:read` — the channel list on /guide. */
+	channels: ScopeCheck | 'unconfigured';
+	/** `commands:read` — the command list on /guide. */
+	commands: ScopeCheck | 'unconfigured';
 	/** How many people are in the channel right now, when voice answered. */
 	inVoice: number | null;
 	/** How many days of member history came back, when stats answered. */
 	historyDays: number | null;
+	/** How many public channels came back, when channels answered. */
+	channelCount: number | null;
+	/** How many commands came back, when commands answered. */
+	commandCount: number | null;
 	checkedAt: string | null;
 };
 
@@ -181,10 +189,12 @@ async function probe(
 /**
  * Ask SpaceBot whether the connection actually works, one probe per scope.
  *
- * Two probes rather than one because the scopes fail separately and the
- * difference matters to whoever is looking at the page: a key with `voice:read`
- * and no `stats:read` gives a live panel and no graph, which looks like a bug
- * unless the page says which half is missing.
+ * One probe per scope, because they fail separately and the difference matters
+ * to whoever is looking at the page: a key with `voice:read` and no `stats:read`
+ * gives a live panel and no graph, and a key issued before the server guide
+ * existed carries neither `channels:read` nor `commands:read` and leaves that
+ * page empty. Each of those looks like a bug unless the page says which piece
+ * is missing.
  *
  * @param fetcher injected so tests do not reach the network
  */
@@ -201,31 +211,41 @@ export async function verifySpaceBot(
 		connectedAt: config.connectedAt,
 		voice: 'unconfigured',
 		stats: 'unconfigured',
+		channels: 'unconfigured',
+		commands: 'unconfigured',
 		inVoice: null,
 		historyDays: null,
+		channelCount: null,
+		commandCount: null,
 		checkedAt: null
 	};
 
 	if (!config.apiUrl || !config.apiKey) return base;
 
 	const origin = config.apiUrl.replace(/\/$/, '');
-	const [voice, stats] = await Promise.all([
+	const [voice, stats, channels, commands] = await Promise.all([
 		probe(
 			`${origin}/api/v1/voice?channel=${encodeURIComponent(config.channel)}`,
 			config.apiKey,
 			fetcher
 		),
-		probe(`${origin}/api/v1/stats/members?period=24h&granularity=daily`, config.apiKey, fetcher)
+		probe(`${origin}/api/v1/stats/members?period=24h&granularity=daily`, config.apiKey, fetcher),
+		probe(`${origin}/api/v1/channels`, config.apiKey, fetcher),
+		probe(`${origin}/api/v1/commands?limit=1`, config.apiKey, fetcher)
 	]);
 
 	const voiceBody = voice.body as { channels?: { members?: unknown[] }[] } | null;
 	const statsBody = stats.body as { points?: unknown[] } | null;
+	const channelsBody = channels.body as { count?: unknown } | null;
+	const commandsBody = commands.body as { total?: unknown } | null;
 
 	return {
 		...base,
-		connected: voice.check === 'ok' || stats.check === 'ok',
+		connected: [voice, stats, channels, commands].some((result) => result.check === 'ok'),
 		voice: voice.check,
 		stats: stats.check,
+		channels: channels.check,
+		commands: commands.check,
 		inVoice:
 			voice.check === 'ok' && Array.isArray(voiceBody?.channels)
 				? voiceBody.channels.reduce(
@@ -235,6 +255,14 @@ export async function verifySpaceBot(
 				: null,
 		historyDays:
 			stats.check === 'ok' && Array.isArray(statsBody?.points) ? statsBody.points.length : null,
+		channelCount:
+			channels.check === 'ok' && typeof channelsBody?.count === 'number'
+				? channelsBody.count
+				: null,
+		commandCount:
+			commands.check === 'ok' && typeof commandsBody?.total === 'number'
+				? commandsBody.total
+				: null,
 		checkedAt: new Date().toISOString()
 	};
 }

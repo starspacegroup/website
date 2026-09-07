@@ -11,6 +11,10 @@
 	import { site } from '$lib/site.config';
 	import { onMount } from 'svelte';
 
+	// The bot behind the live voice panel and the member graph. The attribution
+	// below the panel points at its own site.
+	const SPACEBOT_URL = 'https://spacebot.starspace.group';
+
 	let toastMessage = '';
 	let showToast = false;
 
@@ -115,6 +119,20 @@
 				<div class="hero-demo">
 					<VoiceChannel />
 				</div>
+
+				<!-- The panel and the graph are both read live from SpaceBot, so the
+				     credit sits under the panel where that is doing its work. -->
+				<a class="hero-powered" href={SPACEBOT_URL} target="_blank" rel="noopener">
+					<img
+						class="hero-powered-mark"
+						src="/brand/spacebot-logo.webp"
+						alt=""
+						width="20"
+						height="20"
+						loading="lazy"
+					/>
+					<span>Powered by <strong>SpaceBot</strong></span>
+				</a>
 			</div>
 		</div>
 	</div>
@@ -668,6 +686,42 @@
 	.hero-demo {
 		width: 100%;
 		max-width: var(--hero-panel-width, 26rem);
+	}
+
+	/* Aligned to the panel's right edge, quiet by default, so it reads as a
+	   credit and not a second call to action. */
+	.hero-powered {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 0.5rem;
+		width: 100%;
+		max-width: var(--hero-panel-width, 26rem);
+		padding: 0.35rem 0.1rem;
+		color: var(--color-text-secondary);
+		font-size: 0.8rem;
+		text-decoration: none;
+		opacity: 0.7;
+		transition:
+			opacity 0.2s ease,
+			color 0.2s ease;
+	}
+
+	.hero-powered:hover,
+	.hero-powered:focus-visible {
+		opacity: 1;
+		color: var(--color-text);
+	}
+
+	.hero-powered strong {
+		font-weight: 600;
+	}
+
+	.hero-powered-mark {
+		width: 20px;
+		height: 20px;
+		border-radius: 5px;
+		flex-shrink: 0;
 	}
 
 	/* The voice panel is a translucent card, so the sky reads through it; the

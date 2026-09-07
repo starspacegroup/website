@@ -73,6 +73,16 @@ if (!name || (/REPLACE_ME/.test(name) && !LOCAL)) {
 }
 
 const args = ['wrangler', 'd1', 'migrations', action, name, ...rest];
+
+// Wrangler v4 defaults `d1 migrations apply` to the LOCAL miniflare file, and
+// says so nowhere in its output: it prints the same green table of applied
+// migrations either way. Without this line `bun run db:migrate` reported all
+// fourteen applied while the production database stayed empty, and the first
+// sign-in after deploy died on a missing `oauth_transactions` table. The
+// health check did not catch it either — `SELECT 1` proves a database is
+// reachable, not that anything is in it.
+if (!LOCAL && !rest.includes('--remote')) args.push('--remote');
+
 console.log(`db-migrate: ${args.join(' ')}\n`);
 const run = spawnSync('bunx', args, {
 	cwd: root,

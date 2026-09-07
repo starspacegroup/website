@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { dev } from '$app/environment';
 	import type { SpaceBotStatus } from '$lib/server/spacebot-connection';
 	import type { PageData } from './$types';
 
@@ -198,6 +199,24 @@
 					comes back between the two servers — it never passes through this browser.
 				</p>
 			</div>
+		{:else}
+			<!-- The button used to just not be there. That is right — one that cannot
+			     work is worse than none — but a silent absence sends whoever expected
+			     it hunting through the code for a bug that is really an unset
+			     variable, which is exactly what happened. Say so instead. -->
+			<p class="unavailable">
+				<strong>One-click connect is not set up for this site.</strong> It needs
+				<code>SPACEBOT_CONNECT_URL</code>, <code>SPACEBOT_CONNECT_CLIENT_ID</code> and
+				<code>SPACEBOT_CONNECT_CLIENT_SECRET</code>, which come from registering this site with a
+				SpaceBot instance. Paste a key by hand below in the meantime.
+			</p>
+			{#if dev}
+				<p class="note">
+					In local dev these are read from <code>.dev.vars</code> once, when the server starts. If
+					you added them since, restart <code>bun run dev</code> — the values are cached for the life
+					of the process.
+				</p>
+			{/if}
 		{/if}
 
 		<!-- Balanced markup rather than an {#if} wrapping a half-open <details>:
@@ -487,6 +506,15 @@
 
 	.form button {
 		justify-self: start;
+	}
+
+	.unavailable {
+		margin: 0 0 var(--spacing-md);
+		padding: var(--spacing-md);
+		border: 1px solid color-mix(in srgb, var(--color-warning) 45%, transparent);
+		border-radius: var(--radius-md);
+		background: color-mix(in srgb, var(--color-warning) 10%, transparent);
+		line-height: 1.6;
 	}
 
 	.note {

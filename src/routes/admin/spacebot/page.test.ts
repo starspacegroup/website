@@ -59,7 +59,8 @@ function apiReturning(next: SpaceBotStatus, ok = true) {
  * items, PII flags). None of it reaches this component, so the cast keeps the
  * tests to the one field the page actually reads.
  */
-const props = (s: SpaceBotStatus) => ({ data: { status: s } }) as never;
+const props = (s: SpaceBotStatus, connectAvailable = false) =>
+	({ data: { status: s, connectAvailable } }) as never;
 
 async function settle() {
 	await Promise.resolve();
@@ -68,6 +69,37 @@ async function settle() {
 }
 
 describe('Admin → SpaceBot', () => {
+	describe('one-click connect', () => {
+		it('offers the button when the site is registered', () => {
+			const { container } = render(Page, props(status(), true));
+			expect(container.querySelector('a[href="/admin/spacebot/connect"]')).toBeTruthy();
+		});
+
+		it('says why it is missing rather than just hiding it', () => {
+			// A silent absence sends whoever expected the button hunting through the
+			// code for a bug that is really an unset variable.
+			const { container } = render(Page, props(status(), false));
+			expect(container.querySelector('a[href="/admin/spacebot/connect"]')).toBeNull();
+
+			const notice = container.querySelector('.unavailable');
+			expect(notice).toBeTruthy();
+			expect(notice?.textContent).toMatch(/not set up/i);
+			// It names what is missing, so the fix does not need a code read.
+			expect(notice?.textContent).toContain('SPACEBOT_CONNECT_CLIENT_ID');
+			expect(notice?.textContent).toContain('SPACEBOT_CONNECT_CLIENT_SECRET');
+			expect(notice?.textContent).toContain('SPACEBOT_CONNECT_URL');
+		});
+
+		it('keeps the paste-a-key form either way', () => {
+			for (const available of [true, false]) {
+				const { container, unmount } = render(Page, props(status(), available));
+				expect(
+					container.querySelector('input[type="password"], input[name*="key"], form')
+				).toBeTruthy();
+				unmount();
+			}
+		});
+	});
 	beforeEach(() => {
 		vi.unstubAllGlobals();
 	});

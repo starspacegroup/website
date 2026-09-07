@@ -157,10 +157,41 @@ describe('guide load', () => {
 	});
 
 	it('lets the CDN cache the page for a day too', async () => {
+		fetchGuildDirectory.mockResolvedValue(directory());
 		const setHeaders = vi.fn();
 		await load({ platform: undefined, setHeaders } as never);
 		expect(setHeaders).toHaveBeenCalledWith({
 			'cache-control': `public, max-age=${DIRECTORY_CACHE_SECONDS}, stale-while-revalidate=86400`
+		});
+	});
+
+	/**
+	 * The header used to be set before the read, so an unavailable page went out
+	 * with a day's max-age and shared caches kept serving it long after SpaceBot
+	 * was reachable again — which is exactly what happened the first time the
+	 * site connected: KV released its failure entry after five minutes, the edge
+	 * did not.
+	 */
+	it('does not let a shared cache hold an unavailable page for a day', async () => {
+		fetchGuildDirectory.mockResolvedValue(EMPTY_DIRECTORY);
+		const setHeaders = vi.fn();
+		await load({ platform: undefined, setHeaders } as never);
+		expect(setHeaders).toHaveBeenCalledWith({
+			'cache-control': 'public, max-age=300, stale-while-revalidate=86400'
+		});
+	});
+
+	it('caches a KV hit for as long as what is in it is worth', async () => {
+		const kv = kvStore();
+		kv.store.set(
+			'guild:directory',
+			JSON.stringify({ at: Date.now(), ttl: 300, directory: EMPTY_DIRECTORY })
+		);
+		const setHeaders = vi.fn();
+		await load({ platform: { env: { KV: kv } }, setHeaders } as never);
+		expect(fetchGuildDirectory).not.toHaveBeenCalled();
+		expect(setHeaders).toHaveBeenCalledWith({
+			'cache-control': 'public, max-age=300, stale-while-revalidate=86400'
 		});
 	});
 });

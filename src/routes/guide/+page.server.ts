@@ -31,15 +31,29 @@ type CacheEntry = { at: number; ttl: number; directory: GuildDirectory };
 const UNAVAILABLE_CACHE_SECONDS = 300;
 
 export const load: PageServerLoad = async ({ platform, setHeaders }) => {
-	setHeaders({
-		'cache-control': `public, max-age=${DIRECTORY_CACHE_SECONDS}, stale-while-revalidate=86400`
-	});
+	/**
+	 * The response is cacheable for as long as what it holds is worth reusing,
+	 * which is the same distinction KV makes below: a day for a directory, five
+	 * minutes for the page that says there isn't one.
+	 *
+	 * Setting the long TTL up front, before the read, is what pinned an
+	 * unavailable page in front of every visitor for a day after SpaceBot was
+	 * connected — KV had let its own failure entry go after five minutes, but
+	 * the edge was still serving the HTML built from it.
+	 */
+	const cacheFor = (directory: GuildDirectory) => {
+		const ttl = directory.available ? DIRECTORY_CACHE_SECONDS : UNAVAILABLE_CACHE_SECONDS;
+		setHeaders({
+			'cache-control': `public, max-age=${ttl}, stale-while-revalidate=86400`
+		});
+	};
 
 	const kv = platform?.env?.KV;
 
 	if (kv) {
 		const cached = (await kv.get(CACHE_KEY, 'json').catch(() => null)) as CacheEntry | null;
 		if (cached && Date.now() - cached.at < cached.ttl * 1000) {
+			cacheFor(cached.directory);
 			return { directory: cached.directory };
 		}
 	}
@@ -47,6 +61,8 @@ export const load: PageServerLoad = async ({ platform, setHeaders }) => {
 	const directory = await fetchGuildDirectory(await getSpaceBotConfig(platform)).catch(
 		() => EMPTY_DIRECTORY
 	);
+
+	cacheFor(directory);
 
 	// An unavailable directory is cached too, for a fraction of the time. It
 	// stops every visitor during a SpaceBot outage from queueing behind their own

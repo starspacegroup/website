@@ -31,6 +31,29 @@
 	--chart-content: #9d174d;
 	--chart-usage: #b45309;
 
+	/* Home hero. The hero is the share card's night sky (brand/og-image.svg)
+	   in both themes — the card has one sky, so does the page it opens — which
+	   is why these have no dark-theme override, and why the hero gets the real
+	   coral rather than the darkened light-mode primary: every one of these
+	   sits on navy, never on white. Contrast against --hero-sky, the lightest
+	   point of the gradient: text 14.1:1, text-secondary 9.0:1, primary 5.7:1,
+	   secondary 5.7:1. The hero maps the --color-* names to these for its own
+	   subtree, so the count, the trend and the voice panel stand in the dark
+	   without knowing it. */
+	--hero-sky: #1b2450;
+	--hero-sky-deep: #070c1f;
+	--hero-star: #ffffff;
+	--hero-text: #f8f9fa;
+	--hero-text-secondary: #c3c9e0;
+	--hero-background: #0a1030;
+	--hero-surface: rgb(22 31 74 / 0.78);
+	--hero-surface-hover: rgb(255 255 255 / 0.1);
+	--hero-border: rgb(255 255 255 / 0.14);
+	--hero-primary: #fe795d;
+	--hero-primary-hover: #ff9077;
+	--hero-secondary: #d69153;
+	--hero-secondary-hover: #e3a66e;
+
 	/* Spacing */
 	--spacing-xs: 0.25rem;
 	--spacing-sm: 0.5rem;
@@ -105,11 +128,18 @@ html {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+/* Until the first frame after hydration, nothing transitions: the theme is
+   set from localStorage in app.html before paint, and this keeps a late
+   re-application from animating every colour on the page. Keyframe animations
+   are deliberately not frozen here. They used to be, and every animation on
+   the site — the hero's entrance, the voice-channel demo — waited for the
+   JavaScript to land, then started from its first frame over content that had
+   already painted: visible, gone, faded back in. Animations do not cause the
+   theme flash; transitions do. */
 html.theme-preload *,
 html.theme-preload *::before,
 html.theme-preload *::after {
 	transition: none !important;
-	animation: none !important;
 }
 
 body {

@@ -13,6 +13,11 @@ fail separately.
       and `*` landing inside regex literals. Verified: `bun run check`, 0 errors.
 - [x] Home page — hero, live Discord member count, join CTA, six-card explainer, featured project
       shelf, closing CTA.
+- [x] The hero is the share card's night sky in both themes (`HeroSky.svelte`, the seeded
+      starfield in `src/lib/hero-sky.ts`, the `--hero-*` tokens in `src/app.css`). Verified:
+      `src/lib/hero-sky.test.ts`; headless screenshots at 1440 and 390 in both themes, with
+      JavaScript off, and under prefers-reduced-motion; `bun run check` and
+      `bun run validate:contrast` clean.
 - [x] `/projects` over checked-in data in `src/lib/data/`. Verified:
       `tests/unit/site-content.test.ts`, including that every named image is on disk.
 - [x] `src/lib/discord.ts` owns the invite code and the count fetch, and throws rather than

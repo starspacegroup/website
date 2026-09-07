@@ -61,11 +61,12 @@ All text/background combinations must meet:
 #### Light Theme (default)
 
 ```css
-/* Primary colors */
---color-primary: #0066cc; /* Main brand color */
---color-primary-hover: #0052a3; /* Hover state */
---color-secondary: #6366f1; /* Secondary accent */
---color-secondary-hover: #4f46e5; /* Secondary hover */
+/* Primary colors. The *Space coral (#fe795d) is 2.6:1 on white, so light
+   mode carries the same hue darkened; dark mode gets the real coral. */
+--color-primary: #bc3f1f; /* Main brand color */
+--color-primary-hover: #a5371b; /* Hover state */
+--color-secondary: #8a5a2b; /* Secondary accent: the mark's bronze */
+--color-secondary-hover: #6f4822; /* Secondary hover */
 
 /* Backgrounds */
 --color-background: #ffffff; /* Page background */
@@ -90,7 +91,8 @@ All text/background combinations must meet:
 Apply `data-theme="dark"` to `<html>` or any container:
 
 ```css
---color-primary: #3b82f6;
+--color-primary: #fe795d;
+--color-secondary: #d69153;
 --color-background: #0a0a0a;
 --color-surface: #1a1a1a;
 --color-text: #f8f9fa;
@@ -98,6 +100,35 @@ Apply `data-theme="dark"` to `<html>` or any container:
 --color-border: #3a3a3a;
 /* ... and more */
 ```
+
+#### Hero sky
+
+The home hero is the share card's night sky in **both** themes — the card has one sky, so does
+the page it opens — so its tokens live in `:root` alone and have no dark override. Every one of
+them sits on navy, never on white, which is why the hero gets the real coral rather than the
+darkened light-mode primary:
+
+```css
+--hero-sky: #1b2450; /* The card's inner sky */
+--hero-sky-deep: #070c1f; /* Its edges */
+--hero-star: #ffffff;
+--hero-text: #f8f9fa; /* 14.1:1 on --hero-sky */
+--hero-text-secondary: #c3c9e0; /* 9.0:1 */
+--hero-background: #0a1030; /* Tiles inside the voice panel */
+--hero-surface: rgb(22 31 74 / 0.78); /* The panel: glass, the stars show through */
+--hero-surface-hover: rgb(255 255 255 / 0.1);
+--hero-border: rgb(255 255 255 / 0.14);
+--hero-primary: #fe795d; /* 5.7:1 on --hero-sky; also the nebula glow */
+--hero-primary-hover: #ff9077;
+--hero-secondary: #d69153; /* 5.7:1 */
+--hero-secondary-hover: #e3a66e;
+```
+
+`.hero` in `src/routes/+page.svelte` maps the `--color-*` names to these for its own subtree, so
+the member count, the trend line and the voice panel render on the sky through the same tokens they
+use everywhere else — do not give those components hero-specific colours. `validate:contrast` reads
+only the `--color-*` pairs; the hero ratios above were computed by hand and belong in the comment
+beside the tokens in `src/app.css` if they change.
 
 ### Spacing
 

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import MemberCount from '$lib/components/MemberCount.svelte';
+	import HeroSky from '$lib/components/HeroSky.svelte';
 	import MemberTrend from '$lib/components/MemberTrend.svelte';
 	import ProjectCard from '$lib/components/ProjectCard.svelte';
 	import SharingMeta from '$lib/components/SharingMeta.svelte';
@@ -53,18 +54,26 @@
 	imageHeight={630}
 />
 
-<div class="hero">
+<section class="hero">
+	<HeroSky />
 	<div class="container">
 		<div class="hero-content">
 			<div class="hero-copy">
-				<img
-					class="hero-mark"
-					src="/brand/starspace-mark.webp"
-					alt=""
-					width="120"
-					height="120"
-					decoding="async"
-				/>
+				<!-- The glow behind the mark is the wrapper's ::before, so it follows the
+				     mark wherever the layout puts it — centred on a phone, left beside
+				     the voice panel on a desktop — the way the card puts its nebula
+				     behind the star. -->
+				<div class="hero-mark-wrap">
+					<img
+						class="hero-mark"
+						src="/brand/starspace-mark.webp"
+						alt=""
+						width="160"
+						height="160"
+						decoding="async"
+						fetchpriority="high"
+					/>
+				</div>
 
 				<h1 class="main-title">{site.name}</h1>
 
@@ -100,7 +109,7 @@
 			</div>
 		</div>
 	</div>
-</div>
+</section>
 
 <!-- What this place actually is -->
 <section class="features">
@@ -337,51 +346,113 @@
 {/if}
 
 <style>
-	/* The hero is deliberately plain.
+	/* The hero is the share card, alive.
 
-	   It used to carry an animated "cosmic background": five radial nebula
-	   gradients under feTurbulence filters, two drifting planets, a comet, two
-	   star layers, eleven twinkling dots, floating blobs, and a radial scrim
-	   underneath to keep the copy readable over the top of it — plus a decoy
-	   command-palette search box whose only job was to open the real palette.
-	   None of it said what this place is, and the gradients fought the one thing
-	   that should carry the brand here: the mark itself.
-
-	   What is left is the mark, the name, the live member count, and the way in.
-	   Flat fills from the theme tokens, one fade on mount, no animation loops.
-	   The command palette lives in the nav, behind its own button and Cmd/Ctrl+K. */
+	   It once carried a "cosmic background" — five turbulence-filtered nebulae,
+	   drifting planets, a comet, blobs — that fought the mark and said nothing
+	   about the place, and it was stripped back to the mark, the name and the
+	   way in. What is here now is the brand's own night from
+	   brand/og-image.svg, no more: the navy sky, one coral glow behind the star,
+	   a seeded starfield (HeroSky.svelte), the carved-wood mark large and lit,
+	   and the same words. Everything is markup and CSS, so it paints before
+	   hydration; the only motion is a staggered entrance, a slow float on the
+	   mark and a quarter of the stars breathing, and all of it stops under
+	   prefers-reduced-motion. */
 	.hero {
+		/* The same night in both themes, like the card. The count, the trend and
+		   the voice panel read the sky's palette through the token names they use
+		   everywhere else — nothing inside knows it is standing in the dark. The
+		   values live in app.css beside the theme tokens. */
+		--color-background: var(--hero-background);
+		--color-surface: var(--hero-surface);
+		--color-surface-hover: var(--hero-surface-hover);
+		--color-text: var(--hero-text);
+		--color-text-secondary: var(--hero-text-secondary);
+		--color-border: var(--hero-border);
+		--color-primary: var(--hero-primary);
+		--color-primary-hover: var(--hero-primary-hover);
+		--color-secondary: var(--hero-secondary);
+		--color-secondary-hover: var(--hero-secondary-hover);
+
 		position: relative;
+		isolation: isolate;
+		overflow: hidden;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: var(--spacing-2xl) var(--spacing-md);
-		background: var(--color-background);
+		padding: clamp(2.5rem, 6vh, 4.5rem) var(--spacing-md) clamp(3rem, 7vh, 5rem);
+		/* Under the sky, so nothing pale shows through before it paints. */
+		background: var(--hero-sky-deep);
+		color: var(--color-text);
+	}
+
+	/* The horizon: a hairline of coral where the night meets the page. */
+	.hero::after {
+		content: '';
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		height: 1px;
+		background: linear-gradient(
+			90deg,
+			transparent,
+			color-mix(in srgb, var(--hero-primary) 45%, transparent),
+			transparent
+		);
 	}
 
 	.container {
 		position: relative;
 		width: 100%;
-		max-width: 64rem;
+		max-width: 68rem;
 		margin: 0 auto;
 	}
 
-	/* The fade-in is a CSS animation, not a class toggled from onMount. The old
-	   way server-rendered the hero at opacity 0 and waited for hydration to
-	   reveal it — so with JavaScript off, blocked, or merely slow, the first
-	   thing on the site was a blank space. An animation runs the moment the
-	   stylesheet does, script or no script. */
 	.hero-content {
 		display: grid;
 		gap: var(--spacing-2xl);
 		text-align: center;
-		animation: hero-in 0.5s ease both;
+	}
+
+	/* The entrance is a CSS animation, not a class toggled from onMount, so
+	   with JavaScript off, blocked or merely slow the hero is still the first
+	   thing on the site. Each piece of the copy follows the last by a beat; the
+	   panel arrives after the copy has. */
+	.hero-copy > *,
+	.hero-demo {
+		animation: hero-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+	}
+
+	.hero-copy > :nth-child(2) {
+		animation-delay: 80ms;
+	}
+
+	.hero-copy > :nth-child(3) {
+		animation-delay: 160ms;
+	}
+
+	.hero-copy > :nth-child(4) {
+		animation-delay: 240ms;
+	}
+
+	.hero-copy > :nth-child(5) {
+		animation-delay: 320ms;
+	}
+
+	.hero-copy > :nth-child(6) {
+		animation-delay: 400ms;
+	}
+
+	.hero-demo {
+		animation-duration: 0.9s;
+		animation-delay: 360ms;
 	}
 
 	@keyframes hero-in {
 		from {
 			opacity: 0;
-			transform: translateY(12px);
+			transform: translateY(14px);
 		}
 		to {
 			opacity: 1;
@@ -390,30 +461,63 @@
 	}
 
 	/* The carved-wood star, straight from brand/starspace-mark.png via
-	   `bun run build:brand`. Same file the nav and footer use, so it is already
-	   in cache by the time anyone scrolls. */
-	.hero-mark {
-		display: block;
-		width: 96px;
-		height: 96px;
-		margin: 0 auto var(--spacing-lg);
+	   `bun run build:brand` — the same file the nav and footer use, so it is
+	   already in cache by the time anyone scrolls. Large, lit from behind by
+	   the card's coral nebula, thrown forward by its shadow, and drifting the
+	   way a thing does when nothing is holding it down. */
+	.hero-mark-wrap {
+		position: relative;
+		z-index: 0;
+		width: fit-content;
+		margin: 0 auto var(--spacing-md);
 	}
 
-	@media (min-width: 768px) {
-		.hero-mark {
-			width: 112px;
-			height: 112px;
+	.hero-mark-wrap::before {
+		content: '';
+		position: absolute;
+		inset: -75%;
+		z-index: -1;
+		border-radius: 50%;
+		background: radial-gradient(
+			closest-side,
+			color-mix(in srgb, var(--hero-primary) 38%, transparent),
+			color-mix(in srgb, var(--hero-primary) 12%, transparent) 55%,
+			transparent
+		);
+	}
+
+	.hero-mark {
+		display: block;
+		width: clamp(120px, 14vw, 168px);
+		height: auto;
+		aspect-ratio: 1;
+		filter: drop-shadow(0 18px 28px rgb(0 0 0 / 0.55));
+		animation: hero-float 6s ease-in-out infinite alternate;
+	}
+
+	@keyframes hero-float {
+		from {
+			transform: translateY(0);
+		}
+		to {
+			transform: translateY(-8px);
 		}
 	}
 
 	@media (min-width: 1024px) {
+		.hero {
+			/* Fill the first screen. 64px is the nav's height. */
+			min-height: calc(100vh - 64px);
+			min-height: calc(100svh - 64px);
+		}
+
 		.hero-content {
 			grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
 			align-items: center;
 			text-align: left;
 		}
 
-		.hero-mark {
+		.hero-mark-wrap {
 			margin-left: 0;
 		}
 
@@ -433,49 +537,33 @@
 	}
 
 	.main-title {
-		font-size: 3rem;
-		font-weight: 700;
+		margin-bottom: var(--spacing-xs);
+		font-size: clamp(2.75rem, 6vw + 1rem, 5.5rem);
+		font-weight: 800;
+		line-height: 1;
+		letter-spacing: -0.035em;
 		color: var(--color-text);
-		margin-bottom: var(--spacing-sm);
-		letter-spacing: -0.03em;
-	}
-
-	@media (min-width: 768px) {
-		.main-title {
-			font-size: 4.5rem;
-		}
+		text-shadow: 0 0 48px color-mix(in srgb, var(--hero-primary) 30%, transparent);
 	}
 
 	.hero-tagline {
-		margin: 0 0 var(--spacing-lg);
-		font-size: 1.125rem;
+		margin: 0 0 var(--spacing-md);
+		font-size: clamp(1.125rem, 1vw + 0.8rem, 1.375rem);
 		font-weight: 600;
 		letter-spacing: -0.01em;
 		color: var(--color-text);
 	}
 
-	@media (min-width: 768px) {
-		.hero-tagline {
-			font-size: 1.5rem;
-		}
-	}
-
 	.hero-count {
-		margin-bottom: var(--spacing-lg);
+		margin-bottom: var(--spacing-md);
 	}
 
 	.subtitle {
-		max-width: 38rem;
-		margin: 0 auto var(--spacing-xl);
-		font-size: 1rem;
-		color: var(--color-text-secondary);
+		max-width: 36rem;
+		margin: 0 auto var(--spacing-lg);
+		font-size: clamp(0.95rem, 0.4vw + 0.85rem, 1.125rem);
 		line-height: 1.7;
-	}
-
-	@media (min-width: 768px) {
-		.subtitle {
-			font-size: 1.125rem;
-		}
+		color: var(--color-text-secondary);
 	}
 
 	.hero-actions {
@@ -498,17 +586,22 @@
 		font-size: 1.05rem;
 		font-weight: 600;
 		text-decoration: none;
+		box-shadow: 0 10px 30px rgb(88 101 242 / 0.35);
 		transition:
 			background var(--transition-fast),
-			transform var(--transition-fast);
+			transform var(--transition-fast),
+			box-shadow var(--transition-fast);
 	}
 
 	.hero-join:hover,
 	.hero-join:focus-visible {
 		background: #4752c4;
 		transform: translateY(-2px);
+		box-shadow: 0 14px 34px rgb(88 101 242 / 0.45);
 	}
 
+	/* Glass on the night: the surface token is translucent inside the hero, so
+	   the stars show through the button the way they do through the panel. */
 	.hero-secondary {
 		display: inline-flex;
 		align-items: center;
@@ -520,6 +613,7 @@
 		font-size: 1.05rem;
 		font-weight: 600;
 		text-decoration: none;
+		backdrop-filter: blur(8px);
 		transition:
 			border-color var(--transition-fast),
 			background var(--transition-fast);
@@ -529,6 +623,25 @@
 	.hero-secondary:focus-visible {
 		border-color: var(--color-primary);
 		background: var(--color-surface-hover);
+	}
+
+	/* The voice panel is a translucent card, so the sky reads through it; the
+	   blur keeps the stars from cutting through the tiles. */
+	.hero-demo {
+		backdrop-filter: blur(10px);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.hero-copy > *,
+		.hero-demo,
+		.hero-mark {
+			animation: none;
+		}
+
+		.hero-join:hover,
+		.hero-join:focus-visible {
+			transform: none;
+		}
 	}
 
 	/* Featured project shelf */
@@ -633,33 +746,6 @@
 		.hero-join:hover,
 		.hero-join:focus-visible {
 			transform: none;
-		}
-	}
-
-	/* Responsive adjustments */
-	@media (max-width: 768px) {
-		.main-title {
-			font-size: 2.5rem;
-		}
-
-		.subtitle {
-			font-size: 0.938rem;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.hero-mark {
-			width: 80px;
-			height: 80px;
-		}
-
-		.main-title {
-			font-size: 2rem;
-		}
-
-		.subtitle {
-			font-size: 0.875rem;
-			line-height: 1.6;
 		}
 	}
 

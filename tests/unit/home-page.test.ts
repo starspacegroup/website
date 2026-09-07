@@ -7,10 +7,11 @@ import Page from '../../src/routes/+page.svelte';
 // See: https://svelte.dev/docs/kit/state-management#avoid-shared-state-on-the-server
 //
 // They are kept in step with the markup anyway, so that whoever fixes the store
-// problem inherits assertions that describe the hero as it is. The hero is
-// deliberately plain: mark, name, tagline, member count, two links. The animated
-// cosmic background and the decoy command-palette search box it used to carry
-// are gone — the palette lives in the nav, behind its button and Cmd/Ctrl+K.
+// problem inherits assertions that describe the hero as it is: the share card's
+// night sky (HeroSky, decorative and hidden from assistive technology), the
+// mark, the name, the tagline, the member count, two links. The old animated
+// "cosmic background" and the decoy command-palette search box are gone — the
+// palette lives in the nav, behind its button and Cmd/Ctrl+K.
 describe.skip('Home Page Hero', () => {
 	it('should render the main title', () => {
 		render(Page);
@@ -39,8 +40,9 @@ describe.skip('Home Page Hero', () => {
 		expect(actions[1].getAttribute('href')).toBe('/projects');
 	});
 
-	it('should not reinstate the decorative background or the decoy palette', () => {
+	it('should keep the sky decorative, and not reinstate the old background or the decoy palette', () => {
 		const { container } = render(Page);
+		expect(container.querySelector('.hero-sky')?.getAttribute('aria-hidden')).toBe('true');
 		expect(container.querySelector('.cosmic-bg')).toBeNull();
 		expect(container.querySelector('.command-palette')).toBeNull();
 		expect(container.querySelector('.hero input')).toBeNull();

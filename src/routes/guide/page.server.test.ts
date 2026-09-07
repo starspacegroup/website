@@ -167,7 +167,7 @@ describe('guide load', () => {
 			fetchGuildDirectory.mockResolvedValue(answer);
 			const setHeaders = vi.fn();
 			await load({ platform: undefined, setHeaders } as never);
-			expect(setHeaders.mock.calls[0][0]['cache-control']).toContain('no-cache');
+			expect(setHeaders.mock.calls[0][0]['cache-control']).toContain('no-store');
 		}
 	});
 

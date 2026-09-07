@@ -32,30 +32,24 @@ const UNAVAILABLE_CACHE_SECONDS = 300;
 
 export const load: PageServerLoad = async ({ platform, setHeaders }) => {
 	/**
-	 * `private, no-cache`: only the reader's own browser may hold this, and it
-	 * must revalidate before reusing it.
+	 * `private, no-store`: no cache, browser or shared, may keep this response.
+	 * Every load renders fresh from the origin.
 	 *
-	 * Two things pull on this header, and they point the same way.
+	 * The page carries the nav bar, rendered server-side with the signed-in
+	 * user, so a stored copy is a per-user copy — and storing it caused two
+	 * distinct bugs. A shared `s-maxage` let the edge hand one visitor's nav to
+	 * the next. And `stale-while-revalidate` let a browser keep serving its own
+	 * stored copy for a day: after signing in, a refresh of the guide showed the
+	 * signed-out nav, because the browser answered from that day-old copy instead
+	 * of asking. `no-store` ends both — nothing is ever stored, so nothing stale
+	 * or cross-user can be served, and a browser drops any copy it already holds
+	 * the next time it fetches.
 	 *
-	 * The page must never be stale. An earlier version went out with a day's
-	 * `max-age`, and a browser that considers a page fresh never asks about it —
-	 * so after SpaceBot connected, the guide stayed blank on first load and came
-	 * right only on refresh, because refreshing is the one thing that bypasses a
-	 * fresh cache entry. `no-cache` revalidates every time, so a correction is
-	 * never invisible.
-	 *
-	 * The page must never be *shared*. Every page carries the nav bar, which is
-	 * rendered server-side with the signed-in user — so a shared cache that
-	 * stored this HTML would hand one visitor's nav to the next. It did: with
-	 * `public, s-maxage`, the edge served its stored copy on refresh and the nav
-	 * forgot who you were. `private` keeps it out of every shared cache.
-	 *
-	 * Nothing is lost by not caching at the edge. The one expensive part — the
-	 * read from SpaceBot — is already held in KV below, shared across every
-	 * request; the render itself is cheap.
+	 * Nothing is lost. The one expensive part — the read from SpaceBot — is held
+	 * in KV below, shared across every request; the render itself is cheap.
 	 */
 	const cacheFor = () => {
-		setHeaders({ 'cache-control': 'private, no-cache' });
+		setHeaders({ 'cache-control': 'private, no-store' });
 	};
 
 	const kv = platform?.env?.KV;

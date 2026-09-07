@@ -31,28 +31,42 @@
 	--chart-content: #9d174d;
 	--chart-usage: #b45309;
 
-	/* Home hero. The hero is the share card's night sky (brand/og-image.svg)
-	   in both themes — the card has one sky, so does the page it opens — which
-	   is why these have no dark-theme override, and why the hero gets the real
-	   coral rather than the darkened light-mode primary: every one of these
-	   sits on navy, never on white. Contrast against --hero-sky, the lightest
-	   point of the gradient: text 14.1:1, text-secondary 9.0:1, primary 5.7:1,
-	   secondary 5.7:1. The hero maps the --color-* names to these for its own
-	   subtree, so the count, the trend and the voice panel stand in the dark
-	   without knowing it. */
-	--hero-sky: #1b2450;
-	--hero-sky-deep: #070c1f;
-	--hero-star: #ffffff;
-	--hero-text: #f8f9fa;
-	--hero-text-secondary: #c3c9e0;
-	--hero-background: #0a1030;
-	--hero-surface: rgb(22 31 74 / 0.78);
-	--hero-surface-hover: rgb(255 255 255 / 0.1);
-	--hero-border: rgb(255 255 255 / 0.14);
-	--hero-primary: #fe795d;
-	--hero-primary-hover: #ff9077;
-	--hero-secondary: #d69153;
-	--hero-secondary-hover: #e3a66e;
+	/* Home hero — the light theme's is dawn, the dark theme's is the share
+	   card's night (brand/og-image.svg). Same sky, same hour apart: warm where
+	   the mark hangs, cool at the edges, the last stars still faintly up. The
+	   hero maps the --color-* names to these for its own subtree, so the member
+	   count, the trend line and the voice panel follow it without a
+	   hero-specific rule of their own.
+
+	   --hero-glow is the coral of the mark's halo and the horizon line. It is
+	   the bright brand coral in BOTH themes and is never text — that is why it
+	   is a separate token from --hero-primary, which has to stay legible and so
+	   darkens in the light theme like the rest of light mode.
+
+	   Contrast in this theme, measured against the COOL end of the gradient
+	   (#edf1fc) — the worst case, because it is the darker of the two ends,
+	   not the one that looks it: text 15.4:1, text-secondary 6.8:1,
+	   primary 4.8:1, secondary 5.2:1, success 4.8:1. validate:contrast checks
+	   the --color-* pairs, not these; recompute by hand and update this note. */
+	--hero-sky: #fff2e8;
+	--hero-sky-deep: #edf1fc;
+	--hero-star: #7d88a8;
+	--hero-star-opacity: 0.42;
+	--hero-halo-opacity: 0;
+	--hero-glow: #fe795d;
+	--hero-text: #1a1a1a;
+	--hero-text-secondary: #4d545c;
+	--hero-title-glow: transparent;
+	--hero-mark-shadow: rgb(122 62 32 / 0.3);
+	--hero-background: #ffffff;
+	--hero-surface: rgb(255 255 255 / 0.72);
+	--hero-surface-hover: #ffffff;
+	--hero-border: rgb(26 26 26 / 0.14);
+	--hero-primary: #bc3f1f;
+	--hero-primary-hover: #a5371b;
+	--hero-secondary: #8a5a2b;
+	--hero-secondary-hover: #6f4822;
+	--hero-success: #1f7a37;
 
 	/* Spacing */
 	--spacing-xs: 0.25rem;
@@ -109,6 +123,30 @@
 	--chart-users: #10a396;
 	--chart-content: #b01e5c;
 	--chart-usage: #d97706;
+
+	/* Home hero — night, straight off the share card. Contrast against
+	   --hero-sky, the lightest point of the gradient: text 14.1:1,
+	   text-secondary 9.0:1, primary 5.7:1, secondary 5.7:1, success 5.9:1.
+	   See the note in :root. */
+	--hero-sky: #1b2450;
+	--hero-sky-deep: #070c1f;
+	--hero-star: #ffffff;
+	--hero-star-opacity: 1;
+	--hero-halo-opacity: 1;
+	--hero-glow: #fe795d;
+	--hero-text: #f8f9fa;
+	--hero-text-secondary: #c3c9e0;
+	--hero-title-glow: rgb(254 121 93 / 0.3);
+	--hero-mark-shadow: rgb(0 0 0 / 0.55);
+	--hero-background: #0a1030;
+	--hero-surface: rgb(22 31 74 / 0.78);
+	--hero-surface-hover: rgb(255 255 255 / 0.1);
+	--hero-border: rgb(255 255 255 / 0.14);
+	--hero-primary: #fe795d;
+	--hero-primary-hover: #ff9077;
+	--hero-secondary: #d69153;
+	--hero-secondary-hover: #e3a66e;
+	--hero-success: #10b981;
 }
 
 /* Reset and base styles */

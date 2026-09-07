@@ -402,6 +402,7 @@
 		--color-primary-hover: var(--hero-primary-hover);
 		--color-secondary: var(--hero-secondary);
 		--color-secondary-hover: var(--hero-secondary-hover);
+		--color-success: var(--hero-success);
 
 		/* The measure of the live column, and of the voice panel inside it. One
 		   value drives the grid track and both halves, so they cannot disagree. */
@@ -431,7 +432,7 @@
 		background: linear-gradient(
 			90deg,
 			transparent,
-			color-mix(in srgb, var(--hero-primary) 45%, transparent),
+			color-mix(in srgb, var(--hero-glow) 45%, transparent),
 			transparent
 		);
 	}
@@ -530,8 +531,8 @@
 		border-radius: 50%;
 		background: radial-gradient(
 			closest-side,
-			color-mix(in srgb, var(--hero-primary) 38%, transparent),
-			color-mix(in srgb, var(--hero-primary) 12%, transparent) 55%,
+			color-mix(in srgb, var(--hero-glow) 38%, transparent),
+			color-mix(in srgb, var(--hero-glow) 12%, transparent) 55%,
 			transparent
 		);
 	}
@@ -541,7 +542,7 @@
 		width: clamp(112px, 12vw, 216px);
 		height: auto;
 		aspect-ratio: 1;
-		filter: drop-shadow(0 18px 28px rgb(0 0 0 / 0.55));
+		filter: drop-shadow(0 18px 28px var(--hero-mark-shadow));
 		animation: hero-float 6s ease-in-out infinite alternate;
 	}
 
@@ -566,7 +567,7 @@
 		margin-left: -0.06em;
 		letter-spacing: -0.035em;
 		color: var(--color-text);
-		text-shadow: 0 0 48px color-mix(in srgb, var(--hero-primary) 30%, transparent);
+		text-shadow: 0 0 48px var(--hero-title-glow);
 	}
 
 	.hero-tagline {

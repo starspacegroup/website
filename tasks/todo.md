@@ -25,6 +25,12 @@ fail separately.
       element edges at 2000, 1440, 1280 and 390; the copy's rail is one x, and the count
       and the panel share both edges. Full bleed was tried first and reverted — pinned to
       the edges of a 2000px monitor the two halves sit a third of a screen apart.
+- [x] The hero has a sky in each theme: the share card's night in dark, the same sky at
+      dawn in light. Full `--hero-*` sets in both `:root` and `[data-theme='dark']`, with
+      `--hero-glow` split from `--hero-primary` (a halo is never text, so it keeps the
+      bright coral in both). Verified: ratios computed against the cool end of each
+      gradient, which is the darker one — light is text 15.4:1, secondary 6.8:1, primary
+      4.8:1, success 4.8:1; screenshots at 2000, 1440 and 390 in both themes.
 - [x] `/projects` over checked-in data in `src/lib/data/`. Verified:
       `tests/unit/site-content.test.ts`, including that every named image is on disk.
 - [x] `src/lib/discord.ts` owns the invite code and the count fetch, and throws rather than

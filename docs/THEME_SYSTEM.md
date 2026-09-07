@@ -103,32 +103,42 @@ Apply `data-theme="dark"` to `<html>` or any container:
 
 #### Hero sky
 
-The home hero is the share card's night sky in **both** themes — the card has one sky, so does
-the page it opens — so its tokens live in `:root` alone and have no dark override. Every one of
-them sits on navy, never on white, which is why the hero gets the real coral rather than the
-darkened light-mode primary:
+The home hero has a sky of its own in each theme — the share card's night
+(`brand/og-image.svg`) in dark, the same sky at dawn in light. Both are `--hero-*` tokens, and
+both are full sets, so `:root` and `[data-theme='dark']` each declare all of them:
 
-```css
---hero-sky: #1b2450; /* The card's inner sky */
---hero-sky-deep: #070c1f; /* Its edges */
---hero-star: #ffffff;
---hero-text: #f8f9fa; /* 14.1:1 on --hero-sky */
---hero-text-secondary: #c3c9e0; /* 9.0:1 */
---hero-background: #0a1030; /* Tiles inside the voice panel */
---hero-surface: rgb(22 31 74 / 0.78); /* The panel: glass, the stars show through */
---hero-surface-hover: rgb(255 255 255 / 0.1);
---hero-border: rgb(255 255 255 / 0.14);
---hero-primary: #fe795d; /* 5.7:1 on --hero-sky; also the nebula glow */
---hero-primary-hover: #ff9077;
---hero-secondary: #d69153; /* 5.7:1 */
---hero-secondary-hover: #e3a66e;
-```
+| Token                   | Light (dawn)             | Dark (night)           | What it is                              |
+| ----------------------- | ------------------------ | ---------------------- | --------------------------------------- |
+| `--hero-sky`            | `#fff2e8`                | `#1b2450`              | Where the mark hangs                    |
+| `--hero-sky-deep`       | `#edf1fc`                | `#070c1f`              | The edges                               |
+| `--hero-star`           | `#7d88a8`                | `#ffffff`              | The seeded starfield                    |
+| `--hero-star-opacity`   | `0.42`                   | `1`                    | The whole field, dimmed together        |
+| `--hero-halo-opacity`   | `0`                      | `1`                    | Halos on the bright few                 |
+| `--hero-glow`           | `#fe795d`                | `#fe795d`              | The mark's halo and the horizon line    |
+| `--hero-text`           | `#1a1a1a`                | `#f8f9fa`              | 15.4:1 / 14.1:1                         |
+| `--hero-text-secondary` | `#4d545c`                | `#c3c9e0`              | 6.8:1 / 9.0:1                           |
+| `--hero-title-glow`     | `transparent`            | `rgb(254 121 93 / .3)` | Behind the wordmark                     |
+| `--hero-mark-shadow`    | `rgb(122 62 32 / .3)`    | `rgb(0 0 0 / .55)`     | Under the star                          |
+| `--hero-background`     | `#ffffff`                | `#0a1030`              | Tiles inside the voice panel            |
+| `--hero-surface`        | `rgb(255 255 255 / .72)` | `rgb(22 31 74 / .78)`  | The panel: glass, the sky shows through |
+| `--hero-primary`        | `#bc3f1f`                | `#fe795d`              | 4.8:1 / 5.7:1                           |
+| `--hero-secondary`      | `#8a5a2b`                | `#d69153`              | 5.2:1 / 5.7:1                           |
+| `--hero-success`        | `#1f7a37`                | `#10b981`              | 4.8:1 / 5.9:1                           |
+
+Two of these are worth understanding before changing them:
+
+- **`--hero-glow` is not `--hero-primary`.** The glow is the bright brand coral in both themes
+  because it is never text — it is the halo behind the mark and the hairline at the horizon.
+  `--hero-primary` has to stay legible, so in light it darkens to `#bc3f1f` like the rest of light
+  mode. Using one token for both puts a muddy brick halo on the dawn or an illegible coral on it.
+- **The worst case for contrast is the _cool_ end of each gradient, not the warm one.** In light,
+  `#edf1fc` is darker than `#fff2e8` and every ratio above is measured against it.
 
 `.hero` in `src/routes/+page.svelte` maps the `--color-*` names to these for its own subtree, so
-the member count, the trend line and the voice panel render on the sky through the same tokens they
-use everywhere else — do not give those components hero-specific colours. `validate:contrast` reads
-only the `--color-*` pairs; the hero ratios above were computed by hand and belong in the comment
-beside the tokens in `src/app.css` if they change.
+the member count, the trend line and the voice panel render on whichever sky is up through the same
+tokens they use everywhere else — do not give those components hero-specific colours.
+`validate:contrast` reads only the `--color-*` pairs; the hero ratios above were computed by hand
+and belong in the comment beside the tokens in `src/app.css` if they change.
 
 ### Spacing
 

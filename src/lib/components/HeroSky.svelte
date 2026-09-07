@@ -2,11 +2,13 @@
 	import { SKY, starfield } from '$lib/hero-sky';
 
 	/**
-	 * The night behind the home hero: the share card's sky, on the page.
+	 * The sky behind the home hero: the share card's, on the page.
 	 *
 	 * Same gradient, same coral glow, same seeded starfield as
 	 * `brand/og-image.svg`, so the page a visitor lands on is the card they
-	 * clicked. It is server-rendered markup and CSS — no script, no timers, no
+	 * clicked. The card's night is the dark theme's; the light theme gets the
+	 * same sky at dawn, its stars nearly out. Both are `--hero-*` tokens in
+	 * `app.css` — this component names no colour of its own. It is server-rendered markup and CSS — no script, no timers, no
 	 * filters — so it paints before hydration, stays crisp at any zoom, and
 	 * costs nothing once painted. Under prefers-reduced-motion the stars hold
 	 * still.
@@ -58,7 +60,7 @@
 		background:
 			radial-gradient(
 				ellipse 70% 55% at 85% 100%,
-				color-mix(in srgb, var(--hero-primary) 9%, transparent),
+				color-mix(in srgb, var(--hero-glow) var(--hero-wash, 9%), transparent),
 				transparent 70%
 			),
 			radial-gradient(ellipse 95% 85% at 50% 28%, var(--hero-sky), var(--hero-sky-deep));
@@ -69,7 +71,7 @@
 			background:
 				radial-gradient(
 					ellipse 60% 60% at 85% 95%,
-					color-mix(in srgb, var(--hero-primary) 9%, transparent),
+					color-mix(in srgb, var(--hero-glow) var(--hero-wash, 9%), transparent),
 					transparent 70%
 				),
 				radial-gradient(ellipse 85% 95% at 28% 40%, var(--hero-sky), var(--hero-sky-deep));
@@ -83,13 +85,23 @@
 		height: 100%;
 	}
 
+	/* The whole field dims together in the light theme: these are the last
+	   stars before sunrise, not a night sky on a white page. Per-star opacity
+	   from the generator multiplies with this. */
+	.stars {
+		opacity: var(--hero-star-opacity, 1);
+	}
+
 	.star {
 		fill: var(--hero-star);
 	}
 
-	/* The bright few get a soft halo, which is what gives the field depth. */
+	/* The bright few get a soft halo, which is what gives the field depth on a
+	   night sky. A soft grey disc on a pale one is just a smudge, so the light
+	   theme sets --hero-halo-opacity to 0 and keeps the crisp points only. */
 	.halo {
 		fill: url(#hero-sky-halo);
+		opacity: var(--hero-halo-opacity, 1);
 	}
 
 	.halo-stop {

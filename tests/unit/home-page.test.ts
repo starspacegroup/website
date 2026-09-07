@@ -42,13 +42,13 @@ describe.skip('Home Page Hero', () => {
 		expect(actions[1].getAttribute('href')).toBe('/projects');
 	});
 
-	it('should group the live proof beside the copy, not inside it', () => {
+	it('should close the copy with the numbers, and leave the panel alone', () => {
 		const { container } = render(Page);
-		// The count belongs to the live column. Back in .hero-copy it pushes the
-		// buttons down a screen on a phone and empties the right column on a
-		// desktop.
-		expect(container.querySelector('.hero-copy .hero-count')).toBeNull();
-		expect(container.querySelector('.hero-aside .hero-count')).toBeTruthy();
+		// The count is proof of the sentence above it, so it ends that column
+		// rather than starting a second one. It stays after the buttons in the
+		// source either way: on a phone the ask has to reach the first screen.
+		expect(container.querySelector('.hero-copy .hero-count')).toBeTruthy();
+		expect(container.querySelector('.hero-aside .hero-count')).toBeNull();
 		expect(container.querySelector('.hero-aside .hero-demo')).toBeTruthy();
 	});
 

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { dev } from '$app/environment';
+	import { devMemberSeries } from '$lib/dev-member-series';
 	import type { MemberPoint } from '$lib/server/member-history';
 	import { formatDayLabel } from '$lib/utils/stats-timeseries';
 	import { onMount } from 'svelte';
@@ -16,12 +18,21 @@
 	 *
 	 * It renders nothing until it has two days to draw, and nothing at all when
 	 * SpaceBot is not configured — the hero then looks exactly as it did before
-	 * the graph existed.
+	 * the graph existed. In local dev it draws a made-up month instead, so the
+	 * layout can be worked on; see `$lib/dev-member-series`.
 	 */
 
 	let points: MemberPoint[] = [];
 
 	onMount(async () => {
+		// Matches the count above, which short-circuits for the same reason: there
+		// is no SpaceBot key in local dev, so the real series is always empty and
+		// the graph would never be seen while it was being worked on.
+		if (dev) {
+			points = devMemberSeries();
+			return;
+		}
+
 		try {
 			const response = await fetch('/api/members/history');
 			if (!response.ok) return;
@@ -33,9 +44,14 @@
 	});
 
 	// Geometry is rebuilt at the rendered width so nothing is stretched.
+	/**
+	 * Plot height. The default suits the narrow measure this was drawn at; the
+	 * hero gives it more, because 56px across a 458px column is a hairline.
+	 */
+	export let height = 56;
+
 	let measuredWidth = 0;
 	$: width = Math.round(measuredWidth) || 320;
-	const height = 56;
 	const pad = { top: 6, right: 8, bottom: 6, left: 2 };
 
 	$: n = points.length;
@@ -131,6 +147,12 @@
 			on:keydown={onKey}
 		>
 			<svg {width} {height} viewBox="0 0 {width} {height}" aria-hidden="true">
+				<defs>
+					<linearGradient id="member-trend-fade" x1="0" y1="0" x2="0" y2="1">
+						<stop offset="0" class="trend-fade" stop-opacity="0.22" />
+						<stop offset="1" class="trend-fade" stop-opacity="0" />
+					</linearGradient>
+				</defs>
 				<path class="trend-area" d={areaPath} />
 				<path class="trend-line" d={linePath} />
 				{#if current}
@@ -178,7 +200,7 @@
 <style>
 	.trend {
 		width: 100%;
-		max-width: 22rem;
+		max-width: var(--member-trend-max, 22rem);
 		margin: var(--spacing-sm) auto 0;
 		/* Follows the count's alignment: centred on a phone, left beside the
 		   voice panel — the hero sets both custom properties on .hero-count. */
@@ -206,8 +228,11 @@
 	}
 
 	.trend-area {
-		fill: var(--color-primary);
-		fill-opacity: 0.1;
+		fill: url(#member-trend-fade);
+	}
+
+	.trend-fade {
+		stop-color: var(--color-primary);
 	}
 
 	.trend-line {

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
+	import { DEV_MEMBERS, DEV_ONLINE } from '$lib/dev-member-series';
 	import { fetchGuildCounts } from '$lib/discord';
 	import { onMount } from 'svelte';
 
@@ -7,10 +8,10 @@
 	export let label = 'Members on Discord';
 
 	// Dev short-circuit: the invite endpoint is rate limited per IP and a
-	// hot-reloading dev server would hammer it. Deliberately not a plausible
-	// number, so nobody mistakes what they see locally for the live count.
-	const DEV_MEMBERS = 69420;
-	const DEV_ONLINE = 420;
+	// hot-reloading dev server would hammer it. The figures live in
+	// `$lib/dev-member-series` because the trend line under this one needs the
+	// same ones — a graph that ends somewhere other than the number above it is
+	// worse than no graph.
 
 	let members: number | null = null;
 	let online: number | null = null;

@@ -97,22 +97,21 @@
 					</a>
 					<a class="hero-secondary" href="/projects">See what we build</a>
 				</div>
-			</div>
 
-			<!-- Everything live about the server, in one column: how many people are
-			     here, the month behind that number, and the room itself. Grouping the
-			     proof together leaves the left column as identity, promise and ask,
-			     and it gives the right column the height to stand beside them.
-
-			     It sits after the buttons in the source, which is also where it lands
-			     on a phone: the ask reaches the first screen, and the proof is the
-			     first thing under it. -->
-			<div class="hero-aside">
+				<!-- The numbers close the copy column rather than starting a second one.
+				     They are proof of the sentence above them, so they read as the end of
+				     that argument — and they sit after the buttons in the source, which is
+				     where they land on a phone too: the ask reaches the first screen and
+				     the proof is the first thing under it. -->
 				<div class="hero-count">
 					<MemberCount />
-					<MemberTrend />
+					<MemberTrend height={76} />
 				</div>
+			</div>
 
+			<!-- The room itself, alone on the right. It is one object and it is the
+			     heaviest thing on the page; anything stacked with it competed. -->
+			<div class="hero-aside">
 				<div class="hero-demo">
 					<VoiceChannel />
 				</div>
@@ -480,6 +479,11 @@
 	}
 
 	.hero-count {
+		/* The numbers used to belong to the other column, which supplied this
+		   separation through the grid gap. Stacked under the buttons on a phone
+		   they have to ask for it. The desktop grid overrides it, where the
+		   row gap does the work again. */
+		margin-top: var(--spacing-xl);
 		animation-delay: 360ms;
 	}
 
@@ -669,7 +673,6 @@
 		gap: var(--spacing-lg);
 	}
 
-	.hero-count,
 	.hero-demo {
 		width: 100%;
 		max-width: var(--hero-panel-width, 26rem);
@@ -688,7 +691,7 @@
 	   that drifts is worse than one that simply sits in the middle. */
 	.hero-scroll {
 		position: absolute;
-		bottom: var(--spacing-xl);
+		bottom: var(--spacing-sm);
 		left: 50%;
 		transform: translateX(-50%);
 		display: none;
@@ -728,6 +731,10 @@
 			/* Fill the first screen. 64px is the nav's height. */
 			min-height: calc(100vh - 64px);
 			min-height: calc(100svh - 64px);
+			/* Extra room at the foot, reserved for the scroll cue. It is absolutely
+			   positioned, so without this the content simply grows under it on a
+			   short laptop screen. */
+			padding-bottom: clamp(5.5rem, 10vh, 8rem);
 		}
 
 		.hero-content {
@@ -735,6 +742,10 @@
 			   caps itself, so extra width on a large screen opens the gap between
 			   the two rather than stretching either. */
 			grid-template-columns: minmax(0, 1fr) minmax(0, var(--hero-panel-width));
+			/* The copy column carries the numbers now and is comfortably the taller
+			   of the two, so the panel centres against it. Aligning their tops
+			   instead would hang the panel from the ceiling with a screen of empty
+			   sky under it. */
 			align-items: center;
 			gap: clamp(2.5rem, 5vw, 6rem);
 			text-align: left;
@@ -759,13 +770,14 @@
 
 		.hero-mark-wrap {
 			grid-column: 1;
-			grid-row: 1 / span 3;
+			grid-row: 1 / span 4;
 			align-self: start;
 		}
 
 		.hero-heading,
 		.subtitle,
-		.hero-actions {
+		.hero-actions,
+		.hero-count {
 			grid-column: 2;
 			min-width: 0;
 		}
@@ -788,12 +800,23 @@
 			--member-count-align: left;
 			--member-count-justify: flex-start;
 			--member-trend-inline: 0;
+			--member-trend-max: 100%;
 			--member-number-size: clamp(3rem, 3.4vw, 4.5rem);
 
-			/* The rule belongs to the count, so it only exists where the two
-			   halves are actually stacked in a column. */
-			padding-bottom: var(--spacing-lg);
-			border-bottom: 1px solid var(--color-border);
+			/* The figure and the month behind it sit side by side rather than
+			   stacked: stacked they ran the column another 150px down the page
+			   while the width they had went unused. Bottom-aligned, so the
+			   sparkline's caption lands on the same line as "online now". */
+			display: grid;
+			grid-template-columns: auto minmax(12rem, 1fr);
+			gap: var(--spacing-xl);
+			align-items: end;
+
+			/* A hairline above, because the numbers are a different kind of
+			   statement from the sentence and the buttons they follow. */
+			margin-top: var(--spacing-xs);
+			padding-top: var(--spacing-lg);
+			border-top: 1px solid var(--color-border);
 		}
 
 		.hero-scroll {

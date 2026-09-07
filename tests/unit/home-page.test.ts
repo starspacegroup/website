@@ -8,10 +8,12 @@ import Page from '../../src/routes/+page.svelte';
 //
 // They are kept in step with the markup anyway, so that whoever fixes the store
 // problem inherits assertions that describe the hero as it is: the share card's
-// night sky (HeroSky, decorative and hidden from assistive technology), the
-// mark, the name, the tagline, the member count, two links. The old animated
-// "cosmic background" and the decoy command-palette search box are gone — the
-// palette lives in the nav, behind its button and Cmd/Ctrl+K.
+// night sky (HeroSky, decorative and hidden from assistive technology), then two
+// columns — the mark, the name, the tagline and two links on the left, and
+// everything live on the right, which is the member count, its trend and the
+// #Ten Forward panel. The old animated "cosmic background" and the decoy
+// command-palette search box are gone — the palette lives in the nav, behind its
+// button and Cmd/Ctrl+K.
 describe.skip('Home Page Hero', () => {
 	it('should render the main title', () => {
 		render(Page);
@@ -38,6 +40,23 @@ describe.skip('Home Page Hero', () => {
 		expect(actions.length).toBe(2);
 		expect(actions[0].getAttribute('href')).toContain('discord');
 		expect(actions[1].getAttribute('href')).toBe('/projects');
+	});
+
+	it('should group the live proof beside the copy, not inside it', () => {
+		const { container } = render(Page);
+		// The count belongs to the live column. Back in .hero-copy it pushes the
+		// buttons down a screen on a phone and empties the right column on a
+		// desktop.
+		expect(container.querySelector('.hero-copy .hero-count')).toBeNull();
+		expect(container.querySelector('.hero-aside .hero-count')).toBeTruthy();
+		expect(container.querySelector('.hero-aside .hero-demo')).toBeTruthy();
+	});
+
+	it('should point the scroll cue at a section that exists', () => {
+		const { container } = render(Page);
+		const href = container.querySelector('.hero-scroll')?.getAttribute('href');
+		expect(href).toBe('#what-this-is');
+		expect(container.querySelector('section#what-this-is')).toBeTruthy();
 	});
 
 	it('should keep the sky decorative, and not reinstate the old background or the decoy palette', () => {

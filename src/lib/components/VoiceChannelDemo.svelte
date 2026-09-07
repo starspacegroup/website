@@ -107,9 +107,13 @@
 </figure>
 
 <style>
+	/* The caller sets the measure through --vc-max-width; 26rem is the width
+	   this panel was drawn at and stays the default. Both voice components
+	   carry the identical rule, so the panel does not resize when it swaps
+	   between the simulation and the real room. */
 	.vc {
 		width: 100%;
-		max-width: 26rem;
+		max-width: var(--vc-max-width, 26rem);
 		margin: 0 auto;
 	}
 

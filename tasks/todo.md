@@ -18,6 +18,13 @@ fail separately.
       `src/lib/hero-sky.test.ts`; headless screenshots at 1440 and 390 in both themes, with
       JavaScript off, and under prefers-reduced-motion; `bun run check` and
       `bun run validate:contrast` clean.
+- [x] The hero fills a wide screen without coming apart on one: a 90rem centred column,
+      the mark hanging in the margin so the name, the promise, the copy and the buttons
+      all start on one rail, and the live proof (count, trend, `#Ten Forward`) gathered
+      into a column of its own on the right. Verified: headless screenshots and measured
+      element edges at 2000, 1440, 1280 and 390; the copy's rail is one x, and the count
+      and the panel share both edges. Full bleed was tried first and reverted — pinned to
+      the edges of a 2000px monitor the two halves sit a third of a screen apart.
 - [x] `/projects` over checked-in data in `src/lib/data/`. Verified:
       `tests/unit/site-content.test.ts`, including that every named image is on disk.
 - [x] `src/lib/discord.ts` owns the invite code and the count fetch, and throws rather than

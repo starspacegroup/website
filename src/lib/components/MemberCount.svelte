@@ -82,7 +82,9 @@
 
 	.member-number {
 		margin: 0.25rem 0 0;
-		font-size: clamp(3.5rem, 12vw, 6rem);
+		/* The caller's, because the same number is the whole page on a phone and
+		   one column of a hero on a desktop. The default is the phone's. */
+		font-size: var(--member-number-size, clamp(3.5rem, 12vw, 6rem));
 		font-weight: 200;
 		line-height: 1.05;
 		/* Proportional digits on purpose. Tabular figures give every digit the

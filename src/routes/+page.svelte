@@ -56,34 +56,29 @@
 
 <section class="hero">
 	<HeroSky />
-	<div class="container">
+	<div class="container hero-container">
 		<div class="hero-content">
 			<div class="hero-copy">
-				<!-- The glow behind the mark is the wrapper's ::before, so it follows the
-				     mark wherever the layout puts it — centred on a phone, left beside
-				     the voice panel on a desktop — the way the card puts its nebula
-				     behind the star. -->
-				<div class="hero-mark-wrap">
-					<img
-						class="hero-mark"
-						src="/brand/starspace-mark.webp"
-						alt=""
-						width="160"
-						height="160"
-						decoding="async"
-						fetchpriority="high"
-					/>
-				</div>
+				<!-- Mark and words are one lockup on a wide screen and a stack on a
+				     phone. The glow is the wrapper's own ::before, so it stays behind
+				     the star either way — the share card puts its nebula there too. -->
+				<div class="hero-lockup">
+					<div class="hero-mark-wrap">
+						<img
+							class="hero-mark"
+							src="/brand/starspace-mark.webp"
+							alt=""
+							width="160"
+							height="160"
+							decoding="async"
+							fetchpriority="high"
+						/>
+					</div>
 
-				<h1 class="main-title">{site.name}</h1>
-
-				<p class="hero-tagline">Work, create and collaborate — with chaos and fun.</p>
-
-				<!-- The count is the short, striking part, so on a phone it sits above
-				     the body copy rather than below five lines of it. -->
-				<div class="hero-count">
-					<MemberCount />
-					<MemberTrend />
+					<div class="hero-heading">
+						<h1 class="main-title">{site.name}</h1>
+						<p class="hero-tagline">Work, create and collaborate — with chaos and fun.</p>
+					</div>
 				</div>
 
 				<p class="subtitle">
@@ -104,15 +99,45 @@
 				</div>
 			</div>
 
-			<div class="hero-demo">
-				<VoiceChannel />
+			<!-- Everything live about the server, in one column: how many people are
+			     here, the month behind that number, and the room itself. Grouping the
+			     proof together leaves the left column as identity, promise and ask,
+			     and it gives the right column the height to stand beside them.
+
+			     It sits after the buttons in the source, which is also where it lands
+			     on a phone: the ask reaches the first screen, and the proof is the
+			     first thing under it. -->
+			<div class="hero-aside">
+				<div class="hero-count">
+					<MemberCount />
+					<MemberTrend />
+				</div>
+
+				<div class="hero-demo">
+					<VoiceChannel />
+				</div>
 			</div>
 		</div>
 	</div>
+
+	<!-- A 100vh hero has to say there is more under it. Wide screens only: on a
+	     phone the page already scrolls past the fold on its own. -->
+	<a class="hero-scroll" href="#what-this-is">
+		<span>What this place is</span>
+		<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+			<path
+				d="M4.5 7l4.5 4.5L13.5 7"
+				stroke="currentColor"
+				stroke-width="1.8"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+		</svg>
+	</a>
 </section>
 
 <!-- What this place actually is -->
-<section class="features">
+<section class="features" id="what-this-is">
 	<div class="features-shell">
 		<div class="features-header">
 			<h2 class="features-title">A coworking space that happens to be a Discord server</h2>
@@ -357,7 +382,11 @@
 	   and the same words. Everything is markup and CSS, so it paints before
 	   hydration; the only motion is a staggered entrance, a slow float on the
 	   mark and a quarter of the stars breathing, and all of it stops under
-	   prefers-reduced-motion. */
+	   prefers-reduced-motion.
+
+	   The composition is two columns that each earn their side. Left: who this
+	   is, what it offers, and the way in. Right: everything live — the member
+	   count, the month behind it, and #Ten Forward itself. */
 	.hero {
 		/* The same night in both themes, like the card. The count, the trend and
 		   the voice panel read the sky's palette through the token names they use
@@ -374,13 +403,18 @@
 		--color-secondary: var(--hero-secondary);
 		--color-secondary-hover: var(--hero-secondary-hover);
 
+		/* The measure of the live column, and of the voice panel inside it. One
+		   value drives the grid track and both halves, so they cannot disagree. */
+		--hero-panel-width: 26rem;
+
 		position: relative;
 		isolation: isolate;
 		overflow: hidden;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: clamp(2.5rem, 6vh, 4.5rem) var(--spacing-md) clamp(3rem, 7vh, 5rem);
+		/* Horizontal padding is the shared .container's, not the hero's. */
+		padding-block: clamp(2.5rem, 6vh, 4.5rem) clamp(3rem, 7vh, 5rem);
 		/* Under the sky, so nothing pale shows through before it paints. */
 		background: var(--hero-sky-deep);
 		color: var(--color-text);
@@ -402,11 +436,14 @@
 		);
 	}
 
-	.container {
+	/* Wider than the rest of the page — the hero should feel expansive where a
+	   section of cards does not — but still a centred column, not full bleed.
+	   Pinned to the edges of a large monitor the two halves end up a third of a
+	   screen apart with nothing between them, which reads as two designs rather
+	   than one. */
+	.hero-container {
 		position: relative;
-		width: 100%;
-		max-width: 68rem;
-		margin: 0 auto;
+		max-width: 90rem;
 	}
 
 	.hero-content {
@@ -417,36 +454,41 @@
 
 	/* The entrance is a CSS animation, not a class toggled from onMount, so
 	   with JavaScript off, blocked or merely slow the hero is still the first
-	   thing on the site. Each piece of the copy follows the last by a beat; the
-	   panel arrives after the copy has. */
-	.hero-copy > *,
-	.hero-demo {
+	   thing on the site. Each piece follows the last by a beat, in the order it
+	   is read, and the panel arrives once the words have. */
+	.hero-mark-wrap,
+	.hero-heading,
+	.subtitle,
+	.hero-actions,
+	.hero-count,
+	.hero-demo,
+	.hero-scroll {
 		animation: hero-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 	}
 
-	.hero-copy > :nth-child(2) {
-		animation-delay: 80ms;
+	.hero-heading {
+		animation-delay: 90ms;
 	}
 
-	.hero-copy > :nth-child(3) {
-		animation-delay: 160ms;
+	.subtitle {
+		animation-delay: 180ms;
 	}
 
-	.hero-copy > :nth-child(4) {
-		animation-delay: 240ms;
+	.hero-actions {
+		animation-delay: 260ms;
 	}
 
-	.hero-copy > :nth-child(5) {
-		animation-delay: 320ms;
-	}
-
-	.hero-copy > :nth-child(6) {
-		animation-delay: 400ms;
+	.hero-count {
+		animation-delay: 360ms;
 	}
 
 	.hero-demo {
 		animation-duration: 0.9s;
-		animation-delay: 360ms;
+		animation-delay: 460ms;
+	}
+
+	.hero-scroll {
+		animation-delay: 700ms;
 	}
 
 	@keyframes hero-in {
@@ -460,6 +502,14 @@
 		}
 	}
 
+	.hero-lockup {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--spacing-md);
+		margin-bottom: var(--spacing-lg);
+	}
+
 	/* The carved-wood star, straight from brand/starspace-mark.png via
 	   `bun run build:brand` — the same file the nav and footer use, so it is
 	   already in cache by the time anyone scrolls. Large, lit from behind by
@@ -468,8 +518,8 @@
 	.hero-mark-wrap {
 		position: relative;
 		z-index: 0;
+		flex: none;
 		width: fit-content;
-		margin: 0 auto var(--spacing-md);
 	}
 
 	.hero-mark-wrap::before {
@@ -488,7 +538,7 @@
 
 	.hero-mark {
 		display: block;
-		width: clamp(120px, 14vw, 168px);
+		width: clamp(112px, 12vw, 216px);
 		height: auto;
 		aspect-ratio: 1;
 		filter: drop-shadow(0 18px 28px rgb(0 0 0 / 0.55));
@@ -504,65 +554,37 @@
 		}
 	}
 
-	@media (min-width: 1024px) {
-		.hero {
-			/* Fill the first screen. 64px is the nav's height. */
-			min-height: calc(100vh - 64px);
-			min-height: calc(100svh - 64px);
-		}
-
-		.hero-content {
-			grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
-			align-items: center;
-			text-align: left;
-		}
-
-		.hero-mark-wrap {
-			margin-left: 0;
-		}
-
-		.hero-actions {
-			justify-content: flex-start;
-		}
-
-		.hero-count {
-			--member-count-align: left;
-			--member-count-justify: flex-start;
-			--member-trend-inline: 0;
-		}
-
-		.subtitle {
-			margin-left: 0;
-		}
-	}
-
 	.main-title {
-		margin-bottom: var(--spacing-xs);
-		font-size: clamp(2.75rem, 6vw + 1rem, 5.5rem);
+		margin: 0 0 var(--spacing-xs);
+		font-size: clamp(2.75rem, 5vw + 1rem, 6.5rem);
 		font-weight: 800;
 		line-height: 1;
+		/* The wordmark opens on an asterisk, which carries no visual left edge.
+		   Pulling it back by its own side bearing puts the stem of the S — what
+		   the eye actually reads as the start of the line — over the mark's
+		   left edge and over everything below it. */
+		margin-left: -0.06em;
 		letter-spacing: -0.035em;
 		color: var(--color-text);
 		text-shadow: 0 0 48px color-mix(in srgb, var(--hero-primary) 30%, transparent);
 	}
 
 	.hero-tagline {
-		margin: 0 0 var(--spacing-md);
-		font-size: clamp(1.125rem, 1vw + 0.8rem, 1.375rem);
+		margin: 0;
+		font-size: clamp(1.125rem, 1vw + 0.85rem, 1.75rem);
 		font-weight: 600;
+		line-height: 1.3;
 		letter-spacing: -0.01em;
+		text-wrap: balance;
 		color: var(--color-text);
 	}
 
-	.hero-count {
-		margin-bottom: var(--spacing-md);
-	}
-
 	.subtitle {
-		max-width: 36rem;
+		max-width: 40rem;
 		margin: 0 auto var(--spacing-lg);
-		font-size: clamp(0.95rem, 0.4vw + 0.85rem, 1.125rem);
+		font-size: clamp(0.95rem, 0.35vw + 0.9rem, 1.1875rem);
 		line-height: 1.7;
+		text-wrap: pretty;
 		color: var(--color-text-secondary);
 	}
 
@@ -573,13 +595,24 @@
 		gap: var(--spacing-md);
 	}
 
+	@media (max-width: 519px) {
+		.hero-actions {
+			flex-direction: column;
+		}
+
+		.hero-join,
+		.hero-secondary {
+			justify-content: center;
+		}
+	}
+
 	/* Discord's own blurple, not a theme token — people recognise the button
 	   before they read it, and it has to look the same in both themes. */
 	.hero-join {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.6rem;
-		padding: 0.85rem 1.6rem;
+		padding: 0.95rem 1.9rem;
 		border-radius: var(--radius-md);
 		background: #5865f2;
 		color: #ffffff;
@@ -605,7 +638,7 @@
 	.hero-secondary {
 		display: inline-flex;
 		align-items: center;
-		padding: 0.85rem 1.6rem;
+		padding: 0.95rem 1.9rem;
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-md);
 		background: var(--color-surface);
@@ -625,16 +658,158 @@
 		background: var(--color-surface-hover);
 	}
 
+	/* The live column. Its two halves are the same width and share a left edge,
+	   with a rule between them, so the count reads as the panel's headline
+	   rather than as a stray number above a card. */
+	.hero-aside {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--spacing-lg);
+	}
+
+	.hero-count,
+	.hero-demo {
+		width: 100%;
+		max-width: var(--hero-panel-width, 26rem);
+	}
+
 	/* The voice panel is a translucent card, so the sky reads through it; the
 	   blur keeps the stars from cutting through the tiles. */
 	.hero-demo {
+		--vc-max-width: 100%;
+
 		backdrop-filter: blur(10px);
 	}
 
+	/* Centred under the whole hero rather than on the copy's rail: the rail
+	   moves with the viewport once the content is a centred column, and a cue
+	   that drifts is worse than one that simply sits in the middle. */
+	.hero-scroll {
+		position: absolute;
+		bottom: var(--spacing-xl);
+		left: 50%;
+		transform: translateX(-50%);
+		display: none;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.4rem 0.5rem;
+		font-size: 0.8125rem;
+		font-weight: 500;
+		letter-spacing: 0.02em;
+		color: var(--color-text-secondary);
+		text-decoration: none;
+		transition: color var(--transition-fast);
+	}
+
+	.hero-scroll:hover,
+	.hero-scroll:focus-visible {
+		color: var(--color-text);
+	}
+
+	.hero-scroll svg {
+		animation: hero-nudge 2.4s ease-in-out infinite;
+	}
+
+	@keyframes hero-nudge {
+		0%,
+		60%,
+		100% {
+			transform: translateY(0);
+		}
+		30% {
+			transform: translateY(3px);
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.hero {
+			/* Fill the first screen. 64px is the nav's height. */
+			min-height: calc(100vh - 64px);
+			min-height: calc(100svh - 64px);
+		}
+
+		.hero-content {
+			/* The live column is a fixed measure; the copy takes what is left and
+			   caps itself, so extra width on a large screen opens the gap between
+			   the two rather than stretching either. */
+			grid-template-columns: minmax(0, 1fr) minmax(0, var(--hero-panel-width));
+			align-items: center;
+			gap: clamp(2.5rem, 5vw, 6rem);
+			text-align: left;
+		}
+
+		/* The mark hangs in the margin and the words share one rail: the name,
+		   the promise, the copy and the buttons all start on the same line,
+		   which is also the nav logo's. The lockup stops generating a box so
+		   its two halves can take their places in this grid directly. */
+		.hero-copy {
+			display: grid;
+			grid-template-columns: auto minmax(0, 1fr);
+			column-gap: clamp(1.5rem, 2.5vw, 2.75rem);
+			row-gap: var(--spacing-xl);
+			align-content: start;
+			max-width: 56rem;
+		}
+
+		.hero-lockup {
+			display: contents;
+		}
+
+		.hero-mark-wrap {
+			grid-column: 1;
+			grid-row: 1 / span 3;
+			align-self: start;
+		}
+
+		.hero-heading,
+		.subtitle,
+		.hero-actions {
+			grid-column: 2;
+			min-width: 0;
+		}
+
+		.subtitle {
+			margin: 0;
+		}
+
+		.hero-aside {
+			margin-left: 0;
+		}
+
+		.hero-actions,
+		.hero-aside {
+			align-items: flex-start;
+			justify-content: flex-start;
+		}
+
+		.hero-count {
+			--member-count-align: left;
+			--member-count-justify: flex-start;
+			--member-trend-inline: 0;
+			--member-number-size: clamp(3rem, 3.4vw, 4.5rem);
+
+			/* The rule belongs to the count, so it only exists where the two
+			   halves are actually stacked in a column. */
+			padding-bottom: var(--spacing-lg);
+			border-bottom: 1px solid var(--color-border);
+		}
+
+		.hero-scroll {
+			display: inline-flex;
+		}
+	}
+
 	@media (prefers-reduced-motion: reduce) {
-		.hero-copy > *,
+		.hero-mark-wrap,
+		.hero-heading,
+		.subtitle,
+		.hero-actions,
+		.hero-count,
 		.hero-demo,
-		.hero-mark {
+		.hero-scroll,
+		.hero-mark,
+		.hero-scroll svg {
 			animation: none;
 		}
 

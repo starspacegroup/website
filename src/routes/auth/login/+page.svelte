@@ -88,98 +88,164 @@
 
 <div class="auth-page">
 	<div class="auth-container">
-		{#if data.devAuthSimulationEnabled}
-			<div class="pretend-role-panel" role="group" aria-label="Pretend login role selection">
-				<span class="pretend-role-label">Pretend Role</span>
-				<div class="pretend-role-toggle">
-					<button
-						type="button"
-						class:selected={selectedPretendRole === 'user'}
-						on:click={() => (selectedPretendRole = 'user')}
-						disabled={isLoading}
-					>
-						User
-					</button>
-					<button
-						type="button"
-						class:selected={selectedPretendRole === 'admin'}
-						on:click={() => (selectedPretendRole = 'admin')}
-						disabled={isLoading}
-					>
-						Admin
-					</button>
-					<button
-						type="button"
-						class:selected={selectedPretendRole === 'superadmin'}
-						on:click={() => (selectedPretendRole = 'superadmin')}
-						disabled={isLoading}
-					>
-						Superadmin
-					</button>
-				</div>
+		{#if data.signedInAs}
+			<!-- Already signed in. Say so, and offer the two things they might
+			     actually have wanted; do not bounce them somewhere with no
+			     explanation, which reads as a failed sign-in. -->
+			<div class="auth-header">
+				<h1>You are already signed in</h1>
+				<p>as <strong>{data.signedInAs.name}</strong></p>
 			</div>
-		{/if}
 
-		<div class="auth-header">
-			<h1>Welcome Back</h1>
-			<p>Sign in to your account</p>
-		</div>
-
-		<AuthProviderButtons
-			configuredProviders={data.configuredProviders}
-			simulatedProviders={data.simulatedProviders}
-			disabled={isLoading}
-			actionLabel="Continue"
-			on:select={(event) => handleSSOLogin(event.detail.provider)}
-		/>
-
-		<form on:submit|preventDefault={handleSubmit}>
-			{#if error}
-				<div class="error-message">{error}</div>
+			{#if data.signedInAs.lacksAccess}
+				<div class="error-message">
+					This account cannot open that page. Signing in again will not change that — you would need
+					different permissions on this account.
+				</div>
 			{/if}
 
-			<div class="form-group">
-				<label for={emailField}>Email</label>
-				<input
-					id={emailField}
-					name={emailField}
-					type="email"
-					bind:value={email}
-					placeholder="you@example.com"
-					autocomplete="email"
-					required
-				/>
-			</div>
-
-			<div class="form-group">
-				<label for={passwordField}>Password</label>
-				<input
-					id={passwordField}
-					name={passwordField}
-					type="password"
-					bind:value={password}
-					placeholder="••••••••"
-					autocomplete="current-password"
-					required
-				/>
-			</div>
-
-			<button type="submit" class="submit-button" disabled={isLoading}>
-				{#if isLoading}
-					Signing in...
-				{:else}
-					Sign In
+			<div class="signed-in-actions">
+				{#if data.signedInAs.canOpenAdmin}
+					<a class="signed-in-primary" href="/admin">Go to admin</a>
 				{/if}
-			</button>
-		</form>
+				<a class="signed-in-secondary" href="/">Back to the site</a>
+				<form method="POST" action="/api/auth/logout">
+					<button class="signed-in-secondary" type="submit">Sign out</button>
+				</form>
+			</div>
+		{:else}
+			{#if data.devAuthSimulationEnabled}
+				<div class="pretend-role-panel" role="group" aria-label="Pretend login role selection">
+					<span class="pretend-role-label">Pretend Role</span>
+					<div class="pretend-role-toggle">
+						<button
+							type="button"
+							class:selected={selectedPretendRole === 'user'}
+							on:click={() => (selectedPretendRole = 'user')}
+							disabled={isLoading}
+						>
+							User
+						</button>
+						<button
+							type="button"
+							class:selected={selectedPretendRole === 'admin'}
+							on:click={() => (selectedPretendRole = 'admin')}
+							disabled={isLoading}
+						>
+							Admin
+						</button>
+						<button
+							type="button"
+							class:selected={selectedPretendRole === 'superadmin'}
+							on:click={() => (selectedPretendRole = 'superadmin')}
+							disabled={isLoading}
+						>
+							Superadmin
+						</button>
+					</div>
+				</div>
+			{/if}
 
-		<div class="auth-footer">
-			<p>Don't have an account? <a href="/auth/signup">Sign up</a></p>
-		</div>
+			<div class="auth-header">
+				<h1>Welcome Back</h1>
+				<p>Sign in to your account</p>
+			</div>
+
+			<AuthProviderButtons
+				configuredProviders={data.configuredProviders}
+				simulatedProviders={data.simulatedProviders}
+				disabled={isLoading}
+				actionLabel="Continue"
+				on:select={(event) => handleSSOLogin(event.detail.provider)}
+			/>
+
+			<form on:submit|preventDefault={handleSubmit}>
+				{#if error}
+					<div class="error-message">{error}</div>
+				{/if}
+
+				<div class="form-group">
+					<label for={emailField}>Email</label>
+					<input
+						id={emailField}
+						name={emailField}
+						type="email"
+						bind:value={email}
+						placeholder="you@example.com"
+						autocomplete="email"
+						required
+					/>
+				</div>
+
+				<div class="form-group">
+					<label for={passwordField}>Password</label>
+					<input
+						id={passwordField}
+						name={passwordField}
+						type="password"
+						bind:value={password}
+						placeholder="••••••••"
+						autocomplete="current-password"
+						required
+					/>
+				</div>
+
+				<button type="submit" class="submit-button" disabled={isLoading}>
+					{#if isLoading}
+						Signing in...
+					{:else}
+						Sign In
+					{/if}
+				</button>
+			</form>
+
+			<div class="auth-footer">
+				<p>Don't have an account? <a href="/auth/signup">Sign up</a></p>
+			</div>
+		{/if}
 	</div>
 </div>
 
 <style>
+	.signed-in-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--spacing-md);
+	}
+
+	.signed-in-actions form {
+		margin: 0;
+	}
+
+	.signed-in-primary,
+	.signed-in-secondary {
+		display: inline-block;
+		border-radius: var(--radius-md);
+		padding: 0.75rem 1.25rem;
+		font: inherit;
+		font-weight: 600;
+		text-decoration: none;
+		cursor: pointer;
+	}
+
+	.signed-in-primary {
+		background: var(--color-primary);
+		color: var(--color-bg);
+		border: 1px solid var(--color-primary);
+	}
+
+	.signed-in-secondary {
+		background: transparent;
+		color: var(--color-text);
+		border: 1px solid var(--color-border);
+	}
+
+	.signed-in-primary:hover,
+	.signed-in-secondary:hover {
+		filter: brightness(1.1);
+	}
+
 	.auth-page {
 		min-height: calc(100vh - 64px);
 		display: flex;

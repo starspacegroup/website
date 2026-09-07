@@ -6,45 +6,31 @@ describe('Auth Login Page Server - Extended Coverage', () => {
 		vi.resetModules();
 	});
 
-	describe('User redirection when logged in', () => {
-		it('should redirect logged-in user to home', async () => {
-			const mockEvent = {
-				locals: {
-					user: { id: 'user-1', login: 'testuser' }
-				},
-				url: new URL('http://localhost/auth/login'),
-				platform: {}
-			};
-
-			const { load } = await import('../../src/routes/auth/login/+page.server');
-
-			try {
-				await load(mockEvent as any);
-				expect.fail('Should have redirected');
-			} catch (err: any) {
-				expect(err.status).toBe(302);
-				expect(err.location).toBe('/');
-			}
+	/**
+	 * These asserted a redirect to the home page. A signed-in visitor is now
+	 * told they are signed in, because being moved without explanation reads as
+	 * a sign-in that failed — which is how it was reported.
+	 */
+	describe('When already signed in', () => {
+		const signedIn = (search = '') => ({
+			locals: { user: { id: 'user-1', login: 'testuser' } },
+			url: new URL(`http://localhost/auth/login${search}`),
+			platform: {}
 		});
 
-		it('should redirect to /?error=forbidden when error=unauthorized', async () => {
-			const mockEvent = {
-				locals: {
-					user: { id: 'user-1', login: 'testuser' }
-				},
-				url: new URL('http://localhost/auth/login?error=unauthorized'),
-				platform: {}
-			};
-
+		it('renders rather than redirecting', async () => {
 			const { load } = await import('../../src/routes/auth/login/+page.server');
+			const result = (await load(signedIn() as any)) as any;
 
-			try {
-				await load(mockEvent as any);
-				expect.fail('Should have redirected');
-			} catch (err: any) {
-				expect(err.status).toBe(302);
-				expect(err.location).toBe('/?error=forbidden');
-			}
+			expect(result.signedInAs).toBeTruthy();
+			expect(result.signedInAs.lacksAccess).toBe(false);
+		});
+
+		it('flags the case where they lack access to what they asked for', async () => {
+			const { load } = await import('../../src/routes/auth/login/+page.server');
+			const result = (await load(signedIn('?error=unauthorized') as any)) as any;
+
+			expect(result.signedInAs.lacksAccess).toBe(true);
 		});
 	});
 

@@ -23,34 +23,53 @@ describe('Auth Login Page Server', () => {
 	});
 
 	describe('load function', () => {
-		it('should redirect logged-in user to home page', async () => {
+		/**
+		 * These used to assert a redirect to the home page. Being bounced there
+		 * with nothing said is indistinguishable from a sign-in that failed, and
+		 * it was reported as exactly that by someone whose session was valid the
+		 * whole time. The page now says so instead.
+		 */
+		it('tells a signed-in visitor they are signed in, rather than moving them', async () => {
 			const { load } = await import('../../src/routes/auth/login/+page.server');
 
-			const mockUrl = new URL('http://localhost/auth/login');
+			const result = (await load({
+				locals: {
+					user: { id: '1', login: 'user', email: 'user@test.com', isOwner: false }
+				},
+				url: new URL('http://localhost/auth/login')
+			} as any)) as any;
 
-			await expect(
-				load({
-					locals: {
-						user: { id: '1', login: 'user', email: 'user@test.com', isOwner: false }
-					},
-					url: mockUrl
-				} as any)
-			).rejects.toMatchObject({ status: 302, location: '/' });
+			expect(result.signedInAs).toMatchObject({ lacksAccess: false, canOpenAdmin: false });
 		});
 
-		it('should redirect logged-in user with unauthorized error to home with forbidden', async () => {
+		it('says plainly when they were sent here from a page they cannot open', async () => {
+			// Signing in again would not help, so the page must not imply it would.
 			const { load } = await import('../../src/routes/auth/login/+page.server');
 
-			const mockUrl = new URL('http://localhost/auth/login?error=unauthorized');
+			const result = (await load({
+				locals: {
+					user: { id: '1', login: 'user', email: 'user@test.com', isOwner: false }
+				},
+				url: new URL('http://localhost/auth/login?error=unauthorized')
+			} as any)) as any;
 
-			await expect(
-				load({
-					locals: {
-						user: { id: '1', login: 'user', email: 'user@test.com', isOwner: false }
-					},
-					url: mockUrl
-				} as any)
-			).rejects.toMatchObject({ status: 302, location: '/?error=forbidden' });
+			expect(result.signedInAs.lacksAccess).toBe(true);
+		});
+
+		it('does not offer the admin link to someone who would be bounced back', async () => {
+			const { load } = await import('../../src/routes/auth/login/+page.server');
+
+			const plain = (await load({
+				locals: { user: { id: '1', login: 'u', email: 'u@t.com', isOwner: false } },
+				url: new URL('http://localhost/auth/login')
+			} as any)) as any;
+			const admin = (await load({
+				locals: { user: { id: '2', login: 'a', email: 'a@t.com', isAdmin: true } },
+				url: new URL('http://localhost/auth/login')
+			} as any)) as any;
+
+			expect(plain.signedInAs.canOpenAdmin).toBe(false);
+			expect(admin.signedInAs.canOpenAdmin).toBe(true);
 		});
 
 		it('should return configuredProviders for non-logged-in user', async () => {
@@ -64,6 +83,7 @@ describe('Auth Login Page Server', () => {
 			} as any);
 
 			expect(result).toEqual({
+				signedInAs: null,
 				configuredProviders: {
 					github: false,
 					discord: false
@@ -87,6 +107,7 @@ describe('Auth Login Page Server', () => {
 			} as any);
 
 			expect(result).toEqual({
+				signedInAs: null,
 				configuredProviders: {
 					github: false,
 					discord: false
@@ -113,6 +134,7 @@ describe('Auth Login Page Server', () => {
 			} as any);
 
 			expect(result).toEqual({
+				signedInAs: null,
 				configuredProviders: {
 					github: false,
 					discord: false
@@ -125,19 +147,23 @@ describe('Auth Login Page Server', () => {
 			});
 		});
 
-		it('should handle logged-in owner user', async () => {
+		it('names the owner and offers them the admin area', async () => {
 			const { load } = await import('../../src/routes/auth/login/+page.server');
 
-			const mockUrl = new URL('http://localhost/auth/login');
+			const result = (await load({
+				locals: {
+					user: {
+						id: '1',
+						login: 'owner',
+						githubLogin: 'owner',
+						email: 'owner@test.com',
+						isOwner: true
+					}
+				},
+				url: new URL('http://localhost/auth/login')
+			} as any)) as any;
 
-			await expect(
-				load({
-					locals: {
-						user: { id: '1', login: 'owner', email: 'owner@test.com', isOwner: true }
-					},
-					url: mockUrl
-				} as any)
-			).rejects.toMatchObject({ status: 302, location: '/' });
+			expect(result.signedInAs).toMatchObject({ name: 'owner', canOpenAdmin: true });
 		});
 	});
 });

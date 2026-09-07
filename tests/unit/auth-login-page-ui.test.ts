@@ -26,7 +26,8 @@ describe('Auth Login Page UI', () => {
 						github: true,
 						discord: true
 					},
-					devAuthSimulationEnabled: true
+					devAuthSimulationEnabled: true,
+					signedInAs: null
 				}
 			}
 		});
@@ -54,7 +55,8 @@ describe('Auth Login Page UI', () => {
 						github: true,
 						discord: true
 					},
-					devAuthSimulationEnabled: true
+					devAuthSimulationEnabled: true,
+					signedInAs: null
 				}
 			}
 		});

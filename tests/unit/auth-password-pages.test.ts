@@ -16,7 +16,8 @@ const layoutData = {
 	hasAIProviders: false,
 	cmsPaletteItems: [],
 	simulatedProviders: { github: false, discord: false },
-	devAuthSimulationEnabled: false
+	devAuthSimulationEnabled: false,
+	signedInAs: null
 };
 
 describe('Password Auth Pages', () => {

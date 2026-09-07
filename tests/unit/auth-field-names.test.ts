@@ -21,7 +21,9 @@ const layoutData = {
 	cmsPaletteItems: [],
 	simulatedProviders: { github: false, discord: false },
 	devAuthSimulationEnabled: false,
-	configuredProviders: { github: false, discord: false }
+	configuredProviders: { github: false, discord: false },
+	// Signed out, so the page renders the form these assertions are about.
+	signedInAs: null
 };
 
 /**

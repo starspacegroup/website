@@ -1,23 +1,35 @@
 import { getConfiguredAuthProviders } from '$lib/utils/auth-provider-config';
 import { isDevAuthSimulationEnabled } from '$lib/utils/dev-auth';
-import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
+/**
+ * The sign-in page, which also has to answer "you are already signed in".
+ *
+ * It used to redirect an authenticated visitor to the home page without saying
+ * anything. Clicking *Sign in* and landing on the home page is indistinguishable
+ * from a sign-in that failed, and it was reported as exactly that — a login that
+ * "just redirects to home" — by someone whose session was valid the whole time.
+ *
+ * So it renders instead. Being already signed in is a normal thing to tell
+ * somebody, not a reason to move them somewhere else.
+ */
 export const load: PageServerLoad = async ({ locals, url, platform }) => {
-	// If user is already logged in
 	if (locals.user) {
-		// If they were redirected here with unauthorized error, it means they lack permissions
-		// This can happen if they're logged in but not the owner trying to access /admin
-		const errorCode = url.searchParams.get('error');
-		if (errorCode === 'unauthorized') {
-			// They're logged in but tried to access a page they don't have permission for
-			// This is actually a "forbidden" scenario, not "unauthorized"
-			// Redirect to home with a more accurate message
-			throw redirect(302, '/?error=forbidden');
-		}
-
-		// Otherwise, redirect logged-in users to home
-		throw redirect(302, '/');
+		const user = locals.user;
+		return {
+			signedInAs: {
+				name: user.githubLogin || user.name || user.email,
+				// Drives the link to the admin area: offering it to someone who
+				// would only be bounced back is worse than not offering it.
+				canOpenAdmin: Boolean(user.isOwner || user.isAdmin || user.isSuperAdmin),
+				// They were sent here from a page they could not open. Say so —
+				// signing in again is not the fix, and would look like one.
+				lacksAccess: url.searchParams.get('error') === 'unauthorized'
+			},
+			configuredProviders: { github: false, discord: false },
+			simulatedProviders: { github: false, discord: false },
+			devAuthSimulationEnabled: false
+		};
 	}
 
 	const configuredProviders = await getConfiguredAuthProviders(platform);
@@ -28,6 +40,7 @@ export const load: PageServerLoad = async ({ locals, url, platform }) => {
 	};
 
 	return {
+		signedInAs: null,
 		configuredProviders,
 		simulatedProviders,
 		devAuthSimulationEnabled

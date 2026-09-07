@@ -198,6 +198,24 @@
 					Opens SpaceBot, where you pick the server and approve all four read-only scopes. The key
 					comes back between the two servers — it never passes through this browser.
 				</p>
+				<!-- Both halves of the handshake are exact-match settings on the
+				     registration, and getting either wrong ends on the same refusal
+				     screen at SpaceBot with nothing here to say which one it was. -->
+				<dl class="connect-facts">
+					<div>
+						<dt>Goes to</dt>
+						<dd><code>{data.connectSpaceBotUrl}</code></dd>
+					</div>
+					<div>
+						<dt>Comes back to</dt>
+						<dd><code>{data.connectReturnUrl}</code></dd>
+					</div>
+				</dl>
+				<p class="note">
+					Both must be registered with that SpaceBot, character for character. The return address
+					follows whatever address you are reading this page on — open the site on its real address,
+					not through a tunnel, or the return address will not be one that is registered.
+				</p>
 			</div>
 		{:else}
 			<!-- The button used to just not be there. That is right — one that cannot
@@ -506,6 +524,30 @@
 
 	.form button {
 		justify-self: start;
+	}
+
+	.connect-facts {
+		display: grid;
+		gap: var(--spacing-xs);
+		margin: var(--spacing-md) 0;
+	}
+
+	.connect-facts div {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--spacing-sm);
+	}
+
+	.connect-facts dt {
+		min-width: 8rem;
+		color: var(--color-text-secondary);
+		font-size: 0.875rem;
+	}
+
+	.connect-facts dd {
+		margin: 0;
+		font-size: 0.875rem;
+		word-break: break-all;
 	}
 
 	.unavailable {

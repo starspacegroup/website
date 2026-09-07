@@ -1,5 +1,5 @@
 import { getSpaceBotConfig, verifySpaceBot } from '$lib/server/spacebot-connection';
-import { readConnectClient } from '$lib/server/spacebot-connect';
+import { callbackUrl, readConnectClient } from '$lib/server/spacebot-connect';
 import { requireOwner } from '$lib/server/auth-guards';
 import type { PageServerLoad } from './$types';
 
@@ -38,12 +38,19 @@ export const load: PageServerLoad = async ({ platform, locals, url }) => {
 	requireOwner(locals);
 
 	const outcomeKey = url.searchParams.get('connect');
+	const client = readConnectClient(platform);
 
 	return {
 		status: await verifySpaceBot(await getSpaceBotConfig(platform)),
 		// A Connect button that cannot work is worse than no button, so the page
 		// only offers it when this site is actually registered with a SpaceBot.
-		connectAvailable: readConnectClient(platform) !== null,
+		connectAvailable: client !== null,
+		// Where SpaceBot is asked to send the owner back, and where SpaceBot is
+		// being sent. Both are shown, because both are exact-match settings on the
+		// registration and either one being wrong produces the same dead end with
+		// nothing on this page to say which.
+		connectReturnUrl: callbackUrl(url.origin),
+		connectSpaceBotUrl: client?.spacebotUrl ?? null,
 		outcome: (outcomeKey && CONNECT_OUTCOMES[outcomeKey]) || null
 	};
 };

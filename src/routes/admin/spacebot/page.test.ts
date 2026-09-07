@@ -60,7 +60,14 @@ function apiReturning(next: SpaceBotStatus, ok = true) {
  * tests to the one field the page actually reads.
  */
 const props = (s: SpaceBotStatus, connectAvailable = false) =>
-	({ data: { status: s, connectAvailable } }) as never;
+	({
+		data: {
+			status: s,
+			connectAvailable,
+			connectReturnUrl: 'https://starspace.group/admin/spacebot/callback',
+			connectSpaceBotUrl: 'https://spacebot.starspace.group'
+		}
+	}) as never;
 
 async function settle() {
 	await Promise.resolve();
@@ -73,6 +80,15 @@ describe('Admin → SpaceBot', () => {
 		it('offers the button when the site is registered', () => {
 			const { container } = render(Page, props(status(), true));
 			expect(container.querySelector('a[href="/admin/spacebot/connect"]')).toBeTruthy();
+		});
+
+		it('shows both addresses the registration has to match', () => {
+			// Either one being wrong ends on the same refusal at SpaceBot, and the
+			// refusal cannot say which. This page can.
+			const { container } = render(Page, props(status(), true));
+			const facts = container.querySelector('.connect-facts')?.textContent ?? '';
+			expect(facts).toContain('https://spacebot.starspace.group');
+			expect(facts).toContain('https://starspace.group/admin/spacebot/callback');
 		});
 
 		it('says why it is missing rather than just hiding it', () => {

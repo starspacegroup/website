@@ -250,42 +250,6 @@
 				<div class="feature-header">
 					<div class="feature-icon">
 						<svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-							<rect
-								x="5"
-								y="8"
-								width="30"
-								height="21"
-								rx="3"
-								stroke="var(--color-primary)"
-								stroke-width="2.5"
-							/>
-							<path
-								d="M14 34h12M20 29v5"
-								stroke="var(--color-primary)"
-								stroke-width="2.5"
-								stroke-linecap="round"
-							/>
-							<path
-								d="M13 22l5-6 4 5 5-7"
-								stroke="var(--color-secondary)"
-								stroke-width="2.5"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-							/>
-						</svg>
-					</div>
-					<h3 class="feature-title">Show and tell</h3>
-				</div>
-				<p class="feature-description">
-					A channel for what you made this week, however small and however broken. It is the
-					deadline that is not a deadline, and it is why things get finished.
-				</p>
-			</div>
-
-			<div class="feature-card">
-				<div class="feature-header">
-					<div class="feature-icon">
-						<svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
 							<path
 								d="M12 18V13a8 8 0 0 1 15.4-3"
 								stroke="var(--color-secondary)"

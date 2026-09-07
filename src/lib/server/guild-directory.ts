@@ -112,7 +112,43 @@ function toChannel(raw: unknown): DirectoryChannel | null {
 }
 
 /**
- * Keep a command only if it has a name and a description.
+ * True when a command is one an ordinary member can actually type.
+ *
+ * Two things disqualify one, and SpaceBot already records both — neither is
+ * guessed at here:
+ *
+ * - **Disabled.** `enabled` is false. Nobody can run it, so listing it on a
+ *   public page only invites people to try. SpaceBot applies a guild's own
+ *   override before answering, so this is the value for *this* server, not a
+ *   built-in's default.
+ * - **Restricted.** `default_member_permissions` is set. That is Discord's own
+ *   field, and null is the only value meaning everyone; anything else names a
+ *   permission the reader of a public page almost certainly does not hold.
+ *   `/promote` and `/spam` are moderator tools, and a directory of things to
+ *   type should not be advertising them.
+ *
+ * Between them these also take out the half-finished commands every server
+ * accumulates — a `/test` left disabled behind an admin permission is exactly
+ * the shape of thing that should never have reached the page.
+ */
+function isPublicCommand(row: Record<string, unknown>): boolean {
+	// The API sends SQLite's 0/1 for enabled, and JSON true/false after a
+	// built-in override is merged. Only an explicit falsy value hides a command:
+	// an absent field means SpaceBot did not say, and this page does not invent
+	// a restriction any more than it invents a command.
+	if (row.enabled === false || row.enabled === 0) return false;
+
+	const permissions = row.default_member_permissions;
+	if (permissions === null || permissions === undefined) return true;
+	// An empty column is unset, not a restriction. Every other value restricts —
+	// including '0', which Discord reads as "nobody by default, until an admin
+	// grants it", the most restrictive setting there is rather than the least.
+	return String(permissions).trim() === '';
+}
+
+/**
+ * Keep a command only if it has a name and a description, and only if a member
+ * could actually type it — see `isPublicCommand`.
  *
  * A command with no description is one nobody can act on from a list, and this
  * page is the list.
@@ -120,6 +156,7 @@ function toChannel(raw: unknown): DirectoryChannel | null {
 function toCommand(raw: unknown): DirectoryCommand | null {
 	if (!raw || typeof raw !== 'object') return null;
 	const row = raw as Record<string, unknown>;
+	if (!isPublicCommand(row)) return null;
 	const name = str(row.name);
 	const description = str(row.description);
 	if (!name || !description) return null;

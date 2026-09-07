@@ -103,7 +103,6 @@
 			<p class="vc-idle">nobody is sharing a screen right now</p>
 		</div>
 	</div>
-	<figcaption class="vc-caption">#Ten Forward, most afternoons.</figcaption>
 </figure>
 
 <style>
@@ -347,12 +346,6 @@
 	.vc-handle {
 		font-size: 0.7rem;
 		font-weight: 600;
-		color: var(--color-text-secondary);
-	}
-
-	.vc-caption {
-		margin-top: var(--spacing-sm);
-		font-size: 0.8rem;
 		color: var(--color-text-secondary);
 	}
 

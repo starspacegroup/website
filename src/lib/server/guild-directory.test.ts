@@ -88,6 +88,70 @@ describe('fetchGuildDirectory', () => {
 		expect(room?.builtIn).toBe(true);
 	});
 
+	/**
+	 * The live server guide listed /promote and /spam — moderator tools — next
+	 * to a /test and a /testing left half-finished behind an admin permission.
+	 * SpaceBot already recorded why none of them belonged there; the page just
+	 * was not reading it.
+	 */
+	describe('what a member can actually type', () => {
+		const only = async (commands: unknown[]) => {
+			const directory = await fetchGuildDirectory(
+				CONFIG,
+				fetcherFor({
+					'/api/v1/channels': channelsBody(),
+					'/api/v1/commands': commandsBody({ commands })
+				})
+			);
+			return directory.commands.map((command) => command.name);
+		};
+
+		it('drops a command nobody is allowed to run', async () => {
+			// 8192 is Manage Messages — /promote and /spam, verbatim.
+			expect(
+				await only([
+					{ name: 'voice-ping', description: 'Ping the channel', default_member_permissions: null },
+					{
+						name: 'promote',
+						description: 'Add the Passenger role',
+						default_member_permissions: '8192'
+					},
+					{ name: 'spam', description: 'Time out a spammer', default_member_permissions: 8192 }
+				])
+			).toEqual(['voice-ping']);
+		});
+
+		it("treats '0' as the strictest setting, not the loosest", async () => {
+			// Discord reads '0' as "nobody by default until an admin grants it".
+			// Read as a falsy bitfield it would look like no restriction at all.
+			expect(
+				await only([{ name: 'test', description: 'Say hi', default_member_permissions: '0' }])
+			).toEqual([]);
+		});
+
+		it('drops a disabled command, however it is spelled', async () => {
+			// SQLite sends 0; a merged built-in override sends false.
+			expect(
+				await only([
+					{ name: 'ping', description: 'Check the bot', enabled: 0 },
+					{ name: 'info', description: 'Bot information', enabled: false },
+					{ name: 'stats', description: 'Server stats', enabled: 1 }
+				])
+			).toEqual(['stats']);
+		});
+
+		it('keeps a command SpaceBot said nothing restrictive about', async () => {
+			// An absent field is not a restriction. The page does not invent one
+			// any more than it invents a command.
+			expect(
+				await only([
+					{ name: 'love', description: 'Shows love' },
+					{ name: 'verse', description: 'Generate a poem', default_member_permissions: '' }
+				])
+			).toEqual(['love', 'verse']);
+		});
+	});
+
 	it('marks a server’s own commands as not built in', async () => {
 		const directory = await fetchGuildDirectory(
 			CONFIG,

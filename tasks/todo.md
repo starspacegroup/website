@@ -41,8 +41,12 @@ fail separately.
       `tests/unit/product-identity.test.ts`.
 - [x] Nav, footer, command palette and `SITEMAP_ROUTES` all carry `/projects`. Verified:
       `tests/unit/agent-readiness.test.ts`, which fails when a public route is unregistered.
-- [x] `/documentation` describes this site, and documents where the content lives. Verified:
-      `tests/unit/documentation-page.test.ts`.
+- [x] The `/documentation` route is gone, on David's call on 2026-09-07, along with its test,
+      `docs/DOCUMENTATION_PAGE.md`, the AGENTS.md rule that required keeping it in sync, and
+      its sitemap, palette, footer and `service-doc` entries. Removing the rule renumbered the
+      Release Rules list, so agent discovery moved from §8 to §7 across the tree. Verified:
+      `bun run check`, full coverage, and `tests/unit/agent-readiness.test.ts`, which now
+      asserts the catalog advertises no `service-doc` at all.
 
 ## Next — before this can be deployed
 

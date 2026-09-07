@@ -71,17 +71,7 @@ full deploy flow.
 
 ---
 
-## Step 3 — Rewrite the documentation page (semantic)
-
-[`src/routes/documentation/+page.svelte`](src/routes/documentation/+page.svelte) is
-template prose about NebulaKit. Rewrite it to describe **your** app — features, setup,
-usage. Keep the route (`/documentation`) or remove it and drop its palette + footer
-entries. The unit test `tests/unit/documentation-page.test.ts` asserts on its content;
-update it to match your rewrite.
-
----
-
-## Step 4 — Refill the command palette (semantic)
+## Step 3 — Refill the command palette (semantic)
 
 The palette hardcodes its entries in
 [`src/lib/components/CommandPalette.svelte`](src/lib/components/CommandPalette.svelte)
@@ -98,7 +88,7 @@ gates. The scanner never edits the component; you curate.
 
 ---
 
-## Step 5 — Brand assets & icon set (semantic)
+## Step 4 — Brand assets & icon set (semantic)
 
 Replace the visual identity. A tab favicon alone is **not** enough — phone home-screen
 tiles and PWA installs read `apple-touch-icon` and the web manifest. Full checklist
@@ -109,7 +99,7 @@ Assets to replace: `static/og-image.{png,svg}`, `static/favicon*.png`,
 
 ---
 
-## Step 6 — Mark it done
+## Step 5 — Mark it done
 
 Set `status: complete` in
 [INITIAL_CUSTOMIZATION_STATUS.md](INITIAL_CUSTOMIZATION_STATUS.md) once branding,

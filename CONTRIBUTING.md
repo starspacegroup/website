@@ -149,20 +149,6 @@ test.describe('Feature Name', () => {
 });
 ```
 
-## 📖 Documentation Requirements
-
-**The `/documentation` route ships with the feature, not after it.**
-
-`src/routes/documentation/+page.svelte` is the in-app documentation users read. Any change that adds,
-removes, or alters a user-visible feature — a route, setup step, command, integration, binding, env
-var, shortcut, or admin capability — must update that page in the **same** PR, with matching
-assertions in `tests/unit/documentation-page.test.ts`.
-
-Internal-only changes (refactors, test-only work, dependency bumps) need no doc update — say so in
-the PR description so the omission is visible as a decision.
-
-Details, section map, and the scaffold for recreating the route: [docs/DOCUMENTATION_PAGE.md](docs/DOCUMENTATION_PAGE.md).
-
 ## 📝 Code Style
 
 ### TypeScript
@@ -272,8 +258,6 @@ bun run dev
 - [ ] Dev environment works (`bun run dev`)
 - [ ] No new external dependencies (or justified in PR description)
 - [ ] Code follows style guidelines
-- [ ] `/documentation` route updated for any user-visible change (or "internal only" noted below)
-- [ ] `tests/unit/documentation-page.test.ts` asserts the new/changed documentation
 - [ ] Supporting docs (`README.md`, `docs/`) updated
 - [ ] Commit messages follow convention
 
@@ -326,7 +310,6 @@ Why is this change needed?
 5. ❌ **Hardcoding values** - Use environment variables
 6. ❌ **Using Node.js APIs** - Use Web APIs for Cloudflare Workers
 7. ❌ **Committing without coverage check** - Must maintain 95%+
-8. ❌ **Shipping a feature without updating `/documentation`** - In-app docs are part of the feature
 
 ## 🎨 UI/UX Standards
 

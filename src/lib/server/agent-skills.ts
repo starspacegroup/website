@@ -5,7 +5,7 @@
  * with this site, discoverable from /.well-known/agent-skills/index.json and
  * fetched from /.well-known/agent-skills/<name>/SKILL.md.
  *
- * HONESTY RULE (AGENTS.md §8): every skill here describes behaviour this
+ * HONESTY RULE (AGENTS.md §7): every skill here describes behaviour this
  * codebase actually implements — the endpoints, status codes, and validation
  * rules below are mirrored from the real handlers. A skill that documents a
  * capability the site lacks sends agents into failure loops. When you change an

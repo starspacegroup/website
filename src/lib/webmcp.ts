@@ -160,7 +160,7 @@ export function buildWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
 			},
 			execute: async (input) => {
 				const path = resolveSamePath(deps.origin, input.path);
-				if (!path) return text('Provide a path on this site, such as "/documentation".');
+				if (!path) return text('Provide a path on this site, such as "/projects".');
 
 				const sitemapResponse = await doFetch(`${deps.origin}/sitemap.xml`, {
 					headers: { Accept: 'application/xml' },

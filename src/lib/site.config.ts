@@ -49,8 +49,8 @@ export const repoUrl = `https://github.com/${site.repo}`;
  *
  * This, not {@link repoUrl}, is what a visitor-facing "GitHub" link points at.
  * The community is several repositories; this site's own is one of them, and
- * landing a first-time visitor inside it hides the rest. Deep links that name a
- * specific file (the References list on /documentation) still use `repoUrl` —
- * they are about this repository and would be wrong anywhere else.
+ * landing a first-time visitor inside it hides the rest. {@link repoUrl} is for
+ * links that are about this repository specifically and would be wrong pointed
+ * at the organisation; nothing on the site needs one today.
  */
 export const orgUrl = `https://github.com/${site.repo.split('/')[0]}`;

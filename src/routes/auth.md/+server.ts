@@ -3,7 +3,7 @@
  *
  * Advertised as the `describedby` Link relation and from the API catalog.
  *
- * HONESTY RULE (AGENTS.md §8): this document says plainly that the site is an
+ * HONESTY RULE (AGENTS.md §7): this document says plainly that the site is an
  * OAuth *client* (it signs users in with GitHub/Discord), not an authorization
  * server, and that there is no automated agent-credential issuance. That is why
  * *Space does NOT publish /.well-known/oauth-authorization-server or

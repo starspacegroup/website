@@ -11,7 +11,7 @@
  * Returns `application/linkset+json` (RFC 9264): a `linkset` array where each
  * member anchors one API and carries typed link relations describing it.
  *
- * HONESTY RULE (AGENTS.md §8): every anchor below is a real, reachable endpoint
+ * HONESTY RULE (AGENTS.md §7): every anchor below is a real, reachable endpoint
  * in this codebase, and every access note matches the auth actually enforced in
  * the handler. A catalog that advertises endpoints which 404, or that describes
  * an authenticated API as public, is worse than no catalog — agents follow it
@@ -21,9 +21,12 @@
  * Most of this app's API surface requires a session cookie and is intentionally
  * NOT presented as agent-callable; the agent-facing story is public content over
  * HTML/Markdown (see /auth.md and the skills index).
+ *
+ * No member carries a `service-doc`. There is no human-readable documentation
+ * page to point one at, and by the honesty rule above an absent relation beats
+ * one that 404s.
  */
 import { absoluteUrl } from '$lib/agent-discovery';
-import { site } from '$lib/site.config';
 import type { RequestHandler } from './$types';
 
 /** A typed link target inside a linkset member (RFC 9264 §4.2). */
@@ -47,11 +50,6 @@ export const GET: RequestHandler = ({ url }) => {
 	const origin = url.origin;
 	const abs = (path: string) => absoluteUrl(origin, path);
 
-	const docs: LinkTarget = {
-		href: abs('/documentation'),
-		type: 'text/html',
-		title: `${site.name} documentation`
-	};
 	const status: LinkTarget = {
 		href: abs('/api/health'),
 		type: 'application/json',
@@ -68,14 +66,12 @@ export const GET: RequestHandler = ({ url }) => {
 			// POST is public and Turnstile-gated when both keys are configured;
 			// GET requires an owner/admin session.
 			anchor: abs('/api/contact-form-submissions'),
-			'service-doc': [docs],
 			describedby: [auth],
 			status: [status]
 		},
 		{
 			// Public health probe; also the `status` target for every other entry.
 			anchor: abs('/api/health'),
-			'service-doc': [docs],
 			status: [status]
 		},
 		{
@@ -84,34 +80,29 @@ export const GET: RequestHandler = ({ url }) => {
 			// Never their names. Below the threshold it answers `{"live":false}`
 			// with no member data at all.
 			anchor: abs('/api/voice'),
-			'service-doc': [docs],
 			status: [status]
 		},
 		{
 			// Public, unauthenticated: the last month of member counts, one point
 			// per day — aggregate totals only, nothing about any member.
 			anchor: abs('/api/members/history'),
-			'service-doc': [docs],
 			status: [status]
 		},
 		{
 			// Owner/admin-session authenticated CMS type management.
 			anchor: abs('/api/cms/types'),
-			'service-doc': [docs],
 			describedby: [auth],
 			status: [status]
 		},
 		{
 			// Session-authenticated LLM chat surface.
 			anchor: abs('/api/chat/models'),
-			'service-doc': [docs],
 			describedby: [auth],
 			status: [status]
 		},
 		{
 			// Session-authenticated streaming LLM chat surface.
 			anchor: abs('/api/chat/stream'),
-			'service-doc': [docs],
 			describedby: [auth],
 			status: [status]
 		}

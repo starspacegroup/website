@@ -1,5 +1,5 @@
 /**
- * Tests for the WebMCP tool surface (AGENTS.md §8).
+ * Tests for the WebMCP tool surface (AGENTS.md §7).
  *
  * The security-relevant assertion is same-origin enforcement: these tools run
  * in the user's page with the user's cookies, so a path input that can escape
@@ -194,7 +194,7 @@ describe('read_page_as_markdown', () => {
 
 	it('refuses private and undiscovered paths without fetching them', async () => {
 		const fetchMock = vi.fn().mockResolvedValueOnce(
-			new Response(`<urlset><url><loc>${ORIGIN}/documentation</loc></url></urlset>`, {
+			new Response(`<urlset><url><loc>${ORIGIN}/projects</loc></url></urlset>`, {
 				status: 200
 			})
 		);
@@ -208,7 +208,7 @@ describe('read_page_as_markdown', () => {
 	it('fails closed when the public sitemap cannot be read', async () => {
 		const fetchMock = vi.fn().mockResolvedValue(new Response('', { status: 503 }));
 		const text = await run('read_page_as_markdown', createDeps({ fetch: fetchMock }), {
-			path: '/documentation'
+			path: '/projects'
 		});
 		expect(text).toContain('public page index');
 		expect(fetchMock).toHaveBeenCalledTimes(1);

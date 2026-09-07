@@ -6,7 +6,7 @@ test.describe('Homepage', () => {
 		await expect(page).toHaveTitle(/\*Space/);
 	});
 
-	test('should navigate to documentation page via command palette', async ({ page }) => {
+	test('should navigate to a page via command palette', async ({ page }) => {
 		await page.goto('/');
 
 		// Open command palette
@@ -23,16 +23,17 @@ test.describe('Homepage', () => {
 			await expect(palette).toBeVisible({ timeout: 2000 });
 		}).toPass({ timeout: 20000 });
 
-		// Search for documentation
+		// Projects is a static command, present whatever the CMS and the session
+		// hold — the palette also carries auth- and provider-dependent entries that
+		// would make this test depend on state it does not control.
 		const searchInput = palette.locator('input[placeholder*="Search"]');
-		await searchInput.fill('documentation');
+		await searchInput.fill('projects');
 
-		// Click on the documentation command (scoped to palette)
-		const docCommand = palette.locator('button:has-text("Documentation")').first();
-		await expect(docCommand).toBeVisible();
-		await docCommand.click();
+		const projectsCommand = palette.locator('button:has-text("Projects")').first();
+		await expect(projectsCommand).toBeVisible();
+		await projectsCommand.click();
 
-		await expect(page).toHaveURL('/documentation');
+		await expect(page).toHaveURL('/projects');
 	});
 
 	test('should open command palette with keyboard shortcut', async ({ page }) => {

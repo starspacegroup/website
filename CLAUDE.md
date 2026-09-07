@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-**[AGENTS.md](AGENTS.md) is the canonical rules file** — coverage floor, migration immutability, CSS variables, scratch files, product identity, icon set, `/documentation` sync, and agent-discovery surfaces. Read it first; it is sized to fit the 200-line memory budget. This file holds the commands, architecture, and Claude-specific context that AGENTS.md deliberately leaves out, and cross-references its rules by section number rather than restating them. `§N` means the **Nth bullet of AGENTS.md's "Release Rules" list**, in order. Renumbering that list is expensive: `git grep -ln "AGENTS.md §"` currently returns 14 tracked files, four of them shipped source (`src/lib/agent-discovery.ts`, `src/lib/server/agent-skills.ts`, `src/routes/[x+2e]well-known/api-catalog/+server.ts`, `src/routes/auth.md/+server.ts`) plus `vite.config.ts`, `ci.yml`, two docs, and five test files. Re-run that grep before touching the list.
+**[AGENTS.md](AGENTS.md) is the canonical rules file** — coverage floor, migration immutability, CSS variables, scratch files, product identity, icon set, and agent-discovery surfaces. Read it first; it is sized to fit the 200-line memory budget. This file holds the commands, architecture, and Claude-specific context that AGENTS.md deliberately leaves out, and cross-references its rules by section number rather than restating them. `§N` means the **Nth bullet of AGENTS.md's "Release Rules" list**, in order. Renumbering that list is expensive: `git grep -ln "AGENTS.md §"` currently returns 15 tracked files: four shipped source (`src/lib/agent-discovery.ts`, `src/lib/server/agent-skills.ts`, `src/routes/[x+2e]well-known/api-catalog/+server.ts`, `src/routes/auth.md/+server.ts`), `vite.config.ts`, `ci.yml`, three docs, this file, four test files, and one archived ledger. The list has been renumbered once, when the `/documentation` rule was deleted and agent discovery moved from §8 to §7 — every one of those files had to change in that same commit. Re-run that grep before touching the list.
 
 AGENTS.md also opens by requiring `tasks/goals.md` and `tasks/todo.md` be read before editing, alongside `git status --short --branch`. Both files are checked in and carry the current work ledger; uncommitted changes in the tree are user-owned and must never be discarded, rewritten, or staged implicitly.
 
@@ -51,7 +51,7 @@ This describes the workflow's _intended_ gates. Per AGENTS.md's Verification rul
 
 SvelteKit 2 + **Svelte 5** (`^5.56.8`) + TypeScript run on Cloudflare Pages (`@sveltejs/adapter-cloudflare`). Existing components largely use Svelte's legacy-compatible `export let`, `$:`, and store syntax; match the surrounding file unless a deliberate migration is in scope. Bindings come in through `event.platform.env`: `DB` (D1), `KV`, and `BUCKET` (R2). There is no ORM; database access uses parameterized D1 statements (`src/lib/utils/db.ts`).
 
-**`src/lib/site.config.ts` is the single source of truth for identity.** Name, slug, tagline, `devPort: 4203`, production URL, repo, author. `vite.config.ts` and `playwright.config.ts` both import it directly, which is why the file must stay dependency-free (no `$app`, no Node APIs) — adding an import there breaks the build config. Surfaces that _can't_ import it (`wrangler.toml`, tests, docs, `src/app.html`, `static/site.webmanifest`) are kept in sync by `bun run customize` (`scripts/customize.mjs`), which is the rebranding pass a downstream app runs once — see [CUSTOMIZE.md](CUSTOMIZE.md). `tests/unit/product-identity.test.ts` reads README, FEATURES, `site.config.ts`, `/documentation`, `app.html`, and the manifest off disk and fails when they drift; that failure is intentional.
+**`src/lib/site.config.ts` is the single source of truth for identity.** Name, slug, tagline, `devPort: 4203`, production URL, repo, author. `vite.config.ts` and `playwright.config.ts` both import it directly, which is why the file must stay dependency-free (no `$app`, no Node APIs) — adding an import there breaks the build config. Surfaces that _can't_ import it (`wrangler.toml`, tests, docs, `src/app.html`, `static/site.webmanifest`) are kept in sync by `bun run customize` (`scripts/customize.mjs`), which is the rebranding pass a downstream app runs once — see [CUSTOMIZE.md](CUSTOMIZE.md). `tests/unit/product-identity.test.ts` reads README, FEATURES, `site.config.ts`, `app.html`, and the manifest off disk and fails when they drift; that failure is intentional.
 
 **`src/hooks.server.ts` — the sequence order is load-bearing.**
 
@@ -83,7 +83,7 @@ There is no `docs/` note for this subsystem; the source comments and `tests/unit
 
 `authHandler` takes identity from the stored payload but **re-reads `is_admin`, `can_view_stats`, and owner status from `users` on every request**, so granting or revoking access takes effect without a re-login. The one exception is an `isPretend` payload, which is used as-is and only when `isDevAuthSimulationEnabled` — a simulated identity in a production database must not authenticate anyone. Per-provider OAuth route pairs under `src/routes/api/auth/{github,discord}/` persist and atomically consume one-time state transactions; email/password lives at `login`, `signup`, and `password`. Provider availability is resolved from `platform.env` or KV `auth_config:<provider>`; account linking lives in `src/lib/services/account-merge.ts`. Authorization checks belong in `src/lib/server/auth-guards.ts` and are reused from there rather than re-derived per route — server loads and API handlers each guard themselves, because hiding UI is not authorization. `@auth/core` and `@auth/sveltekit` were declared dependencies that nothing imported — removed. Don't re-add them without actually wiring Auth.js in.
 
-**Agent discovery** (robots.txt, sitemap, `.well-known/`, `auth.md`, Markdown content negotiation, WebMCP) — see AGENTS.md §8, which is the full contract including the honesty rule about not advertising endpoints that don't exist. `tests/unit/agent-readiness.test.ts` fails when a new public route isn't registered in `src/lib/agent-discovery.ts`; that failure is intentional.
+**Agent discovery** (robots.txt, sitemap, `.well-known/`, `auth.md`, Markdown content negotiation, WebMCP) — see AGENTS.md §7, which is the full contract including the honesty rule about not advertising endpoints that don't exist. `tests/unit/agent-readiness.test.ts` fails when a new public route isn't registered in `src/lib/agent-discovery.ts`; that failure is intentional.
 
 **The SpaceBot connection has exactly one reader.** `src/lib/server/spacebot-connection.ts` resolves it from KV (`spacebot:connection`, written by `/admin/spacebot`) and falls back to `platform.env`, the way `auth-provider-config.ts` resolves OAuth credentials. Both hero features call it and neither reads env itself — a second reader is how the admin page connects SpaceBot while the voice panel carries on reading a stale env var. `/api/admin/spacebot` is owner-only because it handles a credential; it verifies a key against both scopes _before_ storing it (a rejected or unreachable key is never written, a key missing one scope is — half the integration is worth having, and the page says which half), and no response ever carries the key, only `maskKey`'s hint. Disconnecting deletes the cached `voice:ten-forward` and `members:history` entries too, or the hero keeps showing live faces for ten minutes after someone turns it off.
 
@@ -94,7 +94,7 @@ There is no `docs/` note for this subsystem; the source comments and `tests/unit
 - **The three-person threshold is server-side, and so is dropping the names.** Below `LIVE_MEMBER_THRESHOLD` the module returns `{ live: false }` with no member data — not a count, not a trimmed list. Above it, a member is `{ avatar, streaming, video, muted }`: no display name, no username, no user id. Both rules live in `toMember`/`fetchVoiceSnapshot` rather than in the component, because a component that hides a name has still shipped it. `tests/unit/voice-channel.test.ts` asserts over the serialised payload, so putting a name back fails there.
 - **Every failure returns `{ live: false }`.** Missing config, unreachable bot, wrong scope, bad JSON: all of them land on the simulation rather than an error state. The KV entry carries its own timestamp because KV's `expirationTtl` floor is 60s and the freshness window is 10s.
 
-The member-count trend under the hero's number is the same shape one level down: `src/lib/server/member-history.ts` reads SpaceBot's `GET /api/v1/stats/members` (the same key, which must also carry `stats:read`), `src/routes/api/members/history/+server.ts` caches it in KV for ten minutes, and `MemberTrend.svelte` draws a sparkline only once it has two days — so an unconfigured site looks exactly as it did before the graph. Both public routes are catalogued and crawler-allowed per AGENTS.md §8.
+The member-count trend under the hero's number is the same shape one level down: `src/lib/server/member-history.ts` reads SpaceBot's `GET /api/v1/stats/members` (the same key, which must also carry `stats:read`), `src/routes/api/members/history/+server.ts` caches it in KV for ten minutes, and `MemberTrend.svelte` draws a sparkline only once it has two days — so an unconfigured site looks exactly as it did before the graph. Both public routes are catalogued and crawler-allowed per AGENTS.md §7.
 
 **Chat and AI keys** are spread across `src/lib/services/openai-chat.ts` (streaming text plus realtime voice, and the model allow-lists), `src/routes/api/chat/`, `src/routes/admin/ai-keys/`, `src/lib/utils/cost.ts`, and `src/lib/stores/chatHistory.ts`; behavior is specified in `UNIFIED_CHAT_INTERFACE.md` and `VOICE_CHAT_IMPLEMENTATION.md`.
 
@@ -112,20 +112,19 @@ Numbering is the part that actually goes wrong here, twice now. An earlier state
 
 `docs/` holds the long-form design notes that source comments cite by path — `hooks.server.ts` itself points at two of them. Read the relevant one before changing a subsystem:
 
-| Subsystem                                              | Doc                                                         |
-| ------------------------------------------------------ | ----------------------------------------------------------- |
-| Page-view stats, admin stats surface                   | `ADMIN_STATS.md`                                            |
-| Agent discovery, Markdown negotiation, WebMCP          | `AGENT_READINESS.md`                                        |
-| D1/KV/R2 provisioning, the shared-resource incident    | `CLOUDFLARE_SETUP.md`                                       |
-| CMS embed registry and manifest split                  | `CMS_EMBEDS.md`                                             |
-| Command palette + per-item visibility                  | `COMMAND_PALETTE.md`                                        |
-| `/documentation` route (kept in sync per AGENTS.md §7) | `DOCUMENTATION_PAGE.md`                                     |
-| GitHub OAuth pair                                      | `GITHUB_AUTH.md`                                            |
-| Local dev, `.dev.vars`                                 | `LOCAL_SETUP.md`                                            |
-| Payments / purchasing-power pricing                    | `PAYMENTS_AND_PPP.md`                                       |
-| TDD expectations behind the coverage gate              | `TDD_WORKFLOW.md`                                           |
-| Theme tokens, contrast validation (AGENTS.md §3)       | `THEME_SYSTEM.md`, `THEME_IMPLEMENTATION_SUMMARY.md`        |
-| Chat / voice surfaces                                  | `UNIFIED_CHAT_INTERFACE.md`, `VOICE_CHAT_IMPLEMENTATION.md` |
+| Subsystem                                           | Doc                                                         |
+| --------------------------------------------------- | ----------------------------------------------------------- |
+| Page-view stats, admin stats surface                | `ADMIN_STATS.md`                                            |
+| Agent discovery, Markdown negotiation, WebMCP       | `AGENT_READINESS.md`                                        |
+| D1/KV/R2 provisioning, the shared-resource incident | `CLOUDFLARE_SETUP.md`                                       |
+| CMS embed registry and manifest split               | `CMS_EMBEDS.md`                                             |
+| Command palette + per-item visibility               | `COMMAND_PALETTE.md`                                        |
+| GitHub OAuth pair                                   | `GITHUB_AUTH.md`                                            |
+| Local dev, `.dev.vars`                              | `LOCAL_SETUP.md`                                            |
+| Payments / purchasing-power pricing                 | `PAYMENTS_AND_PPP.md`                                       |
+| TDD expectations behind the coverage gate           | `TDD_WORKFLOW.md`                                           |
+| Theme tokens, contrast validation (AGENTS.md §3)    | `THEME_SYSTEM.md`, `THEME_IMPLEMENTATION_SUMMARY.md`        |
+| Chat / voice surfaces                               | `UNIFIED_CHAT_INTERFACE.md`, `VOICE_CHAT_IMPLEMENTATION.md` |
 
 ### Test topology
 

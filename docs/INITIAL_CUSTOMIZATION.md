@@ -7,13 +7,12 @@
 
 **This repository's pass is already done** — see `INITIAL_CUSTOMIZATION_STATUS.md`, which reads `status: complete`. What follows is the reference for a fork.
 
-Do it before feature work, bug fixes, or content entry. A fresh clone still contains NebulaKit branding and documentation; skip this step and the app, its metadata and its assistant guidance keep pointing back at the template.
+Do it before feature work, bug fixes, or content entry. A fresh clone still contains NebulaKit branding and copy; skip this step and the app, its metadata and its assistant guidance keep pointing back at the template.
 
 ## Goals
 
 - Rename the app from NebulaKit to your actual product name.
 - Replace the default social sharing and favicon assets.
-- Replace NebulaKit-specific documentation content so users do not see template docs in your product — the `/documentation` route stays, its content becomes yours.
 - Mark the work as complete in [INITIAL_CUSTOMIZATION_STATUS.md](../INITIAL_CUSTOMIZATION_STATUS.md).
 
 ## Required Checklist
@@ -21,7 +20,6 @@ Do it before feature work, bug fixes, or content entry. A fresh clone still cont
 - [ ] Replace visible app branding.
 - [ ] Replace Open Graph, Twitter, and favicon assets.
 - [ ] Generate the full web-app icon set (apple-touch-icon, manifest icons, light/dark favicons) — see below. A tab favicon alone is not enough; phone home-screen tiles need it.
-- [ ] Rewrite the `/documentation` route and its links for your product (replace the content; keep the route).
 - [ ] Confirm `site.slug` is your own slug, so this site's credential field names are unique — see below.
 - [ ] Update [INITIAL_CUSTOMIZATION_STATUS.md](../INITIAL_CUSTOMIZATION_STATUS.md) to `status: complete`.
 
@@ -55,9 +53,8 @@ Do it before feature work, bug fixes, or content entry. A fresh clone still cont
 
 Tiles and installed-app icons are static and cannot follow `prefers-color-scheme` — only the tab favicon switches. Reference implementation: davis9001.dev-sveltekit `src/app.html` + `static/`. See AGENTS.md §6.
 
-### Template Documentation Removal Or Replacement
+### Template Copy Removal Or Replacement
 
-- [src/routes/documentation/+page.svelte](../src/routes/documentation/+page.svelte)
 - [src/lib/components/Footer.svelte](../src/lib/components/Footer.svelte)
 - [src/lib/components/CommandPalette.svelte](../src/lib/components/CommandPalette.svelte)
 - [README.md](../README.md)
@@ -94,7 +91,7 @@ make autofill work correctly.
 2. Run `bun run customize` (or `--dry` first). This rewrites [src/lib/site.config.ts](../src/lib/site.config.ts) and search-and-replaces the old name/slug/port/repo/URL across the UI, tests, docs, and `wrangler.toml`. See [CUSTOMIZE.md](../CUSTOMIZE.md).
 3. Point `wrangler.toml` at your own Cloudflare resources (the script renames them but can't create them — see CUSTOMIZE.md Step 2).
 4. Replace the social image and favicon assets with your own files (see the icon-set section above).
-5. Rewrite the `/documentation` route for your app, and curate the command palette with `bun run palette:scan`. **Replace its content — do not delete the route.** From here on it must track every user-visible feature you add; see [DOCUMENTATION_PAGE.md](./DOCUMENTATION_PAGE.md) and AGENTS.md §7.
+5. Curate the command palette with `bun run palette:scan`.
 6. Confirm the credential field names are yours — `grep "slug:" src/lib/site.config.ts` must not say `nebulakit` (see the section above).
 7. Update [INITIAL_CUSTOMIZATION_STATUS.md](../INITIAL_CUSTOMIZATION_STATUS.md) to `status: complete` when done.
 
@@ -102,7 +99,6 @@ make autofill work correctly.
 
 - No user-facing page still presents itself as NebulaKit unless that is your actual app name.
 - Social shares use your own image, alt text, and metadata.
-- Users cannot navigate to NebulaKit template documentation from the product UI.
-- `/documentation` still exists, describes your app's real features, and is linked from the footer and command palette.
+- Users cannot navigate to NebulaKit template copy from the product UI.
 - Auth and secret form fields carry this site's own slug, not `nebulakit-*`.
 - [INITIAL_CUSTOMIZATION_STATUS.md](../INITIAL_CUSTOMIZATION_STATUS.md) says `status: complete` and `credential_fields_unique: true`.

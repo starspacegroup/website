@@ -161,9 +161,6 @@ high-entropy `SESSION_SECRET` and `SETUP_SECRET` values; generate each independe
 5. Create content types and entries under `/admin/cms`.
 6. Review privacy-safe usage data at `/admin/stats` when the account has `can_view_stats`.
 
-The in-application guide at `/documentation` is the canonical user/operator walkthrough and must
-change in the same commit as any user-visible feature.
-
 ## Architecture
 
 ```text
@@ -177,8 +174,7 @@ src/
 └── routes/
     ├── admin/        # protected operator surfaces
     ├── api/          # auth, CMS, chat, stats, setup, uploads
-    ├── chat/         # authenticated AI workspace
-    └── documentation/# shipped operator documentation
+    └── chat/         # authenticated AI workspace
 
 migrations/           # immutable ordered D1 migrations
 scripts/              # binding, migration, setup, palette, tunnel tools
@@ -204,7 +200,6 @@ Important boundaries:
 - [Theme system](./docs/THEME_SYSTEM.md)
 - [Command palette](./docs/COMMAND_PALETTE.md)
 - [TDD workflow](./docs/TDD_WORKFLOW.md)
-- [In-app documentation contract](./docs/DOCUMENTATION_PAGE.md)
 
 ## Contributing
 

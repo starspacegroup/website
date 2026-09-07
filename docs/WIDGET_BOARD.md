@@ -160,8 +160,7 @@ Every component added to this library ships with all six:
    in the component body.
 3. Theme compliance — CSS variables only, light and dark parity (AGENTS.md §3).
 4. Tests, written first, holding the 95% coverage floor (AGENTS.md §1).
-5. A `/documentation` entry, in the same change (AGENTS.md §7).
-6. A `FEATURES.md` bullet.
+5. A `FEATURES.md` bullet.
 
 ---
 

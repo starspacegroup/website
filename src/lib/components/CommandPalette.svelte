@@ -129,13 +129,6 @@
 					}
 				]
 			: []),
-		{
-			id: 'documentation',
-			label: 'Documentation',
-			description: `View ${site.name} documentation`,
-			action: () => goto('/documentation'),
-			icon: '📚'
-		},
 		...cmsCommands.map((command) => ({
 			id: command.id,
 			label: command.label,

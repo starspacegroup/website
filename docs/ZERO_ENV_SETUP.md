@@ -1,6 +1,6 @@
 # Zero Environment Variable Setup Guide (Optional)
 
-> **💡 Recommended:** For production deployments, we recommend using **secure environment variables** in Cloudflare Pages. See the [Deployment documentation](../src/routes/documentation/+page.svelte) for details.
+> **💡 Recommended:** For production deployments, we recommend using **secure environment variables** in Cloudflare Pages. See [CLOUDFLARE_SETUP.md](./CLOUDFLARE_SETUP.md) for details.
 >
 > The zero-config setup described below is an **alternative approach** for scenarios where you want to configure credentials via a web UI instead.
 
@@ -16,7 +16,7 @@ This document describes a setup path *Space inherited from NebulaKit. It applies
 
 *Space can work **without any pre-configured environment variables**. Instead of relying on `.env` files or manually set secrets, all configuration is done through a web-based setup flow and stored securely in Cloudflare KV.
 
-Before running this setup flow in a template-derived project, complete [INITIAL_CUSTOMIZATION.md](./INITIAL_CUSTOMIZATION.md) so the app name, sharing assets, and documentation links are updated first.
+Before running this setup flow in a template-derived project, complete [INITIAL_CUSTOMIZATION.md](./INITIAL_CUSTOMIZATION.md) so the app name and sharing assets are updated first.
 
 ## When to Use Zero-Config
 

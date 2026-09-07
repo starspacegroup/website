@@ -53,20 +53,6 @@ describe('Footer', () => {
 		expect(screen.getByRole('link', { name: /^chat$/i })).toHaveAttribute('href', '/chat');
 	});
 
-	it('should link the documentation page', () => {
-		render(Footer);
-		expect(screen.getByRole('link', { name: /documentation/i })).toHaveAttribute(
-			'href',
-			'/documentation'
-		);
-	});
-
-	it('should contain documentation link pointing to /documentation', () => {
-		render(Footer);
-		const docsLink = screen.getByRole('link', { name: /documentation/i });
-		expect(docsLink).toHaveAttribute('href', '/documentation');
-	});
-
 	it('should contain GitHub link in resources', () => {
 		render(Footer);
 		const githubLinks = screen.getAllByRole('link', { name: /github/i });

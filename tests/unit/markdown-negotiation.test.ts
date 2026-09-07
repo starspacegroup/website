@@ -1,5 +1,5 @@
 /**
- * Tests for `Accept: text/markdown` negotiation (AGENTS.md §8).
+ * Tests for `Accept: text/markdown` negotiation (AGENTS.md §7).
  *
  * The behaviour that matters: browsers must keep getting HTML byte-for-byte,
  * agents must get Markdown, and the response must carry `Vary: Accept` so a

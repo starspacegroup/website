@@ -2,7 +2,7 @@
 
 How this site makes itself discoverable and usable by AI agents and crawlers.
 
-The rules that keep it working live in [AGENTS.md §8](../AGENTS.md); this document
+The rules that keep it working live in [AGENTS.md §7](../AGENTS.md); this document
 is the detail — what each surface is, why it is built the way it is, what still
 needs doing by hand, and how to verify it.
 

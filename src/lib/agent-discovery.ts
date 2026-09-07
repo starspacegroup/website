@@ -13,7 +13,7 @@
  * WHY THIS IS ONE MODULE: the guard test asserts that every public page route
  * is either listed for the sitemap or explicitly excluded *with a stated
  * reason*. Adding a page without deciding its crawl policy fails the test suite
- * rather than silently shipping an incomplete sitemap. See AGENTS.md §8.
+ * rather than silently shipping an incomplete sitemap. See AGENTS.md §7.
  *
  * WHY REQUEST-ORIGIN URLS, NOT `site.config.url`: the sitemap protocol requires
  * every listed URL to share the sitemap's own host, and robots.txt is per-host
@@ -44,7 +44,6 @@ export interface SitemapRoute {
 export const SITEMAP_ROUTES: readonly SitemapRoute[] = [
 	{ path: '/', changefreq: 'weekly', priority: 1.0 },
 	{ path: '/projects', changefreq: 'weekly', priority: 0.9 },
-	{ path: '/documentation', changefreq: 'weekly', priority: 0.8 },
 	{ path: '/chat', changefreq: 'monthly', priority: 0.6 },
 	{ path: '/contact', changefreq: 'monthly', priority: 0.5 },
 	{ path: '/privacy', changefreq: 'yearly', priority: 0.3 },
@@ -177,9 +176,13 @@ export interface AgentLink {
  * Link headers advertised on HTML responses (RFC 8288).
  *
  * Registered relation types only, so a conforming agent can act on them without
- * out-of-band knowledge: `api-catalog` is RFC 9727, `service-doc` and
- * `describedby` are in the IANA Link Relations registry, `sitemap` is
- * registered via the sitemaps.org protocol.
+ * out-of-band knowledge: `api-catalog` is RFC 9727, `describedby` is in the
+ * IANA Link Relations registry, `sitemap` is registered via the sitemaps.org
+ * protocol.
+ *
+ * There is deliberately no `service-doc`. The site has no human-readable
+ * documentation page, and the honesty rule is that an absent relation beats
+ * one that resolves to a 404.
  */
 export const AGENT_LINKS: readonly AgentLink[] = [
 	{
@@ -187,12 +190,6 @@ export const AGENT_LINKS: readonly AgentLink[] = [
 		rel: 'api-catalog',
 		type: 'application/linkset+json',
 		note: 'RFC 9727 catalog of this deployment’s APIs.'
-	},
-	{
-		href: '/documentation',
-		rel: 'service-doc',
-		type: 'text/html',
-		note: 'Human-readable documentation for the app and its API surface.'
 	},
 	{
 		href: '/sitemap.xml',

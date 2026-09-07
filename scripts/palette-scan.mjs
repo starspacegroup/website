@@ -43,7 +43,6 @@ function titleize(slug) {
 
 const ICONS = {
 	chat: '💬',
-	documentation: '📚',
 	profile: '👤',
 	contact: '✉️',
 	media: '🖼️',

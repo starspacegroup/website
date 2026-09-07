@@ -1,5 +1,5 @@
 /**
- * Agent-readiness contract tests (AGENTS.md §8).
+ * Agent-readiness contract tests (AGENTS.md §7).
  *
  * These are regression guards, not coverage filler. Every assertion here maps to
  * a published contract that an external crawler or agent relies on, and each one
@@ -191,14 +191,17 @@ describe('/.well-known/api-catalog', () => {
 		expect(response.headers.get('content-type')).toBe('application/linkset+json');
 	});
 
-	it('anchors every entry on this host with a service-doc link', async () => {
+	it('anchors every entry on this host, and advertises no service-doc', async () => {
 		const body = await (await catalogGet(event('/.well-known/api-catalog'))).json();
 		expect(Array.isArray(body.linkset)).toBe(true);
 		expect(body.linkset.length).toBeGreaterThan(0);
 
+		// There is no human-readable documentation page on this site. Advertising
+		// a service-doc that 404s is exactly what the honesty rule forbids, so the
+		// relation is absent rather than pointed somewhere plausible.
 		for (const member of body.linkset) {
 			expect(member.anchor.startsWith(ORIGIN)).toBe(true);
-			expect(member['service-doc']?.[0]?.href).toBe(`${ORIGIN}/documentation`);
+			expect(member['service-doc']).toBeUndefined();
 		}
 	});
 
@@ -320,7 +323,8 @@ describe('Link headers', () => {
 	it('serializes registered relation types', () => {
 		const header = buildLinkHeader();
 		expect(header).toContain('</.well-known/api-catalog>; rel="api-catalog"');
-		expect(header).toContain('rel="service-doc"');
+		expect(header).toContain('</sitemap.xml>; rel="sitemap"');
+		expect(header).not.toContain('rel="service-doc"');
 	});
 
 	it('emits one comma-separated value covering every declared link', () => {
@@ -372,7 +376,7 @@ describe('sitemap route coverage (the guard)', () => {
 				listed || excluded,
 				`Route "/${directory}" is neither listed in SITEMAP_ROUTES nor excluded in ` +
 					`SITEMAP_EXCLUDED_ROUTES (src/lib/agent-discovery.ts). Add it to one or the ` +
-					`other — see AGENTS.md §8.`
+					`other — see AGENTS.md §7.`
 			).toBe(true);
 		}
 	);

@@ -1,6 +1,6 @@
 /**
  * Tests for the in-house HTML → Markdown converter used by
- * `Accept: text/markdown` negotiation (AGENTS.md §8).
+ * `Accept: text/markdown` negotiation (AGENTS.md §7).
  *
  * The cases here are the ones that actually broke, or would break silently:
  * doubled spaces from nested inline elements, `<pre>` inheriting the Svelte

@@ -15,8 +15,7 @@ describe('*Space product identity', () => {
 		const publicSurfaces = [
 			read('README.md'),
 			read('FEATURES.md'),
-			read('src/lib/site.config.ts'),
-			read('src/routes/documentation/+page.svelte')
+			read('src/lib/site.config.ts')
 		].join('\n');
 
 		expect(publicSurfaces).toMatch(/starspace\.group/i);

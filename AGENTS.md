@@ -26,8 +26,6 @@ customize`, `CUSTOMIZE.md`, `INITIAL_CUSTOMIZATION_STATUS.md`, `docs/INITIAL_CUS
   Preserve the complete install set: Apple touch icon, 192/512 manifest icons, `site.webmanifest`,
   light/dark tab favicons, and the declarations in `src/app.html`. Installed-app icons are static;
   only tab favicons switch theme.
-- User-visible route, setup, command, binding, environment, integration, shortcut, or admin changes
-  must update `/documentation` and its focused test in the same change. Internal refactors do not.
 - Keep robots, sitemap, API catalog, agent skills, `auth.md`, Markdown negotiation, and WebMCP honest.
   Add public pages to `SITEMAP_ROUTES` or explicitly exclude them. *Space is an OAuth client, not
   an OAuth or MCP server. Keep `[x+2e]well-known`; the escape preserves TypeScript inclusion.

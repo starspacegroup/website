@@ -281,6 +281,12 @@
 	   holding an empty cell where they were. min-height reserves both rows, so
 	   the panel does not resize as the room fills and empties. */
 	.vc-seats {
+		/* One seat's width, shared with the collapse keyframe so an animating
+		   seat is exactly as wide as a regular one. Narrower on phones (below),
+		   so six seats still make two rows there instead of three — a third row
+		   appearing and vanishing is what resized the panel as the room filled. */
+		--vc-seat-w: 6.25rem;
+
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
@@ -297,7 +303,7 @@
 		flex-direction: column;
 		align-items: center;
 		gap: 0.3rem;
-		width: 6.25rem;
+		width: var(--vc-seat-w);
 		margin-inline: 0.2rem;
 		padding: 0.5rem 0;
 		border-radius: var(--radius-md);
@@ -417,7 +423,7 @@
 		7%,
 		70% {
 			opacity: 1;
-			width: 6.25rem;
+			width: var(--vc-seat-w);
 			margin-inline: 0.2rem;
 			padding-inline: 0;
 		}
@@ -450,6 +456,14 @@
 		.vc-avatar {
 			width: 2rem;
 			height: 2rem;
+		}
+
+		/* Narrower seats keep the room at two rows on a phone, so the panel is the
+		   same height whether two people are in it or six — no third row that
+		   appears and disappears and drags the box open. Still fits three across
+		   down to the smallest phones. */
+		.vc-seats {
+			--vc-seat-w: 4.75rem;
 		}
 	}
 

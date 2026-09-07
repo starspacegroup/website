@@ -251,6 +251,34 @@
 					<div class="feature-icon">
 						<svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
 							<path
+								d="M20 5c3 7 3 18 0 30-3-12-3-23 0-30Z"
+								stroke="var(--color-primary)"
+								stroke-width="2.5"
+								stroke-linejoin="round"
+							/>
+							<path
+								d="M11 31c2-6 2-12 0-18M29 31c-2-6-2-12 0-18"
+								stroke="var(--color-secondary)"
+								stroke-width="2.5"
+								stroke-linecap="round"
+							/>
+						</svg>
+					</div>
+					<h3 class="feature-title">A fun place to be</h3>
+				</div>
+				<p class="feature-description">
+					Welcoming to everyone, and not too serious about itself — the channels carry a loose Star
+					Trek theme, so you work in Ten Forward and you are not the first person to wonder where
+					that name came from.
+					<a class="feature-link" href="/guide">See the channels →</a>
+				</p>
+			</div>
+
+			<div class="feature-card">
+				<div class="feature-header">
+					<div class="feature-icon">
+						<svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+							<path
 								d="M12 18V13a8 8 0 0 1 15.4-3"
 								stroke="var(--color-secondary)"
 								stroke-width="2.5"
@@ -1159,6 +1187,20 @@
 		line-height: 1.7;
 		position: relative;
 		z-index: 1;
+	}
+
+	/* Sits inside the description rather than under it, so a card that carries a
+	   link is the same height as the five that do not. */
+	.feature-link {
+		color: var(--color-primary);
+		font-weight: 600;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+
+	.feature-link:hover,
+	.feature-link:focus-visible {
+		text-decoration: underline;
 	}
 
 	/* Tablet: 2 columns */

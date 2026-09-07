@@ -1,4 +1,5 @@
 import { fetchGuildCounts } from '$lib/discord';
+import { fetchHumanMemberCount } from '$lib/member-stats';
 import { render, screen } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -8,8 +9,10 @@ import MemberCount from './MemberCount.svelte';
 // is not hammered by hot reloads; the tests want the real path.
 vi.mock('$app/environment', () => ({ dev: false, browser: true }));
 vi.mock('$lib/discord', () => ({ fetchGuildCounts: vi.fn() }));
+vi.mock('$lib/member-stats', () => ({ fetchHumanMemberCount: vi.fn() }));
 
 const counts = vi.mocked(fetchGuildCounts);
+const humans = vi.mocked(fetchHumanMemberCount);
 
 /** Let the mount-time promise settle and the DOM catch up. */
 async function settle() {
@@ -20,7 +23,53 @@ async function settle() {
 describe('MemberCount', () => {
 	beforeEach(() => {
 		counts.mockReset();
+		// The default for the older cases, which predate the human figure: no
+		// SpaceBot answer, so the count falls back to Discord's total.
+		humans.mockReset();
+		humans.mockResolvedValue(null);
 		vi.spyOn(console, 'error').mockImplementation(() => undefined);
+	});
+
+	/**
+	 * Discord's invite endpoint counts every bot in the server as a member.
+	 * SpaceBot knows the difference, so the number prefers its figure and keeps
+	 * Discord only for presence — and for the days SpaceBot cannot answer.
+	 */
+	describe('people rather than accounts', () => {
+		it('prefers SpaceBot’s human count over Discord’s total', async () => {
+			counts.mockResolvedValue({ members: 358, online: 38 });
+			humans.mockResolvedValue(340);
+			render(MemberCount);
+			await settle();
+			await settle();
+
+			expect(screen.getByText('340')).toBeInTheDocument();
+			expect(screen.queryByText('358')).not.toBeInTheDocument();
+			// Presence still comes from Discord; SpaceBot does not have it.
+			expect(screen.getByText('38 online now')).toBeInTheDocument();
+		});
+
+		it('falls back to Discord’s total when SpaceBot cannot say', async () => {
+			counts.mockResolvedValue({ members: 358, online: 38 });
+			humans.mockResolvedValue(null);
+			render(MemberCount);
+			await settle();
+			await settle();
+
+			expect(screen.getByText('358')).toBeInTheDocument();
+		});
+
+		it('still shows the number when Discord fails but SpaceBot answers', async () => {
+			// Losing presence should not cost the count as well.
+			counts.mockRejectedValue(new Error('429'));
+			humans.mockResolvedValue(340);
+			render(MemberCount);
+			await settle();
+			await settle();
+
+			expect(screen.getByText('340')).toBeInTheDocument();
+			expect(screen.queryByText(/online now/)).not.toBeInTheDocument();
+		});
 	});
 
 	it('shows a spinner until Discord answers, then the count and presence', async () => {
@@ -69,6 +118,8 @@ describe('MemberCount', () => {
 	it('announces the number politely and takes a custom label', async () => {
 		counts.mockResolvedValue({ members: 7, online: null });
 		render(MemberCount, { props: { label: 'People here' } });
+		// Twice: the count waits on Discord and SpaceBot together now.
+		await settle();
 		await settle();
 
 		expect(screen.getByText('People here')).toBeInTheDocument();

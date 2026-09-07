@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
 	import { devMemberSeries } from '$lib/dev-member-series';
+	import { humanSeries } from '$lib/member-stats';
 	import type { MemberPoint } from '$lib/server/member-history';
 	import { formatDayLabel } from '$lib/utils/stats-timeseries';
 	import { onMount } from 'svelte';
@@ -38,7 +39,8 @@
 			const response = await fetch('/api/members/history');
 			if (!response.ok) return;
 			const data = (await response.json()) as { points?: MemberPoint[] };
-			points = Array.isArray(data.points) ? data.points : [];
+			// People rather than accounts, matching the number above the line.
+			points = humanSeries(Array.isArray(data.points) ? data.points : []);
 		} catch {
 			// No trend line. The count above still stands on its own.
 		}

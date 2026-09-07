@@ -41,9 +41,9 @@ describe('fetchMemberHistory', () => {
 		});
 		expect(await fetchMemberHistory(CONFIG, fetcher)).toEqual({
 			points: [
-				{ day: '2026-09-02', members: 1190, online: null },
-				{ day: '2026-09-03', members: 1200, online: 80 },
-				{ day: '2026-09-04', members: 1204, online: 91 }
+				{ day: '2026-09-02', members: 1190, human: null, online: null },
+				{ day: '2026-09-03', members: 1200, human: null, online: 80 },
+				{ day: '2026-09-04', members: 1204, human: null, online: 91 }
 			]
 		});
 	});
@@ -63,16 +63,36 @@ describe('fetchMemberHistory', () => {
 		});
 		expect(await fetchMemberHistory(CONFIG, fetcher)).toEqual({
 			points: [
-				{ day: '2026-09-01', members: 1000, online: null },
-				{ day: '2026-09-06', members: 1006, online: null }
+				{ day: '2026-09-01', members: 1000, human: null, online: null },
+				{ day: '2026-09-06', members: 1006, human: null, online: null }
 			]
 		});
+	});
+
+	/**
+	 * The hero shows people rather than accounts, so the count that excludes
+	 * bots has to survive the trip. SpaceBot only fills it in for a snapshot
+	 * that knew the bot count, which is why null has to survive too.
+	 */
+	it('carries the human count through, including when there is not one', async () => {
+		const fetcher = fetcherFor({
+			points: [
+				{ period: '2026-09-05', member_count: 358, online_count: 38, human_count: 340 },
+				{ period: '2026-09-06', member_count: 359, online_count: 40, human_count: null },
+				{ period: '2026-09-07', member_count: 360, online_count: 41, human_count: 'lots' }
+			]
+		});
+
+		const { points } = await fetchMemberHistory(CONFIG, fetcher);
+		expect(points.map((p) => p.human)).toEqual([340, null, null]);
+		// A row with an unusable human count keeps its total; it is not dropped.
+		expect(points.map((p) => p.members)).toEqual([358, 359, 360]);
 	});
 
 	it('keeps the last row when a day is repeated', async () => {
 		const fetcher = fetcherFor({ points: [point('2026-09-01', 1), point('2026-09-01', 2)] });
 		expect((await fetchMemberHistory(CONFIG, fetcher)).points).toEqual([
-			{ day: '2026-09-01', members: 2, online: null }
+			{ day: '2026-09-01', members: 2, human: null, online: null }
 		]);
 	});
 

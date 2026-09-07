@@ -2,6 +2,7 @@
 	import { dev } from '$app/environment';
 	import { DEV_MEMBERS, DEV_ONLINE } from '$lib/dev-member-series';
 	import { fetchGuildCounts } from '$lib/discord';
+	import { fetchHumanMemberCount } from '$lib/member-stats';
 	import { onMount } from 'svelte';
 
 	/** Rendered above the number. */
@@ -26,14 +27,22 @@
 			return;
 		}
 
-		void fetchGuildCounts()
-			.then((counts) => {
-				members = counts.members;
-				online = counts.online;
-			})
-			.catch((error) => {
+		// Two sources, because neither has the whole answer. SpaceBot knows how
+		// many of the members are people rather than bots; Discord's invite
+		// endpoint is the only one that knows who is online right now. Either can
+		// be missing without taking the other down with it — the count only shows
+		// a dash when both have nothing.
+		void Promise.all([
+			fetchGuildCounts().catch((error) => {
 				console.error('Member count unavailable:', error);
-				failed = true;
+				return null;
+			}),
+			fetchHumanMemberCount()
+		])
+			.then(([counts, humans]) => {
+				members = humans ?? counts?.members ?? null;
+				online = counts?.online ?? null;
+				failed = members === null;
 			})
 			.finally(() => {
 				loading = false;

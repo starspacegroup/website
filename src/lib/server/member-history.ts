@@ -32,8 +32,17 @@ const REQUEST_TIMEOUT_MS = 2500;
 export type MemberPoint = {
 	/** `YYYY-MM-DD`, in SpaceBot's bucketing. */
 	day: string;
-	/** Total members at the last snapshot that day. */
+	/** Total members at the last snapshot that day, bots included. */
 	members: number;
+	/**
+	 * Members that are not bots, or `null` when SpaceBot could not tell.
+	 *
+	 * SpaceBot derives it as `member_count - bot_count`, so it is only there for
+	 * a snapshot that knew the bot count. The site prefers it and falls back to
+	 * `members`; a server with a dozen bots should not be advertising them as
+	 * people.
+	 */
+	human: number | null;
 	/** Members online at that snapshot, or `null` when Discord did not say. */
 	online: number | null;
 };
@@ -50,7 +59,12 @@ export type MemberHistoryConfig = {
 
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 
-type RawPoint = { period?: unknown; member_count?: unknown; online_count?: unknown };
+type RawPoint = {
+	period?: unknown;
+	member_count?: unknown;
+	online_count?: unknown;
+	human_count?: unknown;
+};
 
 /**
  * Keep a row only if it is a whole day with a real count. SpaceBot buckets by
@@ -64,6 +78,10 @@ function toPoint(raw: RawPoint | null | undefined): MemberPoint | null {
 	return {
 		day: raw.period,
 		members: raw.member_count,
+		human:
+			typeof raw.human_count === 'number' && Number.isFinite(raw.human_count)
+				? raw.human_count
+				: null,
 		online:
 			typeof raw.online_count === 'number' && Number.isFinite(raw.online_count)
 				? raw.online_count

@@ -24,6 +24,14 @@ export const DEV_ONLINE = 420;
 export type DevMemberPoint = {
 	day: string;
 	members: number;
+	/**
+	 * Equal to `members`: the made-up server has no bots in it.
+	 *
+	 * Production prefers this figure over the total, so leaving the two the same
+	 * keeps the dev number and the dev line agreeing — which is the whole reason
+	 * both of them come out of this file.
+	 */
+	human: number | null;
 	online: number | null;
 };
 
@@ -66,6 +74,7 @@ export function devMemberSeries(days = 30, endingAt: Date = new Date()): DevMemb
 		points.push({
 			day: date.toISOString().slice(0, 10),
 			members,
+			human: members,
 			online: Math.round(DEV_ONLINE * (0.82 + 0.3 * eased))
 		});
 	}

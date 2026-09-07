@@ -99,6 +99,24 @@ export const GET: RequestHandler = async ({ url, platform, cookies }) => {
 	const sessionUser = buildDevUser(provider, role);
 	const redirectTarget = role === 'admin' || role === 'superadmin' ? '/admin' : '/';
 
+	// `sessions.user_id` is a foreign key into `users`, so the row has to exist
+	// before the session can. The simulator invents an id per run and used to go
+	// straight to createAuthSession, which meant every simulated login died on a
+	// FOREIGN KEY constraint and the whole local admin surface was unreachable.
+	//
+	// `is_admin` is written because authHandler re-reads privileges from this
+	// table on every request rather than trusting the session payload: without
+	// it a simulated admin is demoted on its very next page load. Ownership is
+	// not written here — that is resolved separately, and a dev row must not be
+	// able to claim it in a database that has a real owner.
+	await db
+		.prepare(
+			`INSERT INTO users (id, email, name, is_admin) VALUES (?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET name = excluded.name, is_admin = excluded.is_admin`
+		)
+		.bind(sessionUser.id, sessionUser.email, sessionUser.name, sessionUser.isAdmin ? 1 : 0)
+		.run();
+
 	const sessionId = await createAuthSession(db, sessionUser);
 
 	return new Response(null, {

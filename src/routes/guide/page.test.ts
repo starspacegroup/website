@@ -27,8 +27,15 @@ const directory = (over: Partial<GuildDirectory> = {}): GuildDirectory => ({
 	...over
 });
 
-const draw = (over: Partial<GuildDirectory> = {}) =>
-	render(Page, { props: { data: { directory: directory(over) } } });
+/**
+ * The route's PageData also carries the layout's `user`, `hasAIProviders` and
+ * `cmsPaletteItems`. This page reads none of them, so the prop is narrowed to
+ * what it actually uses rather than restated in every case.
+ */
+const props = (over: Partial<GuildDirectory> = {}) =>
+	({ data: { directory: directory(over) } }) as never;
+
+const draw = (over: Partial<GuildDirectory> = {}) => render(Page, { props: props(over) });
 
 describe('server guide', () => {
 	it('lists the channels under their category, with their topics', () => {
@@ -56,17 +63,14 @@ describe('server guide', () => {
 		const { container } = draw();
 		expect(container.textContent).not.toMatch(/Making your own room/);
 
-		const withRoom = render(Page, {
-			props: {
-				data: {
-					directory: directory({
-						commands: [
-							{ name: 'room', description: 'Make a room of your own', builtIn: true, options: [] }
-						]
-					})
-				}
-			}
-		});
+		const withRoom = render(
+			Page,
+			props({
+				commands: [
+					{ name: 'room', description: 'Make a room of your own', builtIn: true, options: [] }
+				]
+			})
+		);
 		expect(withRoom.container.textContent).toMatch(/Making your own room/);
 		// The privacy line is the point of the section, not a footnote.
 		expect(withRoom.container.textContent).toMatch(/deliberately not listed/i);

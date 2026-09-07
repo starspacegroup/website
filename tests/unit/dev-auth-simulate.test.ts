@@ -22,14 +22,28 @@ vi.mock('@sveltejs/kit', () => ({
  */
 function makeSessionDb() {
 	const rows = new Map<string, { user_id: string; expires_at: string; data: string | null }>();
+	const users = new Map<string, { email: string; name: string; is_admin: number }>();
 	const db = {
 		prepare(sql: string) {
 			return {
 				bind(...args: unknown[]) {
 					return {
 						async run() {
+							if (/^INSERT INTO users/i.test(sql)) {
+								const [id, email, name, is_admin] = args as [string, string, string, number];
+								users.set(id, { email, name, is_admin });
+								return { success: true };
+							}
 							if (/^INSERT INTO sessions/i.test(sql)) {
 								const [id, user_id, expires_at, data] = args as string[];
+								// `sessions.user_id` is a real foreign key. The stub used to
+								// accept anything, which is how a simulator that never wrote
+								// the user row passed its own tests and died on first use.
+								if (!users.has(user_id)) {
+									throw new Error(
+										`D1_ERROR: FOREIGN KEY constraint failed: no users row for ${user_id}`
+									);
+								}
 								rows.set(id, { user_id, expires_at, data });
 							}
 							return { success: true };
@@ -47,7 +61,11 @@ function makeSessionDb() {
 			};
 		}
 	};
-	return { db: db as unknown as Parameters<typeof createAuthSession>[0], rows };
+	/** What a prior login would have left behind. */
+	const seedUser = (id: string) =>
+		users.set(id, { email: `${id}@example.dev`, name: id, is_admin: 0 });
+
+	return { db: db as unknown as Parameters<typeof createAuthSession>[0], rows, users, seedUser };
 }
 
 function sessionIdFromCookie(setCookieHeader: string): string {
@@ -84,6 +102,28 @@ describe('Dev auth simulation endpoint', () => {
 		const session = await getAuthSession(db, sessionIdFromCookie(cookieHeader));
 		expect(session?.isPretend).toBe(true);
 		expect(session?.simulatedConnections).toEqual(['github']);
+	});
+
+	it('creates the user row its session points at', async () => {
+		// Without this the insert violates the sessions foreign key and every
+		// simulated login 500s, which took the whole local admin surface with it.
+		const { GET } = await import('../../src/routes/api/auth/dev-simulate/+server');
+		const { db, users } = makeSessionDb();
+
+		const response = await GET({
+			url: new URL('http://localhost/api/auth/dev-simulate?provider=discord&role=superadmin'),
+			platform: { env: { DEV_AUTH_BYPASS: 'true', DB: db } }
+		} as any);
+
+		expect(response.status).toBe(302);
+		expect(users.size).toBe(1);
+
+		const [id, row] = [...users.entries()][0];
+		expect(id).toMatch(/^dev-discord-/);
+		expect(row.email).toContain('@example.dev');
+		// authHandler re-reads privileges from `users` on every request, so a
+		// simulated admin that is not marked here is demoted on its next page load.
+		expect(row.is_admin).toBe(1);
 	});
 
 	it('creates a simulated Discord session when bypass is enabled', async () => {
@@ -195,9 +235,11 @@ describe('Dev auth simulation endpoint', () => {
 
 	it('links a provider onto an existing pretend session when mode=link', async () => {
 		const { GET } = await import('../../src/routes/api/auth/dev-simulate/+server');
-		const { db } = makeSessionDb();
+		const { db, seedUser } = makeSessionDb();
 
 		// Seed an existing pretend session and hand its opaque id back as the cookie.
+		// The user row comes with it: linking always follows a login, which is what
+		// writes that row.
 		const existing: SessionUser = {
 			id: 'dev-github-abc12345',
 			login: 'dev-github-abc12345',
@@ -208,6 +250,7 @@ describe('Dev auth simulation endpoint', () => {
 			isPretend: true,
 			simulatedConnections: ['github']
 		};
+		seedUser(existing.id);
 		const existingId = await createAuthSession(db, existing);
 
 		const response = await GET({

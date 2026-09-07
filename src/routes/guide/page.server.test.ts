@@ -20,6 +20,7 @@ vi.mock('$lib/server/guild-directory', async (importOriginal) => {
 });
 
 const { load } = await import('./+page.server');
+type GuildDirectory = import('$lib/server/guild-directory').GuildDirectory;
 const { DIRECTORY_CACHE_SECONDS, EMPTY_DIRECTORY } = await import('$lib/server/guild-directory');
 
 const directory = (over = {}) => ({
@@ -48,8 +49,14 @@ function kvStore() {
 	};
 }
 
+/** `load` is typed `void | PageData`; every case here takes the returning path. */
 const run = (kv: unknown) =>
-	load({ platform: kv ? { env: { KV: kv } } : undefined, setHeaders: vi.fn() } as never);
+	load({
+		platform: kv ? { env: { KV: kv } } : undefined,
+		setHeaders: vi.fn()
+	} as never) as Promise<{
+		directory: GuildDirectory;
+	}>;
 
 beforeEach(() => {
 	fetchGuildDirectory.mockReset();

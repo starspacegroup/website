@@ -169,8 +169,8 @@
 				</a>
 				<p class="note">
 					Opens SpaceBot, where you pick the server and approve
-					<code>voice:read</code> and <code>stats:read</code>. The key comes back
-					between the two servers — it never passes through this browser.
+					<code>voice:read</code> and <code>stats:read</code>. The key comes back between the two
+					servers — it never passes through this browser.
 				</p>
 			</div>
 		{/if}
@@ -180,45 +180,45 @@
 		<details class="manual" open={!data.connectAvailable}>
 			<summary>{data.connectAvailable ? 'Or paste a key by hand' : 'Paste a key'}</summary>
 
-		<ol class="steps">
-			<li>
-				Open SpaceBot, pick the *Space server, and go to <strong>API keys</strong>.
-				{#if status.apiUrl}
-					<a href={`${status.apiUrl}/admin`} target="_blank" rel="noopener noreferrer"
-						>Open SpaceBot</a
-					>
-				{/if}
-			</li>
-			<li>
-				Create a key with both <code>voice:read</code> and <code>stats:read</code>.
-			</li>
-			<li>Paste it here.</li>
-		</ol>
+			<ol class="steps">
+				<li>
+					Open SpaceBot, pick the *Space server, and go to <strong>API keys</strong>.
+					{#if status.apiUrl}
+						<a href={`${status.apiUrl}/admin`} target="_blank" rel="noopener noreferrer"
+							>Open SpaceBot</a
+						>
+					{/if}
+				</li>
+				<li>
+					Create a key with both <code>voice:read</code> and <code>stats:read</code>.
+				</li>
+				<li>Paste it here.</li>
+			</ol>
 
-		<form class="form" on:submit|preventDefault={() => send('POST', { apiUrl, apiKey, channel })}>
-			<label>
-				<span>SpaceBot address</span>
-				<input class="mono" bind:value={apiUrl} placeholder="https://spacebot.starspace.group" />
-			</label>
-			<label>
-				<span>API key</span>
-				<input
-					class="mono"
-					type="password"
-					bind:value={apiKey}
-					autocomplete="off"
-					spellcheck="false"
-					placeholder="sb_live_…"
-				/>
-			</label>
-			<label>
-				<span>Voice channel</span>
-				<input bind:value={channel} placeholder="Ten Forward" />
-			</label>
-			<button class="btn btn-primary" type="submit" disabled={busy || !apiKey}>
-				{busy ? 'Connecting…' : 'Connect'}
-			</button>
-		</form>
+			<form class="form" on:submit|preventDefault={() => send('POST', { apiUrl, apiKey, channel })}>
+				<label>
+					<span>SpaceBot address</span>
+					<input class="mono" bind:value={apiUrl} placeholder="https://spacebot.starspace.group" />
+				</label>
+				<label>
+					<span>API key</span>
+					<input
+						class="mono"
+						type="password"
+						bind:value={apiKey}
+						autocomplete="off"
+						spellcheck="false"
+						placeholder="sb_live_…"
+					/>
+				</label>
+				<label>
+					<span>Voice channel</span>
+					<input bind:value={channel} placeholder="Ten Forward" />
+				</label>
+				<button class="btn btn-primary" type="submit" disabled={busy || !apiKey}>
+					{busy ? 'Connecting…' : 'Connect'}
+				</button>
+			</form>
 		</details>
 
 		<p class="note">

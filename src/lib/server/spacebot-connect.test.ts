@@ -92,11 +92,12 @@ describe('buildAuthorizeUrl', () => {
 
 describe('exchangeCode', () => {
 	it('posts the secret and the same redirect_uri, and returns the key', async () => {
-		const fetcher = vi.fn(async () =>
-			new Response(
-				JSON.stringify({ api_key: 'sb_live_abc', guild_id: '123', scopes: ['voice:read'] }),
-				{ status: 200 }
-			)
+		const fetcher = vi.fn(
+			async () =>
+				new Response(
+					JSON.stringify({ api_key: 'sb_live_abc', guild_id: '123', scopes: ['voice:read'] }),
+					{ status: 200 }
+				)
 		);
 
 		const result = await exchangeCode(client, 'sbc_code', 'https://starspace.group/cb', fetcher);
@@ -119,8 +120,9 @@ describe('exchangeCode', () => {
 	});
 
 	it('reports a refusal rather than pretending it worked', async () => {
-		const fetcher = vi.fn(async () =>
-			new Response(JSON.stringify({ error: 'Invalid client credentials' }), { status: 401 })
+		const fetcher = vi.fn(
+			async () =>
+				new Response(JSON.stringify({ error: 'Invalid client credentials' }), { status: 401 })
 		);
 
 		const result = await exchangeCode(client, 'sbc_code', 'https://starspace.group/cb', fetcher);
@@ -128,7 +130,9 @@ describe('exchangeCode', () => {
 	});
 
 	it('rejects a 200 that carries no usable key', async () => {
-		const fetcher = vi.fn(async () => new Response(JSON.stringify({ guild_id: '1' }), { status: 200 }));
+		const fetcher = vi.fn(
+			async () => new Response(JSON.stringify({ guild_id: '1' }), { status: 200 })
+		);
 		const result = await exchangeCode(client, 'c', 'https://starspace.group/cb', fetcher);
 		expect(result.ok).toBe(false);
 	});

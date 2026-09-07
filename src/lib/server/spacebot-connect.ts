@@ -96,8 +96,7 @@ export function buildAuthorizeUrl(
 }
 
 export type ExchangeResult =
-	| { ok: true; apiKey: string; guildId: string; scopes: string[] }
-	| { ok: false; error: string };
+	{ ok: true; apiKey: string; guildId: string; scopes: string[] } | { ok: false; error: string };
 
 /**
  * Trade the one-time code for a key, server to server.

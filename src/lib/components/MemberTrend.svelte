@@ -6,7 +6,7 @@
 	import { onMount } from 'svelte';
 
 	/**
-	 * The last month of member counts as a sparkline under the hero's number —
+	 * The last 90 days of member counts as a sparkline under the hero's number —
 	 * a trend beside a hero figure, in the stat-tile sense, not a chart with
 	 * axes. One series, so no legend; the label above it says what it is.
 	 *
@@ -18,8 +18,9 @@
 	 *
 	 * It renders nothing until it has two days to draw, and nothing at all when
 	 * SpaceBot is not configured — the hero then looks exactly as it did before
-	 * the graph existed. In local dev it draws a made-up month instead, so the
-	 * layout can be worked on; see `$lib/dev-member-series`.
+	 * the graph existed. In local dev it draws a made-up 90 days instead, matching
+	 * the window production asks for, so the layout can be worked on at the
+	 * density it will really have; see `$lib/dev-member-series`.
 	 */
 
 	let points: MemberPoint[] = [];
@@ -29,7 +30,7 @@
 		// is no SpaceBot key in local dev, so the real series is always empty and
 		// the graph would never be seen while it was being worked on.
 		if (dev) {
-			points = devMemberSeries();
+			points = devMemberSeries(90);
 			return;
 		}
 

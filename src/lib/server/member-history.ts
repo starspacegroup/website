@@ -1,6 +1,6 @@
 /**
- * The member count over the last month, read from SpaceBot, for the graph under
- * the hero's number.
+ * The member count over the last 90 days, read from SpaceBot, for the graph
+ * under the hero's number.
  *
  * SpaceBot records a `server_stats` snapshot a few times a day and serves the
  * series at `GET /api/v1/stats/members` to an API key with the `stats:read`
@@ -14,8 +14,14 @@
  * graph existed.
  */
 
-/** How far back the graph looks. */
-export const HISTORY_PERIOD = '30d';
+/**
+ * How far back the graph looks.
+ *
+ * SpaceBot returns whatever it has rather than erroring on a window longer than
+ * its history, and the trend label counts the points it actually got — so a
+ * server with three weeks of snapshots still reads "in the last 21 days".
+ */
+export const HISTORY_PERIOD = '90d';
 
 /** How long a series may be reused before SpaceBot is asked again. */
 export const HISTORY_CACHE_SECONDS = 600;
@@ -48,7 +54,7 @@ type RawPoint = { period?: unknown; member_count?: unknown; online_count?: unkno
 
 /**
  * Keep a row only if it is a whole day with a real count. SpaceBot buckets by
- * `%Y-%m-%d` for a 30-day window, so anything else is a shape it did not
+ * `%Y-%m-%d` at daily granularity, so anything else is a shape it did not
  * promise, and a graph should not guess at it.
  */
 function toPoint(raw: RawPoint | null | undefined): MemberPoint | null {
@@ -66,7 +72,7 @@ function toPoint(raw: RawPoint | null | undefined): MemberPoint | null {
 }
 
 /**
- * Ask SpaceBot for the last month of member counts, one point per day.
+ * Ask SpaceBot for the last 90 days of member counts, one point per day.
  *
  * @param fetcher injected so tests do not reach the network
  */

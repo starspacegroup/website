@@ -8,7 +8,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 /**
- * GET /api/members/history — the last month of member counts, one point per
+ * GET /api/members/history — the last 90 days of member counts, one point per
  * day, for the trend line under the hero's number.
  *
  * Public and unauthenticated, like the count above it. There is nothing

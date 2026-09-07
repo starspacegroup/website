@@ -83,7 +83,7 @@ export const GET: RequestHandler = ({ url }) => {
 			status: [status]
 		},
 		{
-			// Public, unauthenticated: the last month of member counts, one point
+			// Public, unauthenticated: the last 90 days of member counts, one point
 			// per day — aggregate totals only, nothing about any member.
 			anchor: abs('/api/members/history'),
 			status: [status]

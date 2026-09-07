@@ -115,7 +115,10 @@ describe('fetchMemberHistory', () => {
 
 describe('constants', () => {
 	it('keeps the window and cache at their documented values', () => {
-		expect(HISTORY_PERIOD).toBe('30d');
+		// 90 days, asked of SpaceBot as one window. It returns what it has rather
+		// than erroring on a server younger than that, and the trend label counts
+		// the points that came back, so a short history stays honest.
+		expect(HISTORY_PERIOD).toBe('90d');
 		expect(HISTORY_CACHE_SECONDS).toBe(600);
 	});
 });

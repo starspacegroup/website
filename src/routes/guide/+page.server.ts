@@ -32,27 +32,30 @@ const UNAVAILABLE_CACHE_SECONDS = 300;
 
 export const load: PageServerLoad = async ({ platform, setHeaders }) => {
 	/**
-	 * Shared caches may hold this for as long as what it holds is worth reusing —
-	 * the same distinction KV makes below, a day for a directory and five minutes
-	 * for the page that says there isn't one. Browsers revalidate every time.
+	 * `private, no-cache`: only the reader's own browser may hold this, and it
+	 * must revalidate before reusing it.
 	 *
-	 * `max-age=0` rather than the shared figure is the whole point. This is a
-	 * document, and a document a browser considers fresh is one it will not ask
-	 * about: the reader keeps the copy they happen to hold, and every correction
-	 * behind it — a reconnected SpaceBot, a purged key, a redeploy — stays
-	 * invisible until it expires. That is not theoretical. An unavailable page
-	 * went out with a day's max-age, and afterwards the guide was blank on first
-	 * load and correct on refresh, because refreshing is the one thing that
-	 * bypasses a fresh cache entry.
+	 * Two things pull on this header, and they point the same way.
 	 *
-	 * Revalidating costs a conditional request that is usually a 304, and
-	 * `s-maxage` means the edge still absorbs the traffic.
+	 * The page must never be stale. An earlier version went out with a day's
+	 * `max-age`, and a browser that considers a page fresh never asks about it —
+	 * so after SpaceBot connected, the guide stayed blank on first load and came
+	 * right only on refresh, because refreshing is the one thing that bypasses a
+	 * fresh cache entry. `no-cache` revalidates every time, so a correction is
+	 * never invisible.
+	 *
+	 * The page must never be *shared*. Every page carries the nav bar, which is
+	 * rendered server-side with the signed-in user — so a shared cache that
+	 * stored this HTML would hand one visitor's nav to the next. It did: with
+	 * `public, s-maxage`, the edge served its stored copy on refresh and the nav
+	 * forgot who you were. `private` keeps it out of every shared cache.
+	 *
+	 * Nothing is lost by not caching at the edge. The one expensive part — the
+	 * read from SpaceBot — is already held in KV below, shared across every
+	 * request; the render itself is cheap.
 	 */
-	const cacheFor = (directory: GuildDirectory) => {
-		const shared = directory.available ? DIRECTORY_CACHE_SECONDS : UNAVAILABLE_CACHE_SECONDS;
-		setHeaders({
-			'cache-control': `public, max-age=0, s-maxage=${shared}, stale-while-revalidate=86400`
-		});
+	const cacheFor = () => {
+		setHeaders({ 'cache-control': 'private, no-cache' });
 	};
 
 	const kv = platform?.env?.KV;
@@ -60,7 +63,7 @@ export const load: PageServerLoad = async ({ platform, setHeaders }) => {
 	if (kv) {
 		const cached = (await kv.get(CACHE_KEY, 'json').catch(() => null)) as CacheEntry | null;
 		if (cached && Date.now() - cached.at < cached.ttl * 1000) {
-			cacheFor(cached.directory);
+			cacheFor();
 			return { directory: cached.directory };
 		}
 	}
@@ -69,7 +72,7 @@ export const load: PageServerLoad = async ({ platform, setHeaders }) => {
 		() => EMPTY_DIRECTORY
 	);
 
-	cacheFor(directory);
+	cacheFor();
 
 	// An unavailable directory is cached too, for a fraction of the time. It
 	// stops every visitor during a SpaceBot outage from queueing behind their own

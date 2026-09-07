@@ -167,36 +167,42 @@ describe('guide load', () => {
 			fetchGuildDirectory.mockResolvedValue(answer);
 			const setHeaders = vi.fn();
 			await load({ platform: undefined, setHeaders } as never);
-			expect(setHeaders.mock.calls[0][0]['cache-control']).toContain('max-age=0');
+			expect(setHeaders.mock.calls[0][0]['cache-control']).toContain('no-cache');
 		}
 	});
 
-	it('lets the CDN cache the page for a day too', async () => {
-		fetchGuildDirectory.mockResolvedValue(directory());
-		const setHeaders = vi.fn();
-		await load({ platform: undefined, setHeaders } as never);
-		expect(setHeaders).toHaveBeenCalledWith({
-			'cache-control': `public, max-age=0, s-maxage=${DIRECTORY_CACHE_SECONDS}, stale-while-revalidate=86400`
-		});
-	});
-
 	/**
-	 * The header used to be set before the read, so an unavailable page went out
-	 * with a day's max-age and shared caches kept serving it long after SpaceBot
-	 * was reachable again — which is exactly what happened the first time the
-	 * site connected: KV released its failure entry after five minutes, the edge
-	 * did not.
+	 * Every page carries the nav bar, rendered server-side with the signed-in
+	 * user. A shared cache that stored this HTML would hand one visitor's nav to
+	 * the next — which it did: with `public, s-maxage` the edge served its stored
+	 * copy on refresh and the nav forgot who you were. The response must be
+	 * `private` on every path, so no shared cache ever holds it.
 	 */
-	it('does not let a shared cache hold an unavailable page for a day', async () => {
-		fetchGuildDirectory.mockResolvedValue(EMPTY_DIRECTORY);
-		const setHeaders = vi.fn();
-		await load({ platform: undefined, setHeaders } as never);
-		expect(setHeaders).toHaveBeenCalledWith({
-			'cache-control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400'
-		});
+	it('is never shared-cacheable, so the nav is never served across users', async () => {
+		const cases: Array<GuildDirectory | 'kv-hit'> = [directory(), EMPTY_DIRECTORY, 'kv-hit'];
+		for (const answer of cases) {
+			const kv = kvStore();
+			if (answer === 'kv-hit') {
+				kv.store.set(
+					'guild:directory',
+					JSON.stringify({ at: Date.now(), ttl: 300, directory: directory() })
+				);
+			} else {
+				fetchGuildDirectory.mockResolvedValue(answer);
+			}
+			const setHeaders = vi.fn();
+			await load({ platform: { env: { KV: kv } }, setHeaders } as never);
+
+			const header = setHeaders.mock.calls[0][0]['cache-control'];
+			expect(header).toContain('private');
+			expect(header).not.toContain('public');
+			expect(header).not.toContain('s-maxage');
+		}
 	});
 
-	it('caches a KV hit for as long as what is in it is worth', async () => {
+	it('caches the directory server-side in KV, where the sharing belongs', async () => {
+		// Dropping the edge cache costs nothing: the one expensive part, the read
+		// from SpaceBot, is still held in KV and shared across every request.
 		const kv = kvStore();
 		kv.store.set(
 			'guild:directory',
@@ -205,8 +211,5 @@ describe('guide load', () => {
 		const setHeaders = vi.fn();
 		await load({ platform: { env: { KV: kv } }, setHeaders } as never);
 		expect(fetchGuildDirectory).not.toHaveBeenCalled();
-		expect(setHeaders).toHaveBeenCalledWith({
-			'cache-control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400'
-		});
 	});
 });

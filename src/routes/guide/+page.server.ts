@@ -32,19 +32,26 @@ const UNAVAILABLE_CACHE_SECONDS = 300;
 
 export const load: PageServerLoad = async ({ platform, setHeaders }) => {
 	/**
-	 * The response is cacheable for as long as what it holds is worth reusing,
-	 * which is the same distinction KV makes below: a day for a directory, five
-	 * minutes for the page that says there isn't one.
+	 * Shared caches may hold this for as long as what it holds is worth reusing —
+	 * the same distinction KV makes below, a day for a directory and five minutes
+	 * for the page that says there isn't one. Browsers revalidate every time.
 	 *
-	 * Setting the long TTL up front, before the read, is what pinned an
-	 * unavailable page in front of every visitor for a day after SpaceBot was
-	 * connected — KV had let its own failure entry go after five minutes, but
-	 * the edge was still serving the HTML built from it.
+	 * `max-age=0` rather than the shared figure is the whole point. This is a
+	 * document, and a document a browser considers fresh is one it will not ask
+	 * about: the reader keeps the copy they happen to hold, and every correction
+	 * behind it — a reconnected SpaceBot, a purged key, a redeploy — stays
+	 * invisible until it expires. That is not theoretical. An unavailable page
+	 * went out with a day's max-age, and afterwards the guide was blank on first
+	 * load and correct on refresh, because refreshing is the one thing that
+	 * bypasses a fresh cache entry.
+	 *
+	 * Revalidating costs a conditional request that is usually a 304, and
+	 * `s-maxage` means the edge still absorbs the traffic.
 	 */
 	const cacheFor = (directory: GuildDirectory) => {
-		const ttl = directory.available ? DIRECTORY_CACHE_SECONDS : UNAVAILABLE_CACHE_SECONDS;
+		const shared = directory.available ? DIRECTORY_CACHE_SECONDS : UNAVAILABLE_CACHE_SECONDS;
 		setHeaders({
-			'cache-control': `public, max-age=${ttl}, stale-while-revalidate=86400`
+			'cache-control': `public, max-age=0, s-maxage=${shared}, stale-while-revalidate=86400`
 		});
 	};
 

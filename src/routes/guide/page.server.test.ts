@@ -156,12 +156,27 @@ describe('guide load', () => {
 		expect(fetchGuildDirectory).toHaveBeenCalledTimes(1);
 	});
 
+	/**
+	 * A document a browser considers fresh is one it will not ask about. The
+	 * guide went out with a day's max-age while it was unavailable, and after
+	 * SpaceBot was connected it was blank on first load and correct on refresh —
+	 * refreshing being the one thing that bypasses a fresh cache entry.
+	 */
+	it('never lets a browser hold the page without asking', async () => {
+		for (const answer of [directory(), EMPTY_DIRECTORY]) {
+			fetchGuildDirectory.mockResolvedValue(answer);
+			const setHeaders = vi.fn();
+			await load({ platform: undefined, setHeaders } as never);
+			expect(setHeaders.mock.calls[0][0]['cache-control']).toContain('max-age=0');
+		}
+	});
+
 	it('lets the CDN cache the page for a day too', async () => {
 		fetchGuildDirectory.mockResolvedValue(directory());
 		const setHeaders = vi.fn();
 		await load({ platform: undefined, setHeaders } as never);
 		expect(setHeaders).toHaveBeenCalledWith({
-			'cache-control': `public, max-age=${DIRECTORY_CACHE_SECONDS}, stale-while-revalidate=86400`
+			'cache-control': `public, max-age=0, s-maxage=${DIRECTORY_CACHE_SECONDS}, stale-while-revalidate=86400`
 		});
 	});
 
@@ -177,7 +192,7 @@ describe('guide load', () => {
 		const setHeaders = vi.fn();
 		await load({ platform: undefined, setHeaders } as never);
 		expect(setHeaders).toHaveBeenCalledWith({
-			'cache-control': 'public, max-age=300, stale-while-revalidate=86400'
+			'cache-control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400'
 		});
 	});
 
@@ -191,7 +206,7 @@ describe('guide load', () => {
 		await load({ platform: { env: { KV: kv } }, setHeaders } as never);
 		expect(fetchGuildDirectory).not.toHaveBeenCalled();
 		expect(setHeaders).toHaveBeenCalledWith({
-			'cache-control': 'public, max-age=300, stale-while-revalidate=86400'
+			'cache-control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400'
 		});
 	});
 });

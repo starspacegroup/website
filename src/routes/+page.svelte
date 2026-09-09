@@ -349,7 +349,7 @@
 	<div class="closing-shell">
 		<div class="closing-card closing-card-accent">
 			<h2>Pull up a chair</h2>
-			<p>The server is free, it is open, and someone is almost certainly in a channel right now.</p>
+			<p>The server is free and it is open. Come say hello.</p>
 			<a class="hero-join" href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
 				<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
 					<path

@@ -1,4 +1,8 @@
-name = "starspace-group"
+# The Pages project that serves starspace.group. It does NOT match `site.slug`
+# ("starspace-group"): that name belongs to a separate, domainless Pages project,
+# and `wrangler pages deploy` reads this line, so pointing it at the slug shipped
+# every deploy to a project nobody visits. Deliberate divergence — leave it.
+name = "starspace-website"
 compatibility_date = "2024-01-01"
 pages_build_output_dir = ".svelte-kit/cloudflare"
 

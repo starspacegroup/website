@@ -22,12 +22,26 @@
  *   better than a confident "0 messages" from a bot that was never asked.
  */
 
-import type { ChannelActivity, ChannelType } from '$lib/server/guild-directory';
+import type { ChannelActivity, ChannelType, DirectoryChannel } from '$lib/server/guild-directory';
 
 /** Channel kinds where the interesting activity is people talking out loud. */
 const VOICE_TYPES: ChannelType[] = ['voice', 'stage'];
 
 export const isVoiceChannel = (type: ChannelType): boolean => VOICE_TYPES.includes(type);
+
+/**
+ * Channel kinds whose content lives entirely in threads.
+ *
+ * Discord logs a message against the thread it was posted in, and a thread is
+ * not a channel in the public directory — so a forum's own message count is
+ * structurally zero however busy it is. "Nothing posted in the last 30 days"
+ * would be a flat lie about the busiest forum on a server, so these channels
+ * get no activity line at all. An ordinary text channel with a few threads is
+ * merely undercounted, which is a different thing from being misreported.
+ */
+const THREAD_ONLY_TYPES: ChannelType[] = ['forum', 'media'];
+
+export const isThreadOnly = (type: ChannelType): boolean => THREAD_ONLY_TYPES.includes(type);
 
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 
@@ -187,4 +201,23 @@ export function describeVoiceActivity(
 export function describeLobby(activity: ChannelActivity | null): string | null {
 	if (!activity?.lobby) return null;
 	return 'Join this one and you get a room of your own, made on the spot.';
+}
+
+/**
+ * The one line under a channel, whatever kind it is.
+ *
+ * The page calls this rather than choosing between the two describers itself,
+ * so the rule about forums — see {@link isThreadOnly} — cannot be forgotten at
+ * the one call site that matters.
+ */
+export function describeChannelUse(
+	channel: DirectoryChannel,
+	days: number | null,
+	timezone: string | null = null,
+	now: Date = new Date()
+): string | null {
+	if (isThreadOnly(channel.type)) return null;
+	return isVoiceChannel(channel.type)
+		? describeVoiceActivity(channel.activity, days, timezone, now)
+		: describeTextActivity(channel.activity, days, now);
 }

@@ -1,15 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import {
+	describeChannelUse,
 	describeLobby,
 	describeTextActivity,
 	describeVoiceActivity,
 	formatDuration,
 	formatHour,
 	formatWhen,
+	isThreadOnly,
 	isVoiceChannel,
 	whenClause
 } from './channel-activity';
-import type { ChannelActivity } from '$lib/server/guild-directory';
+import type { ChannelActivity, DirectoryChannel } from '$lib/server/guild-directory';
 
 /**
  * The sentences under each channel on the server guide.
@@ -214,5 +216,51 @@ describe('describeLobby', () => {
 	it('says nothing about an ordinary channel', () => {
 		expect(describeLobby(activity())).toBeNull();
 		expect(describeLobby(null)).toBeNull();
+	});
+});
+
+describe('describeChannelUse', () => {
+	const channel = (over: Partial<DirectoryChannel> = {}): DirectoryChannel => ({
+		id: '1',
+		name: 'general',
+		type: 'text',
+		topic: null,
+		activity: activity({ messages: 4, posters: 2 }),
+		...over
+	});
+
+	it('knows which kinds keep their messages in threads', () => {
+		expect(isThreadOnly('forum')).toBe(true);
+		expect(isThreadOnly('media')).toBe(true);
+		expect(isThreadOnly('text')).toBe(false);
+	});
+
+	it('describes a text channel by what was said', () => {
+		expect(describeChannelUse(channel(), 30, null, NOW)).toMatch(/4 messages from 2 people/);
+	});
+
+	it('describes a voice channel by who was in it', () => {
+		expect(
+			describeChannelUse(
+				channel({
+					type: 'voice',
+					activity: activity({ voiceSeconds: 7200, voicePeople: 2, voiceSessions: 3 })
+				}),
+				30,
+				null,
+				NOW
+			)
+		).toMatch(/2 people spent 2 hours here/);
+	});
+
+	it('says nothing about a forum rather than calling it empty', () => {
+		// Every message in a forum belongs to a thread, so the channel's own count
+		// is zero however busy it is. Printing that zero would be a lie.
+		expect(
+			describeChannelUse(channel({ type: 'forum', activity: activity() }), 30, null, NOW)
+		).toBeNull();
+		expect(
+			describeChannelUse(channel({ type: 'media', activity: activity() }), 30, null, NOW)
+		).toBeNull();
 	});
 });

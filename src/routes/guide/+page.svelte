@@ -1,11 +1,6 @@
 <script lang="ts">
 	import SharingMeta from '$lib/components/SharingMeta.svelte';
-	import {
-		describeLobby,
-		describeTextActivity,
-		describeVoiceActivity,
-		isVoiceChannel
-	} from '$lib/channel-activity';
+	import { describeChannelUse, describeLobby } from '$lib/channel-activity';
 	import { DISCORD_INVITE } from '$lib/discord';
 	import { site } from '$lib/site.config';
 	import type { PageData } from './$types';
@@ -64,12 +59,10 @@
 	const now = new Date();
 
 	/* What actually happens in a channel, as a sentence. Voice and text answer
-	   different questions — "when is anyone in here" against "is this read" — so
-	   they are described separately rather than squeezed into one line. */
+	   different questions — "when is anyone in here" against "is this read" — and
+	   a forum answers neither, because its messages belong to its threads. */
 	const usage = (channel: (typeof directory.categories)[number]['channels'][number]) =>
-		isVoiceChannel(channel.type)
-			? describeVoiceActivity(channel.activity, directory.activityDays, directory.timezone, now)
-			: describeTextActivity(channel.activity, directory.activityDays, now);
+		describeChannelUse(channel, directory.activityDays, directory.timezone, now);
 </script>
 
 <SharingMeta

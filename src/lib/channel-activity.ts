@@ -194,6 +194,15 @@ export function describeVoiceActivity(
 	const hour = formatHour(activity.busiestHourUtc, timezone);
 	if (hour) parts.push(`Busiest around ${hour}.`);
 
+	// A Discord voice channel carries a text chat of its own, and on this server
+	// some of them are busier than the standalone channels. Somebody deciding
+	// whether to open one wants to know there is a conversation in it.
+	if (activity.messages && activity.messages > 0) {
+		const posters = activity.posters ?? 0;
+		const who = posters > 0 ? ` from ${plural(posters, 'person', 'people')}` : '';
+		parts.push(`Its chat has ${plural(activity.messages, 'message')}${who}.`);
+	}
+
 	return parts.join(' ');
 }
 

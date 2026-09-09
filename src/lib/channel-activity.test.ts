@@ -174,6 +174,36 @@ describe('describeVoiceActivity', () => {
 		);
 	});
 
+	it('mentions the chat inside a voice channel when there is one', () => {
+		// Discord voice channels carry their own text chat, and on a busy server
+		// it can outrun the standalone channels.
+		expect(
+			describeVoiceActivity(
+				activity({
+					voiceSeconds: 7200,
+					voicePeople: 2,
+					voiceSessions: 4,
+					messages: 104,
+					posters: 10
+				}),
+				30,
+				null,
+				NOW
+			)
+		).toMatch(/Its chat has 104 messages from 10 people\./);
+	});
+
+	it('says nothing about a chat nobody has used', () => {
+		expect(
+			describeVoiceActivity(
+				activity({ voiceSeconds: 7200, voicePeople: 2, voiceSessions: 4, messages: 0 }),
+				30,
+				null,
+				NOW
+			)
+		).not.toMatch(/chat/);
+	});
+
 	it('drops the clauses it has no figure for', () => {
 		expect(
 			describeVoiceActivity(

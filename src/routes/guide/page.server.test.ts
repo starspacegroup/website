@@ -27,6 +27,8 @@ const directory = (over = {}) => ({
 	categories: [{ name: 'Lobby', channels: [] }],
 	commands: [],
 	syncedAt: '2026-09-07 12:00:00',
+	activityDays: 30,
+	timezone: 'America/New_York',
 	available: true,
 	...over
 });

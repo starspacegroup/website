@@ -1,5 +1,11 @@
 <script lang="ts">
 	import SharingMeta from '$lib/components/SharingMeta.svelte';
+	import {
+		describeLobby,
+		describeTextActivity,
+		describeVoiceActivity,
+		isVoiceChannel
+	} from '$lib/channel-activity';
 	import { DISCORD_INVITE } from '$lib/discord';
 	import { site } from '$lib/site.config';
 	import type { PageData } from './$types';
@@ -7,7 +13,7 @@
 	export let data: PageData;
 
 	const description =
-		'Every channel in the *Space Discord and what it is for, and every command SpaceBot answers to. Read from the server itself, once a day.';
+		'Every channel in the *Space Discord, what it is for and how much it is used, and every command SpaceBot answers to. Read from the server itself, once a day.';
 
 	$: directory = data.directory;
 	$: builtIn = directory.commands.filter((command) => command.builtIn);
@@ -52,6 +58,18 @@
 	};
 
 	$: syncedOn = formatDay(directory.syncedAt);
+
+	/* One clock for the whole render, so two channels that were last used at the
+	   same moment cannot describe it differently. */
+	const now = new Date();
+
+	/* What actually happens in a channel, as a sentence. Voice and text answer
+	   different questions — "when is anyone in here" against "is this read" — so
+	   they are described separately rather than squeezed into one line. */
+	const usage = (channel: (typeof directory.categories)[number]['channels'][number]) =>
+		isVoiceChannel(channel.type)
+			? describeVoiceActivity(channel.activity, directory.activityDays, directory.timezone, now)
+			: describeTextActivity(channel.activity, directory.activityDays, now);
 </script>
 
 <SharingMeta
@@ -94,7 +112,11 @@
 					<h2 id="channels-heading">Channels</h2>
 					<p class="section-lede">
 						{channelCount} public channels, in the order they appear in Discord. Descriptions are the
-						channel topics, written by the people who run them.
+						channel topics, written by the people who run them.{#if directory.activityDays}
+							The line underneath each one is what actually happened in it over the last {directory.activityDays}
+							days — counts only, never who said what. Voice channels are drop-in rooms: nobody schedules
+							them, so the useful thing to know is when people are usually in there.
+						{/if}
 					</p>
 				</div>
 
@@ -113,6 +135,14 @@
 										</p>
 										{#if channel.topic}
 											<p class="channel-topic">{channel.topic}</p>
+										{/if}
+										{#if describeLobby(channel.activity)}
+											<!-- The only voice channel whose purpose is a fact rather than a
+											     pattern: SpaceBot builds a room when you join it. -->
+											<p class="channel-purpose">{describeLobby(channel.activity)}</p>
+										{/if}
+										{#if usage(channel)}
+											<p class="channel-activity">{usage(channel)}</p>
 										{/if}
 									</li>
 								{/each}
@@ -318,6 +348,24 @@
 		margin: 0.3rem 0 0;
 		font-size: 0.9375rem;
 		line-height: 1.6;
+		color: var(--color-text-secondary);
+	}
+
+	/* What the room is *for*, when that is a fact rather than a topic somebody
+	   typed. Carries the accent so it does not read as more description. */
+	.channel-purpose {
+		margin: 0.35rem 0 0;
+		font-size: 0.9375rem;
+		line-height: 1.6;
+		color: var(--color-primary);
+	}
+
+	/* The measured line. Quieter than the topic on purpose: it is context for
+	   the channel, not a second description of it. */
+	.channel-activity {
+		margin: 0.35rem 0 0;
+		font-size: 0.875rem;
+		line-height: 1.55;
 		color: var(--color-text-secondary);
 	}
 

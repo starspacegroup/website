@@ -418,6 +418,121 @@ describe('fetchGuildDirectory', () => {
 		});
 	});
 
+	describe('how a channel is used', () => {
+		const withActivity = (activity: unknown) =>
+			channelsBody({
+				activity_days: 30,
+				timezone: 'America/New_York',
+				categories: [
+					{
+						category: 'Lobby',
+						category_id: 'c1',
+						channels: [{ id: '1', name: 'general', type: 'text', topic: null, activity }]
+					}
+				]
+			});
+
+		it('asks SpaceBot for the usage window it intends to label', async () => {
+			const fetcher = bothOk();
+			await fetchGuildDirectory(CONFIG, fetcher);
+			const asked = (fetcher as unknown as { mock: { calls: [string][] } }).mock.calls.map((call) =>
+				String(call[0])
+			);
+			expect(asked.some((url) => url.includes('/api/v1/channels?activity=30'))).toBe(true);
+		});
+
+		it('carries the window and the server timezone the answer came with', async () => {
+			const directory = await fetchGuildDirectory(
+				CONFIG,
+				fetcherFor({
+					'/api/v1/channels': withActivity({ messages: 4, posters: 2, lobby: false }),
+					'/api/v1/commands': commandsBody()
+				})
+			);
+			expect(directory.activityDays).toBe(30);
+			expect(directory.timezone).toBe('America/New_York');
+		});
+
+		it('reads the counts a channel came with', async () => {
+			const directory = await fetchGuildDirectory(
+				CONFIG,
+				fetcherFor({
+					'/api/v1/channels': withActivity({
+						messages: 91,
+						posters: 7,
+						lastMessageAt: '2026-09-08 18:04:00',
+						voiceSeconds: 17936,
+						voicePeople: 3,
+						voiceSessions: 12,
+						typicalStaySeconds: 1495,
+						busiestHourUtc: 20,
+						lastVoiceAt: '2026-09-08 20:11:00',
+						lobby: true
+					}),
+					'/api/v1/commands': commandsBody()
+				})
+			);
+			expect(directory.categories[0].channels[0].activity).toEqual({
+				messages: 91,
+				posters: 7,
+				lastMessageAt: '2026-09-08 18:04:00',
+				voiceSeconds: 17936,
+				voicePeople: 3,
+				voiceSessions: 12,
+				typicalStaySeconds: 1495,
+				busiestHourUtc: 20,
+				lastVoiceAt: '2026-09-08 20:11:00',
+				lobby: true
+			});
+		});
+
+		it('keeps "not recorded" apart from "nothing happened"', async () => {
+			const directory = await fetchGuildDirectory(
+				CONFIG,
+				fetcherFor({
+					'/api/v1/channels': withActivity({ messages: null, posters: null, lobby: false }),
+					'/api/v1/commands': commandsBody()
+				})
+			);
+			const activity = directory.categories[0].channels[0].activity;
+			expect(activity?.messages).toBeNull();
+			// A voice count that was simply absent is zero, which is what it means:
+			// SpaceBot sends every channel, so a missing voice figure is no voice.
+			expect(activity?.voiceSeconds).toBe(0);
+		});
+
+		it('says nothing about a channel SpaceBot said nothing about', async () => {
+			// An older SpaceBot that never heard of `?activity` omits the field, and
+			// the page must fall back to name and topic rather than to guesses.
+			const directory = await fetchGuildDirectory(CONFIG, bothOk());
+			expect(directory.categories[0].channels[0].activity).toBeNull();
+			expect(directory.activityDays).toBeNull();
+			expect(directory.timezone).toBeNull();
+		});
+
+		it('drops an hour that is not an hour', async () => {
+			const directory = await fetchGuildDirectory(
+				CONFIG,
+				fetcherFor({
+					'/api/v1/channels': withActivity({ busiestHourUtc: 47, lobby: false }),
+					'/api/v1/commands': commandsBody()
+				})
+			);
+			expect(directory.categories[0].channels[0].activity?.busiestHourUtc).toBeNull();
+		});
+
+		it('treats anything but true as not a lobby', async () => {
+			const directory = await fetchGuildDirectory(
+				CONFIG,
+				fetcherFor({
+					'/api/v1/channels': withActivity({ lobby: 'yes' }),
+					'/api/v1/commands': commandsBody()
+				})
+			);
+			expect(directory.categories[0].channels[0].activity?.lobby).toBe(false);
+		});
+	});
+
 	it('caches for a day', () => {
 		expect(DIRECTORY_CACHE_SECONDS).toBe(86_400);
 	});

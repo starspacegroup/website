@@ -5,7 +5,12 @@
  * SpaceBot's gateway keeps a `guild_channels` snapshot of the server's PUBLIC
  * channels — it never sends one `@everyone` cannot view, and never a room a
  * member made with `/room` — and serves it at `GET /api/v1/channels` to a key
- * with the `channels:read` scope. `GET /api/v1/commands` serves the built-in
+ * with the `channels:read` scope. This site asks with `?activity=30`, which
+ * adds how each channel is *used*: a name and a topic somebody set once cannot
+ * tell a newcomer which rooms are alive, when people are in them, or what a
+ * voice channel is for when it has no topic at all. Counts only — SpaceBot
+ * aggregates before answering, so no message text or member name reaches this
+ * site to be published by accident. `GET /api/v1/commands` serves the built-in
  * commands and this server's own, with `commands:read`. Both need the same key
  * the hero already uses, carrying the extra scopes.
  *
@@ -34,6 +39,16 @@ export const DIRECTORY_CACHE_SECONDS = 86_400;
 /** Give up on SpaceBot rather than hold a page render open. */
 const REQUEST_TIMEOUT_MS = 4000;
 
+/**
+ * How much history the channel usage covers.
+ *
+ * A month. Long enough that a room used on weekends still looks used, short
+ * enough that "quiet" means quiet now rather than quiet since spring — a
+ * newcomer reading this page is deciding where to say something today.
+ * SpaceBot's raw events stop at 90 days, so this is well inside what it keeps.
+ */
+const ACTIVITY_DAYS = 30;
+
 /** Channel kinds this site renders. Anything else is dropped, not guessed at. */
 export const RENDERABLE_TYPES = [
 	'text',
@@ -45,12 +60,42 @@ export const RENDERABLE_TYPES = [
 ] as const;
 export type ChannelType = (typeof RENDERABLE_TYPES)[number];
 
+/**
+ * How a channel is actually used, over {@link GuildDirectory.activityDays}.
+ *
+ * `messages` and `posters` are `null` — not zero — for a channel the server
+ * excludes from logging. Nothing was recorded, so "no messages" would be a
+ * claim this site cannot make; the page says the room is not counted instead.
+ */
+export type ChannelActivity = {
+	messages: number | null;
+	posters: number | null;
+	/** When the most recent message landed, or null. */
+	lastMessageAt: string | null;
+	/** Completed voice time, in seconds. */
+	voiceSeconds: number;
+	/** Distinct people who joined voice. */
+	voicePeople: number;
+	/** Times somebody joined. */
+	voiceSessions: number;
+	/** Mean length of a completed visit, in seconds. */
+	typicalStaySeconds: number | null;
+	/** Hour of day, UTC, this channel fills up most often. */
+	busiestHourUtc: number | null;
+	/** Most recent voice join, or null. */
+	lastVoiceAt: string | null;
+	/** Joining this channel gives the member a room of their own. */
+	lobby: boolean;
+};
+
 export type DirectoryChannel = {
 	id: string;
 	name: string;
 	type: ChannelType;
 	/** The channel's own description in Discord, or `null` when it has none. */
 	topic: string | null;
+	/** Null when SpaceBot had nothing to say about this channel's use. */
+	activity: ChannelActivity | null;
 };
 
 export type DirectoryCategory = {
@@ -72,6 +117,10 @@ export type GuildDirectory = {
 	commands: DirectoryCommand[];
 	/** When SpaceBot's gateway last refreshed the channel list. */
 	syncedAt: string | null;
+	/** The window every {@link ChannelActivity} covers, in days. */
+	activityDays: number | null;
+	/** The Discord server's own timezone, for reading a busiest hour in. */
+	timezone: string | null;
 	/** True when SpaceBot answered at all, whatever it had to say. */
 	available: boolean;
 };
@@ -80,6 +129,8 @@ export const EMPTY_DIRECTORY: GuildDirectory = {
 	categories: [],
 	commands: [],
 	syncedAt: null,
+	activityDays: null,
+	timezone: null,
 	available: false
 };
 
@@ -98,6 +149,44 @@ function isRenderableType(value: unknown): value is ChannelType {
 	return RENDERABLE_TYPES.includes(value as ChannelType);
 }
 
+/** A count, or 0. A number this site cannot read is not a number it prints. */
+const count = (value: unknown): number => {
+	const parsed = Number(value);
+	return Number.isFinite(parsed) && parsed > 0 ? Math.round(parsed) : 0;
+};
+
+/** A count that is allowed to be absent — the distinction the page renders. */
+const maybeCount = (value: unknown): number | null => {
+	if (value === null || value === undefined) return null;
+	const parsed = Number(value);
+	return Number.isFinite(parsed) ? Math.round(parsed) : null;
+};
+
+/**
+ * Read one channel's usage, or `null` when SpaceBot did not send any.
+ *
+ * An older SpaceBot that has never heard of `?activity` simply omits the field,
+ * and every channel then renders exactly as it did before. That is the whole
+ * fallback: this site never fills the gap with an estimate.
+ */
+function toActivity(raw: unknown): ChannelActivity | null {
+	if (!raw || typeof raw !== 'object') return null;
+	const row = raw as Record<string, unknown>;
+	const hour = maybeCount(row.busiestHourUtc);
+	return {
+		messages: maybeCount(row.messages),
+		posters: maybeCount(row.posters),
+		lastMessageAt: str(row.lastMessageAt),
+		voiceSeconds: count(row.voiceSeconds),
+		voicePeople: count(row.voicePeople),
+		voiceSessions: count(row.voiceSessions),
+		typicalStaySeconds: maybeCount(row.typicalStaySeconds),
+		busiestHourUtc: hour !== null && hour >= 0 && hour <= 23 ? hour : null,
+		lastVoiceAt: str(row.lastVoiceAt),
+		lobby: row.lobby === true
+	};
+}
+
 /**
  * Keep a channel only if it has a name and a type this site knows how to draw.
  * A nameless or unlabelled entry on a public page is worse than a missing one.
@@ -108,7 +197,7 @@ function toChannel(raw: unknown): DirectoryChannel | null {
 	const name = str(row.name);
 	const id = str(row.id);
 	if (!name || !id || !isRenderableType(row.type)) return null;
-	return { id, name, type: row.type, topic: str(row.topic) };
+	return { id, name, type: row.type, topic: str(row.topic), activity: toActivity(row.activity) };
 }
 
 /**
@@ -219,7 +308,7 @@ export async function fetchGuildDirectory(
 	fetcher: typeof fetch = fetch
 ): Promise<GuildDirectory> {
 	const [channelsBody, commandsBody] = await Promise.all([
-		ask(config, '/api/v1/channels', fetcher),
+		ask(config, `/api/v1/channels?activity=${ACTIVITY_DAYS}`, fetcher),
 		ask(config, '/api/v1/commands?limit=100', fetcher)
 	]);
 
@@ -247,6 +336,10 @@ export async function fetchGuildDirectory(
 		categories,
 		commands,
 		syncedAt: str(channelsBody?.synced_at),
+		// SpaceBot answers with the window it actually used, which is not always
+		// the one that was asked for. The page labels what it was given.
+		activityDays: maybeCount(channelsBody?.activity_days),
+		timezone: str(channelsBody?.timezone),
 		available: true
 	};
 }

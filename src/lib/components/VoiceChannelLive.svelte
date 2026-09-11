@@ -270,13 +270,16 @@
 		box-shadow: 0 0 0 1.5px var(--color-background);
 	}
 
+	/* A solid chip with the tile's own background as the glyph, rather than a red
+	   tint under a red glyph: at 15px a tinted chip left the mic as a smudge, and
+	   the strokes need the full contrast the background token gives in either
+	   theme. The fill is also what the slash's gap stroke paints with, so it has
+	   to be one opaque colour. */
 	.vc-flag-muted {
 		right: -0.2rem;
-		/* Opaque, not a tint over transparent: the slash's gap stroke below has to
-		   match this fill exactly, and it can only name one colour. */
-		--vc-flag-fill: color-mix(in srgb, var(--color-danger) 20%, var(--color-background));
+		--vc-flag-fill: var(--color-danger);
 		background: var(--vc-flag-fill);
-		color: var(--color-danger);
+		color: var(--color-background);
 	}
 
 	/* Left of the mic, and green rather than the brand coral: coral and the mic's
@@ -285,9 +288,9 @@
 	   right now. */
 	.vc-flag-video {
 		left: -0.2rem;
-		--vc-flag-fill: color-mix(in srgb, var(--color-success) 22%, var(--color-background));
+		--vc-flag-fill: var(--color-success);
 		background: var(--vc-flag-fill);
-		color: var(--color-success);
+		color: var(--color-background);
 	}
 
 	/* The slash is drawn twice: once thick in the chip's own fill to cut a gap
@@ -295,13 +298,13 @@
 	   the two shapes merge into a blob at 10px. */
 	.vc-slash-gap {
 		stroke: var(--vc-flag-fill);
-		stroke-width: 3.4;
+		stroke-width: 2.8;
 		stroke-linecap: round;
 	}
 
 	.vc-slash {
 		stroke: currentColor;
-		stroke-width: 1.5;
+		stroke-width: 1.7;
 		stroke-linecap: round;
 	}
 

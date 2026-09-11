@@ -30,22 +30,76 @@
 		/** Seconds between this seat's turns to talk. `null` means muted. */
 		speech: number | null;
 		speechOffset: number;
+		/**
+		 * Seconds for this seat's camera to come on and go off again. `null` means
+		 * a camera that never comes on, which is most people most of the time.
+		 */
+		camera: number | null;
+		cameraOffset: number;
 	};
 
 	const seats: Seat[] = [
-		{ name: 'nova', presence: null, offset: 0, speech: 9, speechOffset: -1 },
-		{ name: 'quill', presence: null, offset: 0, speech: 13, speechOffset: -7 },
-		{ name: 'bramble', presence: 23, offset: -4, speech: null, speechOffset: 0 },
-		{ name: 'orbit', presence: 19, offset: -13, speech: 11, speechOffset: -4 },
-		{ name: 'moss', presence: 29, offset: -21, speech: null, speechOffset: 0 },
-		{ name: 'kestrel', presence: 17, offset: -9, speech: 17, speechOffset: -12 }
+		{
+			name: 'nova',
+			presence: null,
+			offset: 0,
+			speech: 9,
+			speechOffset: -1,
+			camera: 41,
+			cameraOffset: -6
+		},
+		{
+			name: 'quill',
+			presence: null,
+			offset: 0,
+			speech: 13,
+			speechOffset: -7,
+			camera: null,
+			cameraOffset: 0
+		},
+		{
+			name: 'bramble',
+			presence: 23,
+			offset: -4,
+			speech: null,
+			speechOffset: 0,
+			camera: 29,
+			cameraOffset: -17
+		},
+		{
+			name: 'orbit',
+			presence: 19,
+			offset: -13,
+			speech: 11,
+			speechOffset: -4,
+			camera: null,
+			cameraOffset: 0
+		},
+		{
+			name: 'moss',
+			presence: 29,
+			offset: -21,
+			speech: null,
+			speechOffset: 0,
+			camera: null,
+			cameraOffset: 0
+		},
+		{
+			name: 'kestrel',
+			presence: 17,
+			offset: -9,
+			speech: 17,
+			speechOffset: -12,
+			camera: null,
+			cameraOffset: 0
+		}
 	];
 </script>
 
 <figure
 	class="vc"
 	role="img"
-	aria-label="A simulated view of the Ten Forward voice channel: members joining and leaving, one of them sharing their screen."
+	aria-label="A simulated view of the Ten Forward voice channel: members joining and leaving, some muted or on camera, one of them sharing their screen."
 >
 	<div class="vc-panel" aria-hidden="true">
 		<div class="vc-header">
@@ -75,12 +129,50 @@
 					class:vc-regular={seat.presence === null}
 					style="--presence: {seat.presence ?? 0}s; --offset: {seat.offset}s;"
 				>
-					<span
-						class="vc-avatar"
-						class:vc-muted={seat.speech === null}
-						style="--speech: {seat.speech ?? 0}s; --speech-offset: {seat.speechOffset}s;"
-						>{seat.name.slice(0, 2)}</span
-					>
+					<span class="vc-person">
+						<span
+							class="vc-avatar"
+							class:vc-muted={seat.speech === null}
+							style="--speech: {seat.speech ?? 0}s; --speech-offset: {seat.speechOffset}s;"
+							>{seat.name.slice(0, 2)}</span
+						>
+
+						<!-- The same two badges the live panel draws, in the same places and
+						     the same colours, so the mic and the camera do not change
+						     meaning when the simulation swaps out for the real room. The
+						     camera comes and goes on its own cycle; the mic is fixed,
+						     because a seat is either one of the talkers or one of the
+						     listeners for the whole loop. -->
+						{#if seat.camera !== null}
+							<span
+								class="vc-flag vc-flag-video"
+								style="--camera: {seat.camera}s; --camera-offset: {seat.cameraOffset}s;"
+							>
+								<svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+									<rect x="1.4" y="4.4" width="9.4" height="7.2" rx="1.6" fill="currentColor" />
+									<path d="M11.6 8.2l3-2v5.6l-3-2z" fill="currentColor" />
+								</svg>
+							</span>
+						{/if}
+						{#if seat.speech === null}
+							<span class="vc-flag vc-flag-muted">
+								<svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+									<path
+										d="M8 2.4a1.9 1.9 0 0 1 1.9 1.9v3.4a1.9 1.9 0 0 1-3.8 0V4.3A1.9 1.9 0 0 1 8 2.4z"
+										fill="currentColor"
+									/>
+									<path
+										d="M4.3 7.5a3.7 3.7 0 0 0 7.4 0M8 11.2v2.4"
+										stroke="currentColor"
+										stroke-width="1.4"
+										stroke-linecap="round"
+									/>
+									<path class="vc-slash-gap" d="M3.4 2.8l9.2 10.4" />
+									<path class="vc-slash" d="M3.4 2.8l9.2 10.4" />
+								</svg>
+							</span>
+						{/if}
+					</span>
 					<span class="vc-handle">{seat.name}</span>
 				</li>
 			{/each}
@@ -327,6 +419,15 @@
 	/* A seat that is not in the room takes up no width, so the others slide
 	   across to fill the gap the way Discord's own tiles do. */
 
+	/* The avatar and its badges. Position lives here rather than on the seat, so
+	   a badge hangs off the face at any avatar size — including the smaller one
+	   phones get below. Identical to the live panel's. */
+	.vc-person {
+		position: relative;
+		display: block;
+		line-height: 0;
+	}
+
 	.vc-avatar {
 		display: grid;
 		place-items: center;
@@ -337,16 +438,73 @@
 		color: var(--color-secondary);
 		font-size: 0.8rem;
 		font-weight: 700;
+		line-height: 1;
 		animation: vc-speak var(--speech) ease-out infinite;
 		animation-delay: var(--speech-offset);
 	}
 
-	/* Muted seats read as muted at a glance: the avatar goes grey and loses its
-	   speaking ring, rather than carrying a mic glyph nobody can see this small. */
+	/* Muted seats read as muted at a glance, before anyone looks close enough to
+	   find the badge: the avatar goes grey and loses its speaking ring. */
 	.vc-muted {
 		background: color-mix(in srgb, var(--color-text) 10%, transparent);
 		color: var(--color-text-secondary);
 		animation: none;
+	}
+
+	/* One chip per state, on the avatar's lower edge, mic on the right where
+	   Discord puts it. Each carries a ring of the tile's own background so it
+	   separates from the face underneath rather than melting into it. The whole
+	   block is the live panel's, verbatim — the two must not drift. */
+	.vc-flag {
+		position: absolute;
+		bottom: -0.1rem;
+		display: grid;
+		place-items: center;
+		width: 0.95rem;
+		height: 0.95rem;
+		border-radius: 50%;
+		box-shadow: 0 0 0 1.5px var(--color-background);
+	}
+
+	/* A solid chip with the tile's own background as the glyph, rather than a red
+	   tint under a red glyph: at 15px a tinted chip left the mic as a smudge, and
+	   the strokes need the full contrast the background token gives in either
+	   theme. The fill is also what the slash's gap stroke paints with, so it has
+	   to be one opaque colour. */
+	.vc-flag-muted {
+		right: -0.2rem;
+		--vc-flag-fill: var(--color-danger);
+		background: var(--vc-flag-fill);
+		color: var(--color-background);
+	}
+
+	/* Left of the mic, and green rather than the brand coral: coral and the mic's
+	   red are nearly the same colour in the light theme, so the two badges would
+	   read as one alert state. Green is also what the header dot means here — on,
+	   right now. Here it also fades in and out on its own cycle. */
+	.vc-flag-video {
+		left: -0.2rem;
+		--vc-flag-fill: var(--color-success);
+		background: var(--vc-flag-fill);
+		color: var(--color-background);
+		opacity: 0;
+		animation: vc-camera var(--camera) ease-in-out infinite;
+		animation-delay: var(--camera-offset);
+	}
+
+	/* The slash is drawn twice: once thick in the chip's own fill to cut a gap
+	   through the mic beneath it, then once thin on top. Without the gap stroke
+	   the two shapes merge into a blob at 10px. */
+	.vc-slash-gap {
+		stroke: var(--vc-flag-fill);
+		stroke-width: 2.8;
+		stroke-linecap: round;
+	}
+
+	.vc-slash {
+		stroke: currentColor;
+		stroke-width: 1.7;
+		stroke-linecap: round;
 	}
 
 	.vc-handle {
@@ -452,10 +610,35 @@
 		}
 	}
 
+	/* A camera that comes on for about a third of its cycle and goes off again.
+	   Nobody in a lounge VC leaves it on all evening. */
+	@keyframes vc-camera {
+		0%,
+		6% {
+			opacity: 0;
+			transform: scale(0.6);
+		}
+		12%,
+		46% {
+			opacity: 1;
+			transform: none;
+		}
+		52%,
+		100% {
+			opacity: 0;
+			transform: scale(0.6);
+		}
+	}
+
 	@media (max-width: 480px) {
 		.vc-avatar {
 			width: 2rem;
 			height: 2rem;
+		}
+
+		.vc-flag {
+			width: 0.85rem;
+			height: 0.85rem;
 		}
 
 		/* Narrower seats keep the room at two rows on a phone, so the panel is the
@@ -472,6 +655,7 @@
 		.vc-share,
 		.vc-seat,
 		.vc-avatar,
+		.vc-flag-video,
 		.vc-line,
 		.vc-cursor,
 		.vc-dot {

@@ -12,13 +12,27 @@
 	export let channel = 'Ten Forward';
 
 	$: sharing = members.filter((member) => member.streaming).length;
+	$: muted = members.filter((member) => member.muted).length;
+	$: cameras = members.filter((member) => member.video).length;
+
+	/**
+	 * The panel is one `role="img"`, so nothing inside it reaches a screen reader
+	 * on its own — the mic and camera badges have to be said here or not at all.
+	 */
+	$: label = [
+		`${members.length} people are in the ${channel} voice channel right now.`,
+		muted === 1 ? 'One of them is muted.' : muted > 1 ? `${muted} of them are muted.` : '',
+		cameras === 1
+			? 'One has their camera on.'
+			: cameras > 1
+				? `${cameras} have their cameras on.`
+				: ''
+	]
+		.filter(Boolean)
+		.join(' ');
 </script>
 
-<figure
-	class="vc"
-	role="img"
-	aria-label="{members.length} people are in the {channel} voice channel right now."
->
+<figure class="vc" role="img" aria-label={label}>
 	<div class="vc-panel">
 		<div class="vc-header">
 			<svg
@@ -52,26 +66,61 @@
 			     point, and the whole list is replaced on every poll anyway. -->
 			{#each members as member, i (i)}
 				<li class="vc-seat">
-					{#if member.avatar}
-						<img
-							class="vc-avatar"
-							class:vc-muted={member.muted}
-							src={member.avatar}
-							alt=""
-							width="40"
-							height="40"
-							loading="lazy"
-							decoding="async"
-							referrerpolicy="no-referrer"
-						/>
-					{:else}
-						<span class="vc-avatar vc-anon" class:vc-muted={member.muted} aria-hidden="true">
-							<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-								<circle cx="10" cy="7" r="3.4" fill="currentColor" />
-								<path d="M3.6 17.2c0-3.2 2.9-5.2 6.4-5.2s6.4 2 6.4 5.2" fill="currentColor" />
-							</svg>
-						</span>
-					{/if}
+					<span class="vc-person">
+						{#if member.avatar}
+							<img
+								class="vc-avatar"
+								class:vc-dimmed={member.muted}
+								src={member.avatar}
+								alt=""
+								width="40"
+								height="40"
+								loading="lazy"
+								decoding="async"
+								referrerpolicy="no-referrer"
+							/>
+						{:else}
+							<span class="vc-avatar vc-anon" class:vc-dimmed={member.muted} aria-hidden="true">
+								<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+									<circle cx="10" cy="7" r="3.4" fill="currentColor" />
+									<path d="M3.6 17.2c0-3.2 2.9-5.2 6.4-5.2s6.4 2 6.4 5.2" fill="currentColor" />
+								</svg>
+							</span>
+						{/if}
+
+						<!-- Badges, not text. Both sit on the avatar's lower edge and are
+						     absolutely positioned, so a person with neither flag, one flag
+						     or both is exactly the same size and the row never reflows.
+						     Only the ON states are drawn: an unmuted mic and a dark camera
+						     are the normal case, and a tile of grey "no" icons says nothing
+						     a visitor needs. -->
+						{#if member.video}
+							<span class="vc-flag vc-flag-video" aria-hidden="true">
+								<svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+									<rect x="1.4" y="4.4" width="9.4" height="7.2" rx="1.6" fill="currentColor" />
+									<path d="M11.6 8.2l3-2v5.6l-3-2z" fill="currentColor" />
+								</svg>
+							</span>
+						{/if}
+						{#if member.muted}
+							<span class="vc-flag vc-flag-muted" aria-hidden="true">
+								<svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+									<path
+										d="M8 2.4a1.9 1.9 0 0 1 1.9 1.9v3.4a1.9 1.9 0 0 1-3.8 0V4.3A1.9 1.9 0 0 1 8 2.4z"
+										fill="currentColor"
+									/>
+									<path
+										d="M4.3 7.5a3.7 3.7 0 0 0 7.4 0M8 11.2v2.4"
+										stroke="currentColor"
+										stroke-width="1.4"
+										stroke-linecap="round"
+									/>
+									<path class="vc-slash-gap" d="M3.4 2.8l9.2 10.4" />
+									<path class="vc-slash" d="M3.4 2.8l9.2 10.4" />
+								</svg>
+							</span>
+						{/if}
+					</span>
 				</li>
 			{/each}
 		</ul>
@@ -174,6 +223,15 @@
 		box-shadow: inset 0 0 0 1px var(--color-border);
 	}
 
+	/* The avatar and its badges. Position lives here rather than on the seat, so
+	   a badge hangs off the face at any avatar size — including the smaller one
+	   phones get below. */
+	.vc-person {
+		position: relative;
+		display: block;
+		line-height: 0;
+	}
+
 	.vc-avatar {
 		display: grid;
 		place-items: center;
@@ -191,10 +249,60 @@
 		color: color-mix(in srgb, var(--color-text) 45%, transparent);
 	}
 
-	/* A muted person is dimmed rather than badged: at this size a mic glyph is
-	   four pixels of nothing. */
-	.vc-muted {
-		opacity: 0.45;
+	/* A muted person also reads muted at a glance, before anyone looks close
+	   enough to find the badge. Dimmed less than it used to be: the badge now
+	   carries the meaning, so this only has to be a hint. */
+	.vc-dimmed {
+		opacity: 0.6;
+	}
+
+	/* One chip per state, on the avatar's lower edge, mic on the right where
+	   Discord puts it. Each carries a ring of the tile's own background so it
+	   separates from the face underneath rather than melting into it. */
+	.vc-flag {
+		position: absolute;
+		bottom: -0.1rem;
+		display: grid;
+		place-items: center;
+		width: 0.95rem;
+		height: 0.95rem;
+		border-radius: 50%;
+		box-shadow: 0 0 0 1.5px var(--color-background);
+	}
+
+	.vc-flag-muted {
+		right: -0.2rem;
+		/* Opaque, not a tint over transparent: the slash's gap stroke below has to
+		   match this fill exactly, and it can only name one colour. */
+		--vc-flag-fill: color-mix(in srgb, var(--color-danger) 20%, var(--color-background));
+		background: var(--vc-flag-fill);
+		color: var(--color-danger);
+	}
+
+	/* Left of the mic, and green rather than the brand coral: coral and the mic's
+	   red are nearly the same colour in the light theme, so the two badges would
+	   read as one alert state. Green is also what the header dot means here — on,
+	   right now. */
+	.vc-flag-video {
+		left: -0.2rem;
+		--vc-flag-fill: color-mix(in srgb, var(--color-success) 22%, var(--color-background));
+		background: var(--vc-flag-fill);
+		color: var(--color-success);
+	}
+
+	/* The slash is drawn twice: once thick in the chip's own fill to cut a gap
+	   through the mic beneath it, then once thin on top. Without the gap stroke
+	   the two shapes merge into a blob at 10px. */
+	.vc-slash-gap {
+		stroke: var(--vc-flag-fill);
+		stroke-width: 3.4;
+		stroke-linecap: round;
+	}
+
+	.vc-slash {
+		stroke: currentColor;
+		stroke-width: 1.5;
+		stroke-linecap: round;
 	}
 
 	/* Same box, same 7.5rem, as the simulated panel's screen-share slot. Discord
@@ -240,6 +348,11 @@
 		.vc-avatar {
 			width: 2.25rem;
 			height: 2.25rem;
+		}
+
+		.vc-flag {
+			width: 0.85rem;
+			height: 0.85rem;
 		}
 	}
 </style>

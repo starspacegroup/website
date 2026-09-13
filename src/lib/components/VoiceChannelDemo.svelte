@@ -119,7 +119,13 @@
 				/>
 			</svg>
 			<span class="vc-name">Ten Forward</span>
-			<span class="vc-live"><i class="vc-dot"></i>live</span>
+			<!-- "Live Simulation", not "live". The names in this panel are invented
+			     and the room is a loop, so a bare "live" badge told visitors that six
+			     people were in Ten Forward when nobody was. The dot stays and keeps
+			     pulsing — the simulation IS running — but the word now says what it
+			     is. VoiceChannelLive keeps its own "N in voice" for the real room, so
+			     the two are never mistakable for each other. -->
+			<span class="vc-live"><i class="vc-dot"></i>Live Simulation</span>
 		</div>
 
 		<ul class="vc-seats">

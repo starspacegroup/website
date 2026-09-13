@@ -23,8 +23,8 @@ pages_build_output_dir = ".svelte-kit/cloudflare"
 # D1 Database — create with: wrangler d1 create <your-project>-db
 [[d1_databases]]
 binding = "DB"
-database_name = "REPLACE_ME-db"
-database_id = "REPLACE_ME_RUN_SETUP_CF"
+database_name = "starspace-group-db"
+database_id = "e8fe6b0e-91a6-4b77-b295-6fc872ff6858"
 migrations_dir = "./migrations"
 
 # KV Namespace — create with:
@@ -33,8 +33,8 @@ migrations_dir = "./migrations"
 # preview_id MUST differ from id, or `wrangler dev` writes straight into prod.
 [[kv_namespaces]]
 binding = "KV"
-id = "REPLACE_ME_RUN_SETUP_CF"
-preview_id = "REPLACE_ME_RUN_SETUP_CF_PREVIEW"
+id = "d2baf6f5c707492e9c9e94a18377c215"
+preview_id = "9ee3d0f941e646bf8f00c602ba015b8d"
 # R2 Bucket
 # Create with: wrangler r2 bucket create starspace-group-files
 [[r2_buckets]]

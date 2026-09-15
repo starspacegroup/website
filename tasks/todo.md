@@ -69,21 +69,21 @@ fail separately.
       sized from a real advance table. Verified: `bun run check`; `bun run test:coverage`,
       2,567 passing and above the 95 floor on all four; `bun run build`; and the three
       endpoints probed headlessly against `vite preview`, with every variant rendered to
-      PNG in both themes and the page screenshotted in both.
+      PNG in both themes and the page screenshotted in both. Deployed and verified live
+      on 2026-09-15: `/badge`, `/badge.svg` and `/badge.js` all answer 200 on
+      starspace.group, every variant renders, and `?variant=toString` returns the default
+      badge.
 
 ## Next — before this can be deployed
 
-- [ ] Create this site's own Cloudflare resources and write the real ids into `wrangler.toml`:
-      `bun run setup:cf`, then `bunx wrangler r2 bucket create starspace-group-files`, then
-      `bun run db:migrate`. **Never paste ids from a sibling project** — see
-      `docs/CLOUDFLARE_SETUP.md`. Acceptance: `bun run build` succeeds (it fails today by design)
-      and `bun run check:bindings` is clean.
+- [x] Create this site's own Cloudflare resources and write the real ids into `wrangler.toml`.
+      Done in `411c83a`. Verified: `bun run build` succeeds, and `bun run deploy` reaches the
+      `starspace-website` Pages project, which the apex domain serves.
 - [ ] Generate `SESSION_SECRET` and `SETUP_SECRET` independently, set them as Pages secrets, and
       run `/setup` once to establish owner identity. Acceptance: sign-in works against the
       deployed app; `/setup` refuses to run a second time.
-- [ ] Decide the publication target and add it as a remote on purpose. There is deliberately no
-      `origin` today; upstream NebulaKit is the `template` remote. Acceptance: a maintainer, not
-      an agent, sets it.
+- [x] Decide the publication target and add it as a remote on purpose. David set `origin` to
+      `starspacegroup/website` on 2026-09-06; NebulaKit stays as the `template` remote.
 - [ ] Point `starspace.group` at the new deployment and retire `starspace-group-svelte`.
       Acceptance: the live domain serves this build; the old repository's README says where the
       site moved.

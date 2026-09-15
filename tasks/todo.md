@@ -58,6 +58,19 @@ fail separately.
       cover the populated page; the running site can only show the fallback, because no
       SpaceBot key is configured locally.
 
+- [x] The badge: `/badge` picks the wording and the ground and hands out six snippets,
+      `/badge.svg` serves the image a README embeds, and `/badge.js` serves the
+      `<starspace-badge>` element. `src/lib/badge.ts` had been committed on 2026-09-12 with
+      nothing importing it and no endpoint; this is the half that makes it reachable.
+      Two defects found while wiring it up and fixed: `isBadgeVariant` used `in`, so
+      `/badge.svg?variant=toString` rendered a function body as the label, and the flat
+      average-glyph width estimate left "MEMBER OF" touching "*Space" while "BUILT AT" sat
+      a gulf away — the runs are now two tspans the renderer places, centred in a pill
+      sized from a real advance table. Verified: `bun run check`; `bun run test:coverage`,
+      2,567 passing and above the 95 floor on all four; `bun run build`; and the three
+      endpoints probed headlessly against `vite preview`, with every variant rendered to
+      PNG in both themes and the page screenshotted in both.
+
 ## Next — before this can be deployed
 
 - [ ] Create this site's own Cloudflare resources and write the real ids into `wrangler.toml`:

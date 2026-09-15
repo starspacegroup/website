@@ -112,6 +112,13 @@
 			icon: '🧭'
 		},
 		{
+			id: 'badge',
+			label: 'Badge',
+			description: 'Put the *Space badge on your project',
+			action: () => goto('/badge'),
+			icon: '🏅'
+		},
+		{
 			id: 'contact',
 			label: 'Contact',
 			description: 'Send a message to *Space',

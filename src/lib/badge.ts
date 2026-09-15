@@ -46,9 +46,16 @@ export type BadgeTheme = 'dark' | 'light';
 
 export const BADGE_VARIANT_KEYS = Object.keys(BADGE_VARIANTS) as readonly BadgeVariant[];
 
-/** True for a value that names one of the wordings above. */
+/**
+ * True for a value that names one of the wordings above.
+ *
+ * `hasOwnProperty`, not `in`: `in` walks the prototype chain, so `'toString'`
+ * and `'constructor'` passed this guard and then indexed `BADGE_VARIANTS` to a
+ * function, which the SVG happily rendered as its label. `/badge.svg` takes its
+ * variant straight from the query string, so that was reachable by URL.
+ */
 export function isBadgeVariant(value: unknown): value is BadgeVariant {
-	return typeof value === 'string' && value in BADGE_VARIANTS;
+	return typeof value === 'string' && Object.prototype.hasOwnProperty.call(BADGE_VARIANTS, value);
 }
 
 /** True for a value that names one of the two grounds. */
@@ -91,9 +98,19 @@ export const BADGE_THEMES: Record<
  * Geometry for the standalone SVG.
  *
  * The SVG has to state its own size in pixels because a README renders it at
- * intrinsic size with no CSS to help. Widths are derived from an average glyph
- * advance rather than measured — there is no text metrics API in a Worker — so
- * the constants are tuned to leave a little slack rather than fit exactly.
+ * intrinsic size with no CSS to help, and there is no text metrics API in a
+ * Worker to measure with. So the width is estimated from the advance table
+ * below — and, separately, the label and the brand are laid out by the renderer
+ * rather than by us.
+ *
+ * Both halves of that matter. An earlier version placed each run at a computed
+ * x from one average advance for every glyph, which is wrong in opposite
+ * directions for different words: "MEMBER OF" is full of wide capitals and its
+ * brand landed hard against it with no gap, while "BUILT AT" is narrow and left
+ * a gulf. They are now two tspans in one text element, so the renderer puts the
+ * second exactly after the first, and the whole run is centred in the space left
+ * by the mark. The estimate therefore only decides how wide the pill is, and
+ * being a few pixels out shows as even padding rather than as a collision.
  */
 const SVG = {
 	height: 28,
@@ -102,12 +119,81 @@ const SVG = {
 	markSize: 16,
 	labelSize: 10.5,
 	brandSize: 12,
-	/** Average advance per character, as a fraction of font size. */
-	labelAdvance: 0.62,
-	brandAdvance: 0.6,
 	/** Extra tracking applied to the uppercase label. */
-	labelTracking: 0.8
+	labelTracking: 0.8,
+	/** Slack on the estimate, so a narrow font pads rather than overflows. */
+	slack: 1.02
 };
+
+/**
+ * Advance widths per 1000 units of font size.
+ *
+ * Helvetica/Arial metrics. The badge renders in whatever UI font the reader
+ * has, which is not Helvetica — but every UI sans is close enough for a pill
+ * width, and the alternative is one number for `M` and `I` alike.
+ */
+const UPPERCASE_ADVANCE: Record<string, number> = {
+	A: 667,
+	B: 667,
+	C: 722,
+	D: 722,
+	E: 667,
+	F: 611,
+	G: 778,
+	H: 722,
+	I: 278,
+	J: 500,
+	K: 667,
+	L: 556,
+	M: 833,
+	N: 722,
+	O: 778,
+	P: 667,
+	Q: 778,
+	R: 722,
+	S: 667,
+	T: 611,
+	U: 722,
+	V: 667,
+	W: 944,
+	X: 667,
+	Y: 667,
+	Z: 611,
+	' ': 278
+};
+
+/** The same, for the mixed-case semibold brand. */
+const BRAND_ADVANCE: Record<string, number> = {
+	'*': 389,
+	S: 722,
+	p: 611,
+	a: 556,
+	c: 556,
+	e: 556
+};
+
+/** Advance for a glyph no table names — the average of the ones they do. */
+const FALLBACK_ADVANCE = 600;
+
+/**
+ * Estimated width of a run of text at a given size, tracking included.
+ *
+ * Exported for the test that pins the advance table: every glyph in the three
+ * wordings is measured, and `FALLBACK_ADVANCE` is the net under a fourth that
+ * one day carries a digit or a hyphen.
+ */
+export function textWidth(
+	text: string,
+	size: number,
+	advance: Record<string, number>,
+	tracking = 0
+): number {
+	let total = 0;
+	for (const character of text) {
+		total += ((advance[character] ?? FALLBACK_ADVANCE) / 1000) * size + tracking;
+	}
+	return total;
+}
 
 /** Escape for XML text nodes and attribute values. */
 export function escapeXml(value: string): string {
@@ -127,9 +213,10 @@ export function badgeText(variant: BadgeVariant): string {
 /** Estimated pixel width of the rendered badge, used to size the SVG. */
 export function badgeWidth(variant: BadgeVariant): number {
 	const label = BADGE_VARIANTS[variant].toUpperCase();
-	const labelW = label.length * (SVG.labelSize * SVG.labelAdvance + SVG.labelTracking);
-	const brandW = BADGE_BRAND.length * SVG.brandSize * SVG.brandAdvance;
-	return Math.round(SVG.padX * 2 + SVG.markSize + SVG.gap + labelW + SVG.gap + brandW);
+	const labelW = textWidth(label, SVG.labelSize, UPPERCASE_ADVANCE, SVG.labelTracking);
+	const brandW = textWidth(BADGE_BRAND, SVG.brandSize, BRAND_ADVANCE);
+	const content = SVG.markSize + SVG.gap + labelW + SVG.gap + brandW;
+	return Math.round(SVG.padX * 2 + content * SVG.slack);
 }
 
 /**
@@ -150,9 +237,10 @@ export function renderBadgeSvg(
 	const label = BADGE_VARIANTS[variant].toUpperCase();
 	const markX = SVG.padX;
 	const markY = (h - SVG.markSize) / 2;
-	const labelX = markX + SVG.markSize + SVG.gap;
-	const labelW = label.length * (SVG.labelSize * SVG.labelAdvance + SVG.labelTracking);
-	const brandX = labelX + labelW + SVG.gap;
+	/* The text runs as one chunk, centred in what the mark leaves. Anchoring it
+	   in the middle is what turns an inaccurate estimate into even padding. */
+	const textStart = markX + SVG.markSize + SVG.gap;
+	const textX = textStart + (w - SVG.padX - textStart) / 2;
 	const font =
 		'-apple-system,BlinkMacSystemFont,&apos;Segoe UI&apos;,Roboto,Helvetica,Arial,sans-serif';
 	const alt = escapeXml(badgeText(variant));
@@ -165,12 +253,13 @@ export function renderBadgeSvg(
 		` fill="${c.background}" stroke="${c.border}"/>`,
 		`<image x="${markX}" y="${markY}" width="${SVG.markSize}" height="${SVG.markSize}"`,
 		` href="${BADGE_MARK_DATA_URI}"/>`,
-		`<text x="${labelX}" y="${h / 2}" dominant-baseline="central" font-family="${font}"`,
-		` font-size="${SVG.labelSize}" letter-spacing="${SVG.labelTracking}" fill="${c.label}">`,
-		`${escapeXml(label)}</text>`,
-		`<text x="${brandX}" y="${h / 2}" dominant-baseline="central" font-family="${font}"`,
-		` font-size="${SVG.brandSize}" font-weight="600" fill="${c.brand}">`,
-		`${escapeXml(BADGE_BRAND)}</text>`,
+		`<text x="${textX}" y="${h / 2}" text-anchor="middle" dominant-baseline="central"`,
+		` font-family="${font}">`,
+		`<tspan font-size="${SVG.labelSize}" letter-spacing="${SVG.labelTracking}"`,
+		` fill="${c.label}">${escapeXml(label)}</tspan>`,
+		`<tspan dx="${SVG.gap}" font-size="${SVG.brandSize}" font-weight="600"`,
+		` fill="${c.brand}">${escapeXml(BADGE_BRAND)}</tspan>`,
+		`</text>`,
 		`</svg>`
 	].join('');
 }
@@ -316,7 +405,9 @@ export function badgeElementScript(origin: string): string {
     class extends HTMLElement {
       connectedCallback() {
         var variant = this.getAttribute('variant');
-        if (!VARIANTS[variant]) variant = 'built';
+        // hasOwnProperty, not truthiness: VARIANTS['toString'] is a function,
+        // and the badge would print it. Same trap as isBadgeVariant.
+        if (!Object.prototype.hasOwnProperty.call(VARIANTS, variant)) variant = 'built';
         var forced = this.getAttribute('theme');
         var root = this.attachShadow({ mode: 'open' });
         var d = THEMES.dark;

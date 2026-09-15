@@ -11,6 +11,11 @@ inherited from NebulaKit. It is not a catalog of hypothetical integrations.
 - Discord invite, and the counts fetched from it: `src/lib/discord.ts`
 - Project directory and cards: `src/routes/projects/`, `src/lib/components/ProjectCard.svelte`,
   `src/lib/data/projects.ts`
+- The embeddable badge: `/badge` builds it, `/badge.svg` serves it as an image and `/badge.js`
+  as a `<starspace-badge>` custom element. `src/lib/badge.ts` is the single source for the
+  wording, the colours and all six copy-paste snippets. It lands on sites *Space does not own,
+  so it uses literal colours rather than theme tokens and carries the mark as a data URI —
+  deliberately the opposite of the rule everywhere else in the app.
 - Brand assets and the share card: `brand/starspace-mark.png` is the master, and
   `scripts/build-brand.mjs` generates `static/favicon*.svg`, `static/icon-*.png`,
   `static/apple-touch-icon.png`, `static/og-image.png` and `static/brand/starspace-mark.webp`

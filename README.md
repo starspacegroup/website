@@ -19,7 +19,8 @@ It replaces `starspace-group-svelte`, the earlier flowbite build of the same sit
 ## What ships
 
 - **The public site:** the hero with a live member count read straight from Discord's public
-  invite endpoint, `/projects`, and share cards built from the *Space mark.
+  invite endpoint, `/projects`, the server guide at `/guide`, the embeddable badge at `/badge`,
+  and share cards built from the *Space mark.
 - **Content operations:** typed CMS schemas, rich-text embeds, tags, media uploads, public
   content routes, and guarded admin editing.
 - **Authentication:** email/password accounts plus GitHub and Discord OAuth, account linking,

@@ -110,6 +110,22 @@
 				<div class="hero-count">
 					<MemberCount />
 					<MemberTrend height={76} />
+
+					<!-- The figures here are a taste; the page they link to is the rest of
+					     them. It sits under both columns rather than beside one, because it
+					     belongs to the pair and not to the count or the trend alone. -->
+					<a class="hero-stats-link" href="/stats">
+						<span>See the server's figures</span>
+						<svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+							<path
+								d="M7 4.5L11.5 9L7 13.5"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+						</svg>
+					</a>
 				</div>
 			</div>
 
@@ -497,6 +513,34 @@
 		animation-delay: 360ms;
 	}
 
+	/* Quiet on purpose. The two buttons above are the page's ask; this is an
+	   offer to keep reading, and it must not compete with them. */
+	.hero-stats-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		margin-top: var(--spacing-md);
+		color: var(--color-text-secondary);
+		font-size: 0.95rem;
+		font-weight: 500;
+		text-decoration: none;
+		transition: color var(--transition-fast);
+	}
+
+	.hero-stats-link:hover,
+	.hero-stats-link:focus-visible {
+		color: var(--color-text);
+	}
+
+	.hero-stats-link svg {
+		transition: transform var(--transition-fast);
+	}
+
+	.hero-stats-link:hover svg,
+	.hero-stats-link:focus-visible svg {
+		transform: translateX(2px);
+	}
+
 	.hero-demo {
 		animation-duration: 0.9s;
 		animation-delay: 460ms;
@@ -865,6 +909,11 @@
 			border-top: 1px solid var(--color-border);
 		}
 
+		.hero-stats-link {
+			grid-column: 1 / -1;
+			margin-top: 0;
+		}
+
 		.hero-scroll {
 			display: inline-flex;
 		}
@@ -884,7 +933,9 @@
 		}
 
 		.hero-join:hover,
-		.hero-join:focus-visible {
+		.hero-join:focus-visible,
+		.hero-stats-link:hover svg,
+		.hero-stats-link:focus-visible svg {
 			transform: none;
 		}
 	}

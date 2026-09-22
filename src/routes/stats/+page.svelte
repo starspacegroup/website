@@ -351,6 +351,13 @@
 		   nothing else, and the shared 1380px cap left a third of a desktop
 		   screen empty beside them. It still stops: past 2560px the rows get
 		   long enough that reading across one is work. */
+		/* `width: 100%` is load-bearing, not belt and braces. The layout's <main>
+		   is a column flex container, and an auto inline margin on a flex item
+		   overrides `align-items: stretch` — so without a width this box shrinks
+		   to its content and the max-width never binds. At the old 1380px cap the
+		   content was about that wide anyway and it never showed; at 2560px the
+		   page rendered 845px wide in the middle of a 1836px screen. */
+		width: 100%;
 		max-width: var(--layout-stats-max-width);
 		margin: 0 auto;
 		padding: var(--spacing-2xl) var(--spacing-md);

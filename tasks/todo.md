@@ -153,6 +153,15 @@ fail separately.
       server's figures with no personal panel, until the owner reconnects. `/admin/spacebot`
       reports each scope on its own row and says what each missing one costs.
 
+      Now the only thing between a signed-in member and the personal panel. SpaceBot's own
+          deploy was the other half and is done: `116bfbd` sat unpushed, so the live bot 404'd
+          `/api/v1/members/:userId` and the panel fell to "not available" for a reason that looked
+          like a missing scope and was not one. Rebased onto five dependabot merges as `103336b`,
+          pushed, and Cloudflare built it. Verified: `spacebot.starspace.group/_app/version.json`
+          reads `103336b`, and the endpoint now answers
+          `403 {"error":"Insufficient scope. Required: members:read"}` — the right refusal, from a
+          key issued 2026-09-07.
+
 - [ ] Run `bun run test:e2e` and keep it green. Not run in this session; it needs
       `bunx playwright install` and a local D1 migration first.
 - [ ] Re-scrape the share card in each platform's debugger after the first deploy. They cache the

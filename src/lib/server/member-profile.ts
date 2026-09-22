@@ -9,7 +9,7 @@
  *
  * **The user id never comes from the request.** It is read out of
  * `oauth_accounts` for the session the hooks already established, by
- * `discordAccountId`. A `?user=` on this page would turn a private panel into a
+ * `discordAccount`. A `?user=` on this page would turn a private panel into a
  * lookup service for anyone who knows a snowflake, and SpaceBot cannot tell the
  * difference — the trust that the asker owns the account is entirely this
  * site's to keep.
@@ -145,32 +145,45 @@ function toWindow(raw: unknown): MemberWindow {
 	};
 }
 
+/** The Discord account this site has against a signed-in user. */
+export type DiscordAccount = {
+	/** The snowflake. Checked, because it goes into a URL. */
+	id: string;
+	/** Avatar hash from the last sign-in, or null for an account without one. */
+	avatar: string | null;
+};
+
 /**
- * The Discord account id for a signed-in user, or null.
+ * The Discord account for a signed-in user, or null.
  *
  * This is the whole authorization story for the personal panel: the id is
  * whatever the OAuth callback wrote against this user's row, so the only
  * account anyone can ever ask about is the one they proved they own by signing
  * in with it. A user who signed in with GitHub and never linked Discord gets
  * null, and the page invites them to link it.
+ *
+ * The avatar rides along because it comes from the same row and the same
+ * proof — it is the picture on the account they signed in with, shown back to
+ * them alone. It is a hash, not a URL; `discordAvatarUrl` turns it into one.
  */
-export async function discordAccountId(
+export async function discordAccount(
 	db: D1Database | undefined,
 	userId: string | undefined
-): Promise<string | null> {
+): Promise<DiscordAccount | null> {
 	if (!db || !userId) return null;
 
 	try {
 		const row = await db
 			.prepare(
-				"SELECT provider_account_id FROM oauth_accounts WHERE user_id = ? AND provider = 'discord'"
+				"SELECT provider_account_id, avatar FROM oauth_accounts WHERE user_id = ? AND provider = 'discord'"
 			)
 			.bind(userId)
-			.first<{ provider_account_id: string }>();
+			.first<{ provider_account_id: string; avatar: string | null }>();
 		const id = str(row?.provider_account_id);
 		// A stored id that is not a snowflake is a row this site did not write.
 		// It would go into a URL, so it is checked rather than trusted.
-		return id && SNOWFLAKE.test(id) ? id : null;
+		if (!id || !SNOWFLAKE.test(id)) return null;
+		return { id, avatar: str(row?.avatar) || null };
 	} catch {
 		// A failed lookup is a page without the personal panel, not a 500.
 		return null;
@@ -180,7 +193,7 @@ export async function discordAccountId(
 /**
  * Ask SpaceBot what this member did.
  *
- * @param discordUserId from `discordAccountId`, never from the request
+ * @param discordUserId from `discordAccount`, never from the request
  * @param fetcher injected so tests do not reach the network
  */
 export async function fetchMemberProfile(

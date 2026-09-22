@@ -47,7 +47,7 @@ cannot disagree about what "3.4 hours" or "yesterday" looks like.
 
 Three rules, and each one is a test.
 
-**The Discord id never comes from the request.** `discordAccountId` reads
+**The Discord id never comes from the request.** `discordAccount` reads
 `oauth_accounts` for `locals.user.id` — the session the hooks already
 established. Signing in with Discord is the entire proof that the account is
 yours, so the id must have exactly one source. A `?user=` parameter would turn
@@ -69,6 +69,14 @@ own numbers.
 **SpaceBot sends counts, not content.** Messages, voice seconds, commands, and
 a rank. No message text, no channel ids, no names, and never a word about who
 else is ahead of them. The module could not publish what it was never given.
+
+The one picture on the panel does not come from SpaceBot either. The member's
+avatar is read from their own `oauth_accounts` row — written by the Discord
+callback on each sign-in, stored as the hash Discord gave, and turned into a
+CDN URL by `discordAvatarUrl` at render time. It is the same proof as the id:
+the account they signed in with, shown back to them alone, on a page that is
+`private, no-store`. A row with no avatar is not a failure — `discordAvatarUrl`
+returns the default Discord itself serves for that snowflake.
 
 ## What fails to what
 
@@ -108,7 +116,8 @@ another.
 
 ```
 src/lib/server/guild-stats.ts     the server's figures, from SpaceBot
-src/lib/server/member-profile.ts  one member's, plus discordAccountId
+src/lib/server/member-profile.ts  one member's, plus discordAccount
+src/lib/discord.ts                discordAvatarUrl; client-safe
 src/lib/stats-copy.ts             presentation; client-safe
 src/routes/stats/+page.server.ts  the KV cache and the three states
 src/routes/stats/+page.svelte     the page

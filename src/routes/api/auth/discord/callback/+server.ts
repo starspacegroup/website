@@ -119,6 +119,21 @@ export const GET: RequestHandler = async ({ url, cookies, platform, locals }) =>
 			}
 		});
 
+		// The avatar is written on every sign-in rather than only at creation:
+		// people change it, and a stale hash is a broken image on /stats. It is
+		// stored as the hash Discord gave us — the CDN host and the size belong to
+		// whoever renders it. A failure here costs a picture, not the sign-in.
+		try {
+			await db
+				.prepare("UPDATE oauth_accounts SET avatar = ? WHERE user_id = ? AND provider = 'discord'")
+				.bind(typeof discordUser.avatar === 'string' ? discordUser.avatar : null, userId)
+				.run();
+		} catch {
+			// Swallowed deliberately, and caught rather than `.catch`ed: this runs
+			// after the account is reconciled, and a sign-in must not fail over a
+			// picture.
+		}
+
 		return finalizeOAuthLogin({
 			db,
 			platform,

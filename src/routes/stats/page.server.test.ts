@@ -14,7 +14,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const fetchGuildStats = vi.fn();
 const fetchMemberProfile = vi.fn();
-const discordAccountId = vi.fn();
+const discordAccount = vi.fn();
 const getSpaceBotConfig = vi.fn(async () => ({ apiUrl: 'https://bot.test', apiKey: 'sb_live_x' }));
 
 vi.mock('$lib/server/spacebot-connection', () => ({
@@ -31,7 +31,7 @@ vi.mock('$lib/server/member-profile', async (importOriginal) => {
 	return {
 		...actual,
 		fetchMemberProfile: (...args: unknown[]) => fetchMemberProfile(...args),
-		discordAccountId: (...args: unknown[]) => discordAccountId(...args)
+		discordAccount: (...args: unknown[]) => discordAccount(...args)
 	};
 });
 
@@ -80,12 +80,13 @@ const run = (options: { kv?: unknown; user?: unknown } = {}) =>
 		profile: typeof UNAVAILABLE_PROFILE;
 		signedIn: boolean;
 		discordLinked: boolean;
+		avatarUrl: string | null;
 	}>;
 
 beforeEach(() => {
 	fetchGuildStats.mockReset().mockResolvedValue(stats());
 	fetchMemberProfile.mockReset().mockResolvedValue(profile());
-	discordAccountId.mockReset().mockResolvedValue(null);
+	discordAccount.mockReset().mockResolvedValue(null);
 	getSpaceBotConfig.mockClear();
 	setHeaders.mockClear();
 });
@@ -171,20 +172,41 @@ describe('stats load', () => {
 	});
 
 	it('takes the Discord id from the session row, not from anything sent', async () => {
-		discordAccountId.mockResolvedValue('123456789012345678');
+		discordAccount.mockResolvedValue({ id: '123456789012345678', avatar: null });
 		await run({ user: { id: 'user-1' } });
 
 		// The database and the session's user id, and nothing else.
-		expect(discordAccountId).toHaveBeenCalledWith(DB, 'user-1');
+		expect(discordAccount).toHaveBeenCalledWith(DB, 'user-1');
 		expect(fetchMemberProfile).toHaveBeenCalledWith(
 			{ apiUrl: 'https://bot.test', apiKey: 'sb_live_x' },
 			'123456789012345678'
 		);
 	});
 
+	it('serves the avatar of the account that signed in, and no other', async () => {
+		discordAccount.mockResolvedValue({ id: '123456789012345678', avatar: 'abc123' });
+		const data = await run({ user: { id: 'user-1' } });
+
+		expect(data.avatarUrl).toBe(
+			'https://cdn.discordapp.com/avatars/123456789012345678/abc123.png?size=128'
+		);
+	});
+
+	it('falls back to the default avatar rather than to nothing', async () => {
+		discordAccount.mockResolvedValue({ id: '123456789012345678', avatar: null });
+		const data = await run({ user: { id: 'user-1' } });
+
+		expect(data.avatarUrl).toMatch(/^https:\/\/cdn\.discordapp\.com\/embed\/avatars\/[0-5]\.png$/);
+	});
+
+	it('has no avatar for a visitor with no Discord account here', async () => {
+		const data = await run({});
+		expect(data.avatarUrl).toBeNull();
+	});
+
 	it('never caches one person figures', async () => {
 		const kv = kvStore();
-		discordAccountId.mockResolvedValue('123456789012345678');
+		discordAccount.mockResolvedValue({ id: '123456789012345678', avatar: null });
 		await run({ kv, user: { id: 'user-1' } });
 
 		expect(kv.puts.map((put) => put.key)).toEqual(['guild:stats']);
@@ -192,7 +214,7 @@ describe('stats load', () => {
 	});
 
 	it('reports a signed-in user who never linked Discord', async () => {
-		discordAccountId.mockResolvedValue(null);
+		discordAccount.mockResolvedValue(null);
 		const data = await run({ user: { id: 'user-1' } });
 
 		expect(data.signedIn).toBe(true);
@@ -201,7 +223,7 @@ describe('stats load', () => {
 	});
 
 	it('keeps the page when the personal read fails', async () => {
-		discordAccountId.mockResolvedValue('123456789012345678');
+		discordAccount.mockResolvedValue({ id: '123456789012345678', avatar: null });
 		fetchMemberProfile.mockRejectedValue(new Error('403'));
 		const data = await run({ user: { id: 'user-1' } });
 

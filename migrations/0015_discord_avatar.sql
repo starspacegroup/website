@@ -1,0 +1,11 @@
+-- The signed-in member's own Discord avatar, for the personal panel on /stats.
+--
+-- It is the avatar *hash*, not a URL: Discord's CDN host and size parameters
+-- are presentation, and a stored URL would pin today's CDN into every row.
+-- Null is a real answer — an account with no custom avatar — and the caller
+-- falls back to the default Discord shows for that snowflake.
+--
+-- On oauth_accounts rather than users because it belongs to the Discord
+-- account, not to the person: somebody who links Discord and GitHub has two
+-- avatars and one row in `users`.
+ALTER TABLE oauth_accounts ADD COLUMN avatar TEXT;

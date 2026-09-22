@@ -7,10 +7,11 @@ import {
 } from '$lib/server/guild-stats';
 import {
 	UNAVAILABLE_PROFILE,
-	discordAccountId,
+	discordAccount,
 	fetchMemberProfile,
 	type MemberProfile
 } from '$lib/server/member-profile';
+import { discordAvatarUrl } from '$lib/discord';
 import { getSpaceBotConfig } from '$lib/server/spacebot-connection';
 import type { PageServerLoad } from './$types';
 
@@ -85,12 +86,12 @@ export const load: PageServerLoad = async ({ platform, locals, setHeaders }) => 
 
 	// The one identifier this page uses, and it comes from the database row for
 	// the current session. A `?user=` parameter would make this a lookup service.
-	const discordId = await discordAccountId(platform?.env?.DB, locals.user?.id);
+	const account = await discordAccount(platform?.env?.DB, locals.user?.id);
 
 	// Not cached in KV: one person's figures are not a shared answer, and SpaceBot
 	// already marks its response `private` with a short life of its own.
-	const profile: MemberProfile = discordId
-		? await fetchMemberProfile(config, discordId).catch(() => UNAVAILABLE_PROFILE)
+	const profile: MemberProfile = account
+		? await fetchMemberProfile(config, account.id).catch(() => UNAVAILABLE_PROFILE)
 		: UNAVAILABLE_PROFILE;
 
 	return {
@@ -98,6 +99,11 @@ export const load: PageServerLoad = async ({ platform, locals, setHeaders }) => 
 		profile,
 		signedIn: Boolean(locals.user),
 		/** Signed in, but with no Discord account linked to this site. */
-		discordLinked: Boolean(discordId)
+		discordLinked: Boolean(account),
+		/**
+		 * Their own avatar, for the panel that is already only about them. It goes
+		 * out with the same `private, no-store` header as everything else here.
+		 */
+		avatarUrl: account ? discordAvatarUrl(account.id, account.avatar) : null
 	};
 };

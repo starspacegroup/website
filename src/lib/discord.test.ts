@@ -3,6 +3,7 @@ import {
 	DISCORD_INVITE,
 	DISCORD_INVITE_API,
 	DISCORD_INVITE_CODE,
+	discordAvatarUrl,
 	fetchGuildCounts
 } from './discord';
 
@@ -74,5 +75,45 @@ describe('fetchGuildCounts', () => {
 		await expect(fetchGuildCounts(fetcher as unknown as typeof fetch)).rejects.toThrow(
 			'no member count'
 		);
+	});
+});
+
+describe('discordAvatarUrl', () => {
+	const USER = '123456789012345678';
+
+	it('serves the account own picture', () => {
+		expect(discordAvatarUrl(USER, 'abc123')).toBe(
+			`https://cdn.discordapp.com/avatars/${USER}/abc123.png?size=128`
+		);
+	});
+
+	it('asks for the gif of an animated avatar, not the still frame', () => {
+		expect(discordAvatarUrl(USER, 'a_abc123')).toContain('a_abc123.gif');
+	});
+
+	it('takes the size it is given', () => {
+		expect(discordAvatarUrl(USER, 'abc123', 256)).toContain('size=256');
+	});
+
+	it('falls back to the default Discord picked for that account', () => {
+		// Same snowflake, same default, every time — it is a function of the id.
+		const first = discordAvatarUrl(USER, null);
+		expect(first).toMatch(/^https:\/\/cdn\.discordapp\.com\/embed\/avatars\/[0-5]\.png$/);
+		expect(discordAvatarUrl(USER, undefined)).toBe(first);
+		expect(discordAvatarUrl(USER, '')).toBe(first);
+	});
+
+	it('is null for an id that is not a snowflake', () => {
+		// It goes straight into an `<img src>`, so a value this site did not write
+		// does not get to build a URL.
+		for (const id of ['', 'not-an-id', '../../admin', '1'.repeat(40)]) {
+			expect(discordAvatarUrl(id, 'abc123')).toBeNull();
+		}
+	});
+
+	it('is null for a hash that is not a hash', () => {
+		for (const hash of ['../evil', 'a/b', 'x?y=z', 'a'.repeat(80)]) {
+			expect(discordAvatarUrl(USER, hash)).toBeNull();
+		}
 	});
 });

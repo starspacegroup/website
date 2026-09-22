@@ -58,3 +58,35 @@ export async function fetchGuildCounts(fetcher: typeof fetch = fetch): Promise<G
 			typeof data.approximate_presence_count === 'number' ? data.approximate_presence_count : null
 	};
 }
+
+/**
+ * Where Discord serves one account's avatar.
+ *
+ * `hash` is what `/users/@me` calls `avatar` and what this site stores against
+ * the OAuth account. Null is not a failure: an account that never set a picture
+ * has none, and Discord serves a default for it, chosen by the snowflake so the
+ * same person always gets the same one. Animated avatars are prefixed `a_` and
+ * are only animated as `.gif`; asking for `.png` gets the still frame, which is
+ * a worse picture of them for no reason.
+ *
+ * Returns null only for an id that is not a snowflake, because the caller would
+ * otherwise put a row this site did not write into an `<img src>`.
+ */
+export function discordAvatarUrl(
+	userId: string,
+	hash: string | null | undefined,
+	size = 128
+): string | null {
+	if (!/^\d{5,32}$/.test(userId)) return null;
+
+	if (!hash) {
+		// Discord's own rule for which default an account gets. The modern one is
+		// over the whole snowflake; the legacy discriminator form is gone.
+		const index = (BigInt(userId) >> 22n) % 6n;
+		return `https://cdn.discordapp.com/embed/avatars/${index}.png`;
+	}
+
+	if (!/^[a-zA-Z0-9_]{1,64}$/.test(hash)) return null;
+	const extension = hash.startsWith('a_') ? 'gif' : 'png';
+	return `https://cdn.discordapp.com/avatars/${userId}/${hash}.${extension}?size=${size}`;
+}

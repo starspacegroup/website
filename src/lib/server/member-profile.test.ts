@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
 	PROFILE_DAYS,
 	UNAVAILABLE_PROFILE,
-	discordAccountId,
+	discordAccount,
 	fetchMemberProfile
 } from './member-profile';
 
@@ -12,7 +12,7 @@ import {
  * Two things are load-bearing and both are asserted here:
  *
  *  - **The id comes from the database, for the current session.** If
- *    `discordAccountId` ever returned something a request could influence, this
+ *    `discordAccount` ever returned something a request could influence, this
  *    page would become a lookup service for anyone who knows a snowflake.
  *  - **Every failure is the same failure.** No key, no `members:read`, an
  *    unreachable bot: all of them render the page without the personal panel,
@@ -73,10 +73,10 @@ function fakeDb(row: unknown, options: { throws?: boolean } = {}) {
 	};
 }
 
-describe('discordAccountId', () => {
-	it('reads the id linked to this user, and only this user', async () => {
-		const db = fakeDb({ provider_account_id: USER });
-		expect(await discordAccountId(db as never, 'user-1')).toBe(USER);
+describe('discordAccount', () => {
+	it('reads the account linked to this user, and only this user', async () => {
+		const db = fakeDb({ provider_account_id: USER, avatar: 'abc123' });
+		expect(await discordAccount(db as never, 'user-1')).toEqual({ id: USER, avatar: 'abc123' });
 
 		const { sql, binds } = db.calls[0];
 		expect(sql).toContain('FROM oauth_accounts');
@@ -87,16 +87,16 @@ describe('discordAccountId', () => {
 
 	it('is null for a visitor who is not signed in', async () => {
 		const db = fakeDb({ provider_account_id: USER });
-		expect(await discordAccountId(db as never, undefined)).toBeNull();
+		expect(await discordAccount(db as never, undefined)).toBeNull();
 		expect(db.calls).toHaveLength(0);
 	});
 
 	it('is null without a database', async () => {
-		expect(await discordAccountId(undefined, 'user-1')).toBeNull();
+		expect(await discordAccount(undefined, 'user-1')).toBeNull();
 	});
 
 	it('is null for a user who never linked Discord', async () => {
-		expect(await discordAccountId(fakeDb(null) as never, 'user-1')).toBeNull();
+		expect(await discordAccount(fakeDb(null) as never, 'user-1')).toBeNull();
 	});
 
 	it('refuses a stored value that is not a snowflake', async () => {
@@ -104,13 +104,22 @@ describe('discordAccountId', () => {
 		// just because it is in this site's database.
 		for (const stored of ['', '  ', 'not-an-id', '../../admin', '1'.repeat(40), 42]) {
 			const db = fakeDb({ provider_account_id: stored });
-			expect(await discordAccountId(db as never, 'user-1')).toBeNull();
+			expect(await discordAccount(db as never, 'user-1')).toBeNull();
+		}
+	});
+
+	it('carries a null avatar rather than dropping the account', async () => {
+		// An account with no picture is still an account. The panel renders; the
+		// caller falls back to the default Discord serves for that snowflake.
+		for (const stored of [null, undefined, '', '   ']) {
+			const db = fakeDb({ provider_account_id: USER, avatar: stored });
+			expect(await discordAccount(db as never, 'user-1')).toEqual({ id: USER, avatar: null });
 		}
 	});
 
 	it('is null rather than an error when the lookup fails', async () => {
 		const db = fakeDb(null, { throws: true });
-		expect(await discordAccountId(db as never, 'user-1')).toBeNull();
+		expect(await discordAccount(db as never, 'user-1')).toBeNull();
 	});
 });
 

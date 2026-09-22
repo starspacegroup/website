@@ -129,12 +129,30 @@
 		<!-- The reason somebody signed in. It goes first: a member opening this
 		     page came to see their own line, not the server's. -->
 		<section class="section" aria-labelledby="you-heading">
-			<div class="section-head">
-				<h2 id="you-heading">You, in the last {profile.days} days</h2>
-				<p class="section-lede">
-					Counts only, from the same records the figures below come from. Nobody else can see this
-					panel, and this site is never told what you said — only how often.{unrecordedLine}
-				</p>
+			<div class="section-head you-head">
+				<!-- Their own picture, from the account they signed in with. It is
+				     decorative: the heading beside it already says whose panel this is,
+				     so an alt text would only repeat it to a screen reader. -->
+				{#if data.avatarUrl}
+					<img
+						class="you-avatar"
+						src={data.avatarUrl}
+						alt=""
+						width="56"
+						height="56"
+						loading="lazy"
+						decoding="async"
+						referrerpolicy="no-referrer"
+					/>
+				{/if}
+
+				<div class="you-words">
+					<h2 id="you-heading">You, in the last {profile.days} days</h2>
+					<p class="section-lede">
+						Counts only, from the same records the figures below come from. Nobody else can see this
+						panel, and this site is never told what you said — only how often.{unrecordedLine}
+					</p>
+				</div>
 			</div>
 
 			<div class="tiles">
@@ -329,9 +347,36 @@
 
 <style>
 	.page {
-		max-width: var(--layout-feature-grid-max-width);
+		/* Wider than the rest of the site on purpose. This page is tiles and
+		   nothing else, and the shared 1380px cap left a third of a desktop
+		   screen empty beside them. It still stops: past 2560px the rows get
+		   long enough that reading across one is work. */
+		max-width: var(--layout-stats-max-width);
 		margin: 0 auto;
 		padding: var(--spacing-2xl) var(--spacing-md);
+	}
+
+	/* The picture and the words are one lockup, and the words keep the measure
+	   they had — a lede that runs the full width of a 2560px page is unreadable
+	   however wide the tiles under it are. */
+	.you-head {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--spacing-md);
+	}
+
+	.you-words {
+		min-width: 0;
+	}
+
+	.you-avatar {
+		flex-shrink: 0;
+		width: 3.5rem;
+		height: 3.5rem;
+		border-radius: 50%;
+		border: 1px solid var(--color-border);
+		background: var(--color-surface);
+		object-fit: cover;
 	}
 
 	.page-header {

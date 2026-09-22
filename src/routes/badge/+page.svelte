@@ -217,7 +217,10 @@
 	}
 
 	.builder {
-		max-width: 60rem;
+		/* Wider than it was, but still capped. This is a form: the two pickers
+		   and the preview of what they produce. Run edge to edge on a 2560px
+		   screen and the label of a control ends up a foot from the control. */
+		max-width: 76rem;
 		margin: 0 auto var(--spacing-2xl);
 		padding: var(--spacing-xl);
 		border: 1px solid var(--color-border);
@@ -345,10 +348,15 @@
 	}
 
 	.forms {
-		max-width: 60rem;
-		margin: 0 auto;
 		display: grid;
 		gap: var(--spacing-lg);
+		/* Six snippets stacked in a 60rem column made a very long page on a
+		   screen with room for three of them side by side. The lower bound is
+		   what keeps it honest: 34rem is about as narrow as one of these code
+		   blocks can be before it is more horizontal scrollbar than code, so a
+		   laptop still gets a single column and a desktop gets three. */
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 34rem), 1fr));
+		align-items: start;
 	}
 
 	.form {

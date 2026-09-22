@@ -18,6 +18,9 @@
 
 	export let data: PageData;
 
+	/* The share card and the <title> always describe the page a stranger would
+	   find, because that is what gets shared. What is printed under the heading
+	   is allowed to know who is reading. */
 	const description =
 		'How busy the *Space Discord actually is — members, messages and time spent in voice, read from the server itself. Sign in with Discord to see your own figures alongside it.';
 
@@ -64,6 +67,27 @@
 	);
 	$: myMessageAhead = formatAhead(profile.standing.messageRank, profile.standing.messagePopulation);
 	$: myVoiceStanding = formatStanding(profile.standing.voiceRank, profile.standing.voicePopulation);
+
+	/* Sentences that carry their own punctuation are composed here rather than
+	   assembled from inline {#if} blocks. Svelte collapses the newline before a
+	   block into a space, so the markup version renders "3rd of 41 , ahead of
+	   93%" — a space in front of the comma, on every one of them. */
+	$: myMessageLine = myMessageStanding
+		? `${myMessageStanding} who posted${myMessageAhead ? `, ${myMessageAhead}` : ''}.`
+		: null;
+	$: myRecordLine =
+		profile.recorded.messages > profile.activity.messages
+			? `Over everything still on record — ${profile.retentionDays} days, which is as far back as the server keeps raw events — ${plural(profile.recorded.messages, 'message')}${myVoiceEver ? `, and ${myVoiceEver} in voice` : ''}.`
+			: null;
+	$: joinedLine = joinedOn ? `You joined on ${joinedOn}.` : null;
+	$: unrecordedLine = profile.unrecordedChannels
+		? ` ${plural(profile.unrecordedChannels, 'channel')} in the server ${profile.unrecordedChannels === 1 ? 'is' : 'are'} not logged at all, so nothing you post there is counted here.`
+		: '';
+
+	$: snapshotWhen = snapshot?.recordedAt ? formatWhen(snapshot.recordedAt, now) : null;
+	$: snapshotLine = snapshotWhen
+		? `From the most recent snapshot, taken ${whenClause(snapshotWhen)}.`
+		: 'From the most recent snapshot.';
 	$: myLastMessage = formatWhen(profile.activity.lastMessageAt, now);
 	$: myLastVoice = formatWhen(profile.activity.lastVoiceAt, now);
 	$: joinedOn = profile.joinedAt ? formatJoined(profile.joinedAt) : null;
@@ -99,7 +123,11 @@
 <div class="page">
 	<header class="page-header">
 		<h1>Server stats</h1>
-		<p class="page-lede">{description}</p>
+		<p class="page-lede">
+			{showsProfile
+				? 'How busy the *Space Discord actually is, and how busy you have been in it. Read from the server itself.'
+				: description}
+		</p>
 	</header>
 
 	{#if showsProfile}
@@ -110,12 +138,7 @@
 				<h2 id="you-heading">You, in the last {profile.days} days</h2>
 				<p class="section-lede">
 					Counts only, from the same records the figures below come from. Nobody else can see this
-					panel, and this site is never told what you said — only how often.{#if profile.unrecordedChannels}
-						{' '}{plural(profile.unrecordedChannels, 'channel')} in the server {profile.unrecordedChannels ===
-						1
-							? 'is'
-							: 'are'} not logged at all, so nothing you post there is counted here.
-					{/if}
+					panel, and this site is never told what you said — only how often.{unrecordedLine}
 				</p>
 			</div>
 
@@ -123,10 +146,8 @@
 				<div class="tile">
 					<p class="tile-figure">{formatCount(profile.activity.messages)}</p>
 					<p class="tile-label">messages</p>
-					{#if myMessageStanding}
-						<p class="tile-note">
-							{myMessageStanding} who posted{#if myMessageAhead}, {myMessageAhead}{/if}
-						</p>
+					{#if myMessageLine}
+						<p class="tile-note">{myMessageLine}</p>
 					{/if}
 					{#if myLastMessage}
 						<p class="tile-note">Last one {whenClause(myLastMessage)}.</p>
@@ -161,14 +182,9 @@
 				</div>
 			</div>
 
-			<p class="section-note">
-				{#if joinedOn}You joined on {joinedOn}.{/if}
-				{#if profile.recorded.messages > profile.activity.messages}
-					Over everything still on record — {profile.retentionDays} days, which is as far back as the
-					server keeps raw events — {plural(profile.recorded.messages, 'message')}{#if myVoiceEver},
-						and {myVoiceEver} in voice{/if}.
-				{/if}
-			</p>
+			{#if joinedLine || myRecordLine}
+				<p class="section-note">{[joinedLine, myRecordLine].filter(Boolean).join(' ')}</p>
+			{/if}
 		</section>
 	{/if}
 
@@ -191,10 +207,7 @@
 			<section class="section" aria-labelledby="now-heading">
 				<div class="section-head">
 					<h2 id="now-heading">The server right now</h2>
-					<p class="section-lede">
-						From the most recent snapshot{#if snapshot.recordedAt && formatWhen(snapshot.recordedAt, now)},
-							taken {whenClause(formatWhen(snapshot.recordedAt, now) ?? '')}{/if}.
-					</p>
+					<p class="section-lede">{snapshotLine}</p>
 				</div>
 
 				<div class="tiles">

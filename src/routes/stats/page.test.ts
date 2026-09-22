@@ -138,6 +138,25 @@ describe('server stats', () => {
 		expect(screen.queryByRole('heading', { name: 'See your own figures' })).toBeNull();
 	});
 
+	it('leaves no space in front of a comma or a full stop', () => {
+		// Every composed sentence on this page was once assembled from inline
+		// {#if} blocks, and Svelte collapses the newline before a block into a
+		// space — so they all rendered as "3rd of 41 , ahead of 93%".
+		const { container } = draw({ signedIn: true, discordLinked: true, profile: member() });
+		// Normalised, because textContent also runs separate <p>s together and a
+		// gap between two of those is not a gap inside a sentence.
+		const text = (container.textContent ?? '').replace(/\s+/g, ' ');
+		expect(text).toContain('4th of 37 who posted, ahead of 89%.');
+		expect(text).toContain('40 messages, and 10 hours in voice.');
+		expect(text).toContain('From the most recent snapshot, taken');
+		expect(text).not.toMatch(/ [,.]/);
+	});
+
+	it('stops offering the sign-in to somebody who has taken it', () => {
+		const { container } = draw({ signedIn: true, discordLinked: true, profile: member() });
+		expect(container.textContent).not.toMatch(/Sign in with Discord to see your own figures/);
+	});
+
 	it('says which channels are not counted, rather than reporting a low total', () => {
 		draw({ signedIn: true, discordLinked: true, profile: member({ unrecordedChannels: 2 }) });
 		expect(screen.getByText(/2 channels in the server are not logged at all/)).toBeTruthy();

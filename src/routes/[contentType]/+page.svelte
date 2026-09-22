@@ -28,9 +28,23 @@
 	function getRoutePrefix(): string {
 		return `/${contentType.slug}`;
 	}
+
+	// The listing's own entries, so a crawler sees what this page collects
+	// rather than a page of links it has to fetch one at a time.
+	$: listEntries = items.map((entry) => ({
+		name: entry.title,
+		url: `${getRoutePrefix()}/${entry.slug}`,
+		description: entry.seoDescription || ''
+	}));
 </script>
 
-<SharingMeta title={contentType.name} description={contentType.description || ''} />
+<SharingMeta
+	title={contentType.name}
+	description={contentType.description || ''}
+	pageType="CollectionPage"
+	items={listEntries}
+	breadcrumb={[{ name: contentType.name, path: getRoutePrefix() }]}
+/>
 
 <div class="cms-list-page">
 	<header class="cms-list-header">

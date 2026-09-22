@@ -28,6 +28,20 @@
 	function getRoutePrefix(): string {
 		return `/${contentType.slug}`;
 	}
+
+	// A crawler reading one item has to be able to place it: which listing it
+	// belongs to, when it was written, what it was tagged. All of that is in
+	// `data` already and none of it was reaching the page's structured data.
+	$: breadcrumb = [
+		{ name: contentType.name, path: getRoutePrefix() },
+		{ name: item.title, path: `${getRoutePrefix()}/${item.slug}` }
+	];
+	// Only the blog template is actually a post; every other template is some
+	// other kind of article.
+	$: articleType =
+		contentType.settings.itemTemplate === 'blog-item'
+			? ('BlogPosting' as const)
+			: ('Article' as const);
 </script>
 
 <SharingMeta
@@ -35,7 +49,12 @@
 	description={item.seoDescription || ''}
 	image={item.seoImage || ''}
 	type="article"
+	{articleType}
+	{breadcrumb}
 	publishedTime={item.publishedAt || ''}
+	modifiedTime={item.updatedAt || ''}
+	keywords={tags.map((tag) => tag.name)}
+	section={typeof item.fields.category === 'string' ? item.fields.category : ''}
 />
 
 <div class="cms-item-page">

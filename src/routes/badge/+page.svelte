@@ -87,6 +87,7 @@
 	imageAlt={`${site.name} — the badge`}
 	imageWidth={1200}
 	imageHeight={630}
+	breadcrumb={[{ name: 'Badge', path: '/badge' }]}
 />
 
 <div class="page">

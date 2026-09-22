@@ -7,9 +7,15 @@ describe('SharingMeta', () => {
 	beforeEach(() => {
 		// Clear any existing meta tags from previous tests
 		document.head
-			.querySelectorAll('meta, title, link[rel="canonical"]')
+			.querySelectorAll('meta, title, link[rel="canonical"], script[type="application/ld+json"]')
 			.forEach((el) => el.remove());
 	});
+
+	/** The page's JSON-LD graph, parsed, or null when it emitted none. */
+	function graph(): { '@graph': Record<string, unknown>[] } | null {
+		const script = document.querySelector('script[type="application/ld+json"]');
+		return script ? JSON.parse(script.textContent || 'null') : null;
+	}
 
 	it('should render title with site name suffix', () => {
 		render(SharingMeta, {
@@ -377,5 +383,58 @@ describe('SharingMeta', () => {
 	it('still suffixes a page that has its own name', () => {
 		render(SharingMeta, { title: 'Projects', description: 'Built here' });
 		expect(document.title).toBe(`Projects - ${site.name}`);
+	});
+
+	describe('structured data', () => {
+		it('emits one JSON-LD graph naming the organisation, the site and the page', () => {
+			render(SharingMeta, { title: 'Projects', description: 'Built here' });
+			const types = graph()?.['@graph'].map((node) => node['@type']);
+			expect(document.querySelectorAll('script[type="application/ld+json"]')).toHaveLength(1);
+			expect(types).toContain('Organization');
+			expect(types).toContain('WebSite');
+			expect(types).toContain('WebPage');
+		});
+
+		it('emits nothing for a noindex page', () => {
+			// Admin and account surfaces. Describing a page a crawler was told to
+			// skip is noise, and it names internal pages in a payload robots
+			// directives do not cover.
+			render(SharingMeta, { title: 'Admin', noindex: true });
+			expect(graph()).toBeNull();
+		});
+
+		it('passes the page subtype, breadcrumb and listing through', () => {
+			render(SharingMeta, {
+				title: 'Blog',
+				pageType: 'CollectionPage',
+				breadcrumb: [{ name: 'Blog', path: '/blog' }],
+				items: [{ name: 'First', url: '/blog/first' }]
+			});
+			const types = graph()?.['@graph'].map((node) => node['@type']);
+			expect(types).toContain('CollectionPage');
+			expect(types).toContain('BreadcrumbList');
+			expect(types).toContain('ItemList');
+		});
+
+		it('describes an article page as an article, dated and tagged', () => {
+			render(SharingMeta, {
+				title: 'Hello',
+				type: 'article',
+				articleType: 'BlogPosting',
+				publishedTime: '2026-01-01T00:00:00Z',
+				keywords: ['svelte']
+			});
+			const article = graph()?.['@graph'].find((node) => node['@type'] === 'BlogPosting');
+			expect(article?.datePublished).toBe('2026-01-01T00:00:00Z');
+			expect(article?.keywords).toBe('svelte');
+		});
+
+		it('keeps a title that closes a script tag inside the payload', () => {
+			// The graph carries CMS text and reaches the head through {@html}.
+			render(SharingMeta, { title: '</script><img src=x onerror=alert(1)>' });
+			expect(document.querySelector('head img')).toBeNull();
+			const page = graph()?.['@graph'].find((node) => node['@type'] === 'WebPage');
+			expect(page?.name).toBe('</script><img src=x onerror=alert(1)>');
+		});
 	});
 });

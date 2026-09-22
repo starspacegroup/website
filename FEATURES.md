@@ -138,13 +138,16 @@ build/deploy. See [docs/CLOUDFLARE_SETUP.md](./docs/CLOUDFLARE_SETUP.md).
 - Automated WCAG AA contrast validation
 - Complete PWA manifest and install icons
 - Open Graph, Twitter, canonical, and article metadata
+- schema.org JSON-LD on every indexable page — organisation, site, page,
+  breadcrumbs, listings, and articles, in one `@graph`
 - Pointer, touch, and keyboard dragging built on Pointer Events, with a live-region
   announcement for every move
 - A columned widget board over a registry-driven widget catalogue, and a pure
   `reorder()` engine usable on its own
 
 See [docs/THEME_SYSTEM.md](./docs/THEME_SYSTEM.md),
-[docs/COMMAND_PALETTE.md](./docs/COMMAND_PALETTE.md), and
+[docs/COMMAND_PALETTE.md](./docs/COMMAND_PALETTE.md),
+[docs/STRUCTURED_DATA.md](./docs/STRUCTURED_DATA.md), and
 [docs/WIDGET_BOARD.md](./docs/WIDGET_BOARD.md).
 
 ## Quality contract

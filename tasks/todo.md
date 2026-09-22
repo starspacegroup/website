@@ -74,6 +74,23 @@ fail separately.
       starspace.group, every variant renders, and `?variant=toString` returns the default
       badge.
 
+- [x] schema.org JSON-LD on every indexable page (2026-09-21). The site carried complete
+      Open Graph and Twitter metadata and **no structured data at all**, so a search engine
+      had to infer what *Space is from prose. `src/lib/structured-data.ts` builds one
+      `@graph` per page — Organization, WebSite, WebPage, plus a BreadcrumbList, an ItemList
+      and an Article when the page has them — and `SharingMeta.svelte` is the only emitter,
+      deriving it from props that component already took. `/contact` had hand-rolled its
+      title and description and so carried no share card either; it uses `SharingMeta` now.
+      `@id`s are pinned to `site.url` rather than the request origin, a noindex page emits
+      nothing, and `escapeJsonLd` keeps CMS text from closing the `<script>` it rides in.
+      See `docs/STRUCTURED_DATA.md`. Verified: `bun run check` clean over 1,709 files;
+      `bun run test` 2,612 passing; `bun run test:coverage` at 97.98% lines with the new
+      module at 100% on all four; and the blocks read off a running dev server for `/`,
+      `/projects`, `/contact`, `/privacy`, `/blog` and a seeded `/blog/…` item — every one
+      valid JSON, `/chat` (noindex) emitting none, and an item titled
+      `JSON-LD probe </script>` rendering as `\u003c/script\u003e` with the page intact.
+      Not verified live: this is local evidence only, on an undeployed change.
+
 ## Next — before this can be deployed
 
 - [x] Create this site's own Cloudflare resources and write the real ids into `wrangler.toml`.

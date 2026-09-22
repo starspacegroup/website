@@ -72,6 +72,7 @@
 	imageAlt={`${site.name} — the channels and commands`}
 	imageWidth={1200}
 	imageHeight={630}
+	breadcrumb={[{ name: 'Server guide', path: '/guide' }]}
 />
 
 <div class="page">

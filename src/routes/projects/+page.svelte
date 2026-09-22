@@ -16,6 +16,13 @@
 	imageAlt={`${site.name} — projects built by the community`}
 	imageWidth={1200}
 	imageHeight={630}
+	pageType="CollectionPage"
+	breadcrumb={[{ name: 'Projects', path: '/projects' }]}
+	items={projects.map((project) => ({
+		name: project.name,
+		url: project.url,
+		description: project.description
+	}))}
 />
 
 <div class="page">

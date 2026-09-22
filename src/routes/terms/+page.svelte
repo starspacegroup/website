@@ -5,7 +5,11 @@
 	const lastUpdated = 'January 1, 2026';
 </script>
 
-<SharingMeta title="Terms of Service" description="Terms of Service for *Space" />
+<SharingMeta
+	title="Terms of Service"
+	description="Terms of Service for *Space"
+	breadcrumb={[{ name: 'Terms of Service', path: '/terms' }]}
+/>
 
 <main class="legal-page">
 	<div class="legal-container">

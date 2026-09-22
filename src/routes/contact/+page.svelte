@@ -1,13 +1,24 @@
 <script lang="ts">
+	import SharingMeta from '$lib/components/SharingMeta.svelte';
 	import type { ActionData, PageData } from './$types';
 
 	export let data: PageData;
 	export let form: ActionData;
+
+	const description = 'Get in touch — send us a message.';
 </script>
 
+<!-- This page hand-rolled its title and description and so carried no share
+     card and no structured data. The Turnstile tag stays in its own block:
+     SharingMeta owns the metadata, not third-party scripts. -->
+<SharingMeta
+	title="Contact"
+	{description}
+	pageType="ContactPage"
+	breadcrumb={[{ name: 'Contact', path: '/contact' }]}
+/>
+
 <svelte:head>
-	<title>Contact</title>
-	<meta name="description" content="Get in touch — send us a message." />
 	{#if data.turnstileSiteKey}
 		<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 	{/if}

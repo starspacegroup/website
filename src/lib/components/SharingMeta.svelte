@@ -1,12 +1,25 @@
 <!--
   SharingMeta - Comprehensive sharing and SEO meta tags component.
 
-  Renders Open Graph, Twitter Card, canonical URL, article metadata, and robots
-  directives inside <svelte:head>. Use on every page with page-specific props.
+  Renders Open Graph, Twitter Card, canonical URL, article metadata, robots
+  directives, and schema.org JSON-LD inside <svelte:head>. Use on every page
+  with page-specific props.
+
+  The JSON-LD is derived from the props this component already takes, so a page
+  that sets its title, description, image and dates gets structured data for
+  free — see `src/lib/structured-data.ts` and `docs/STRUCTURED_DATA.md`. Only a
+  breadcrumb trail and a listing's entries have to be passed in, because
+  nothing else on the page can supply them.
 -->
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { site } from '$lib/site.config';
+	import {
+		buildPageGraph,
+		jsonLdScript,
+		type Breadcrumb,
+		type ListEntry
+	} from '$lib/structured-data';
 
 	/** Page title (displayed in browser tab and social shares) */
 	export let title: string;
@@ -43,6 +56,23 @@
 	export let imageWidth: number = 0;
 	/** Height of the share image in pixels */
 	export let imageHeight: number = 0;
+	/** schema.org `WebPage` subtype for the JSON-LD page node */
+	export let pageType: 'WebPage' | 'CollectionPage' | 'ContactPage' | 'AboutPage' | 'ItemPage' =
+		'WebPage';
+	/** Breadcrumb trail from the home page down, home itself excluded */
+	export let breadcrumb: Breadcrumb[] = [];
+	/** Entries of a listing page, in render order, for the JSON-LD `ItemList` */
+	export let items: ListEntry[] = [];
+	/** Tag names for `Article.keywords` (only used when type is 'article') */
+	export let keywords: string[] = [];
+	/** Category or section for `Article.articleSection` (type 'article' only) */
+	export let section: string = '';
+	/**
+	 * schema.org type for the article node. `BlogPosting` only when the item
+	 * really is a post — a CMS type can be a changelog or a case study, and
+	 * calling those blog posts is a claim the page does not support.
+	 */
+	export let articleType: 'Article' | 'BlogPosting' = 'Article';
 
 	// The home page passes the site's own name as its title, and appending the
 	// suffix there produced "*Space - *Space" in the tab. A page named after the
@@ -50,6 +80,36 @@
 	$: fullTitle = siteName && title !== siteName ? `${title} - ${siteName}` : title;
 	// Resolve root-relative image paths to absolute URLs for OG/Twitter compliance
 	$: absoluteImage = image && image.startsWith('/') ? `${$page.url.origin}${image}` : image;
+
+	// A noindex page emits no JSON-LD. Every one of them is an admin or account
+	// surface, so describing it to a crawler that has been told not to look is
+	// noise at best, and at worst it names internal pages in a payload the
+	// robots directive does not cover.
+	$: structuredData = noindex
+		? null
+		: buildPageGraph({
+				path: $page.url.pathname,
+				title,
+				description,
+				image,
+				imageAlt,
+				imageWidth,
+				imageHeight,
+				pageType,
+				breadcrumb,
+				items,
+				article:
+					type === 'article'
+						? {
+								type: articleType,
+								datePublished: publishedTime,
+								dateModified: modifiedTime,
+								author,
+								keywords,
+								section
+							}
+						: undefined
+			});
 </script>
 
 <svelte:head>
@@ -108,6 +168,13 @@
 	{/if}
 	{#if twitterCreator}
 		<meta name="twitter:creator" content={twitterCreator} />
+	{/if}
+
+	<!-- Structured data. Written with {@html} because Svelte treats a literal
+	     <script> in markup as a component script; `jsonLdScript` escapes the
+	     payload so CMS text cannot close the element. -->
+	{#if structuredData}
+		{@html jsonLdScript(structuredData)}
 	{/if}
 
 	<!-- Article metadata (only for type="article") -->

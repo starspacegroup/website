@@ -358,7 +358,7 @@
 		   content was about that wide anyway and it never showed; at 2560px the
 		   page rendered 845px wide in the middle of a 1836px screen. */
 		width: 100%;
-		max-width: var(--layout-stats-max-width);
+		max-width: var(--layout-wide-max-width);
 		margin: 0 auto;
 		padding: var(--spacing-2xl) var(--spacing-md);
 	}
@@ -439,7 +439,12 @@
 	.tiles {
 		display: grid;
 		gap: var(--spacing-lg);
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+		/* The upper bound is the point. `auto-fit` collapses the tracks nothing
+		   sits in and hands the leftover to the tiles that remain — with two
+		   tiles on a 2560px page that made each one 1250px wide, a number in the
+		   corner of a billboard. Capped at 26rem they stay card-sized and the row
+		   just starts at the left, the way the guide's columns do. */
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 26rem));
 		align-items: start;
 	}
 

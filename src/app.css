@@ -93,10 +93,12 @@
 	--font-mono: 'Fira Code', 'Cascadia Code', Consolas, Monaco, monospace;
 	--layout-feature-grid-max-width: 1380px;
 	--layout-chrome-max-width: 1500px;
-	/* /stats only. It is a wall of tiles with no prose column to protect, so it
-	   runs to the width of a 1440p desktop rather than the 1380px the rest of
-	   the site keeps for reading. */
-	--layout-stats-max-width: 2560px;
+	/* The pages that are a grid of cards and nothing else — /projects, /guide,
+	   /stats, /badge and the CMS listings. They have no prose column to protect,
+	   so they run to the width of a 1440p desktop rather than stopping at the
+	   1380px the reading pages keep. Text inside them still has its own measure;
+	   this is the width of the grid, not of a sentence. */
+	--layout-wide-max-width: 2560px;
 
 	/* Transitions */
 	--transition-fast: 150ms ease;

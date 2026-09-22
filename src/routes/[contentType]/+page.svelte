@@ -145,7 +145,10 @@
 
 <style>
 	.cms-list-page {
-		max-width: 1720px;
+		/* See the note on `.page` elsewhere: an auto inline margin on a flex item
+		   beats `align-items: stretch`, so this needs a width to fill. */
+		width: 100%;
+		max-width: var(--layout-wide-max-width);
 		margin: 0 auto;
 		padding: var(--spacing-xl) var(--spacing-md);
 	}
@@ -336,6 +339,21 @@
 	@media (min-width: 1400px) {
 		.cms-blog-grid {
 			grid-template-columns: repeat(4, 1fr);
+		}
+	}
+
+	/* The ladder used to stop at four, which was right while the page stopped at
+	   1720px. On a wider screen four cards just get wider, and a card whose
+	   picture is 600px across is a banner, not a card in a list. */
+	@media (min-width: 1900px) {
+		.cms-blog-grid {
+			grid-template-columns: repeat(5, 1fr);
+		}
+	}
+
+	@media (min-width: 2300px) {
+		.cms-blog-grid {
+			grid-template-columns: repeat(6, 1fr);
 		}
 	}
 </style>

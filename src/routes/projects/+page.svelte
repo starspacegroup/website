@@ -51,7 +51,12 @@
 
 <style>
 	.page {
-		max-width: var(--layout-feature-grid-max-width);
+		/* `width: 100%` is load-bearing. The layout's <main> is a column flex
+		   container, and an auto inline margin on a flex item overrides
+		   `align-items: stretch` — without a width the box shrinks to its content
+		   and the max-width never binds. */
+		width: 100%;
+		max-width: var(--layout-wide-max-width);
 		margin: 0 auto;
 		padding: var(--spacing-2xl) var(--spacing-md);
 	}

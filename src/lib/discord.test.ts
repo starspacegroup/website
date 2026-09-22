@@ -4,6 +4,7 @@ import {
 	DISCORD_INVITE_API,
 	DISCORD_INVITE_CODE,
 	discordAvatarUrl,
+	discordDefaultAvatarUrl,
 	fetchGuildCounts
 } from './discord';
 
@@ -95,12 +96,12 @@ describe('discordAvatarUrl', () => {
 		expect(discordAvatarUrl(USER, 'abc123', 256)).toContain('size=256');
 	});
 
-	it('falls back to the default Discord picked for that account', () => {
-		// Same snowflake, same default, every time — it is a function of the id.
-		const first = discordAvatarUrl(USER, null);
-		expect(first).toMatch(/^https:\/\/cdn\.discordapp\.com\/embed\/avatars\/[0-5]\.png$/);
-		expect(discordAvatarUrl(USER, undefined)).toBe(first);
-		expect(discordAvatarUrl(USER, '')).toBe(first);
+	it('is null for an account with no picture of its own', () => {
+		// Not a default here. There is no URL that shows their avatar, and the
+		// caller has a better fallback than a generic one.
+		for (const hash of [null, undefined, '']) {
+			expect(discordAvatarUrl(USER, hash)).toBeNull();
+		}
 	});
 
 	it('is null for an id that is not a snowflake', () => {
@@ -114,6 +115,22 @@ describe('discordAvatarUrl', () => {
 	it('is null for a hash that is not a hash', () => {
 		for (const hash of ['../evil', 'a/b', 'x?y=z', 'a'.repeat(80)]) {
 			expect(discordAvatarUrl(USER, hash)).toBeNull();
+		}
+	});
+});
+
+describe('discordDefaultAvatarUrl', () => {
+	const USER = '123456789012345678';
+
+	it('is the same default for the same account, every time', () => {
+		const url = discordDefaultAvatarUrl(USER);
+		expect(url).toMatch(/^https:\/\/cdn\.discordapp\.com\/embed\/avatars\/[0-5]\.png$/);
+		expect(discordDefaultAvatarUrl(USER)).toBe(url);
+	});
+
+	it('is null for an id that is not a snowflake', () => {
+		for (const id of ['', 'not-an-id', '../../admin', '1'.repeat(40)]) {
+			expect(discordDefaultAvatarUrl(id)).toBeNull();
 		}
 	});
 });

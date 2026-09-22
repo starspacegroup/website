@@ -192,7 +192,28 @@ describe('stats load', () => {
 		);
 	});
 
-	it('falls back to the default avatar rather than to nothing', async () => {
+	it('falls back to the picture the site already holds', async () => {
+		// The common case for anybody who linked Discord before the avatar was
+		// stored: no hash, but the nav has been showing them a real photograph
+		// all along, and that beats a generic one.
+		discordAccount.mockResolvedValue({ id: '123456789012345678', avatar: null });
+		const data = await run({
+			user: { id: 'user-1', avatarUrl: 'https://avatars.example/u/1' }
+		});
+
+		expect(data.avatarUrl).toBe('https://avatars.example/u/1');
+	});
+
+	it('prefers their Discord picture over the site one', async () => {
+		discordAccount.mockResolvedValue({ id: '123456789012345678', avatar: 'abc123' });
+		const data = await run({
+			user: { id: 'user-1', avatarUrl: 'https://avatars.example/u/1' }
+		});
+
+		expect(data.avatarUrl).toContain('cdn.discordapp.com/avatars/');
+	});
+
+	it('falls back to the Discord default rather than to nothing', async () => {
 		discordAccount.mockResolvedValue({ id: '123456789012345678', avatar: null });
 		const data = await run({ user: { id: 'user-1' } });
 

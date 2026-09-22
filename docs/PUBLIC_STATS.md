@@ -75,8 +75,16 @@ avatar is read from their own `oauth_accounts` row — written by the Discord
 callback on each sign-in, stored as the hash Discord gave, and turned into a
 CDN URL by `discordAvatarUrl` at render time. It is the same proof as the id:
 the account they signed in with, shown back to them alone, on a page that is
-`private, no-store`. A row with no avatar is not a failure — `discordAvatarUrl`
-returns the default Discord itself serves for that snowflake.
+`private, no-store`.
+
+A row with no hash is not a failure, and it is the normal case for anybody who
+linked Discord before the column existed — nothing can backfill it, because
+`0012_minimize_oauth_tokens` means this site holds no provider token to ask
+Discord with, and SpaceBot has never been in the business of sending pictures.
+So the panel takes the first of three: their Discord avatar, then whatever
+avatar the account already carries here (what the nav has been showing them all
+along), then `discordDefaultAvatarUrl` — generic, but never a hole in the
+layout. A real photograph of them beats a correct-but-generic one.
 
 ## What fails to what
 

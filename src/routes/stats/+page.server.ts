@@ -11,7 +11,7 @@ import {
 	fetchMemberProfile,
 	type MemberProfile
 } from '$lib/server/member-profile';
-import { discordAvatarUrl } from '$lib/discord';
+import { discordAvatarUrl, discordDefaultAvatarUrl } from '$lib/discord';
 import { getSpaceBotConfig } from '$lib/server/spacebot-connection';
 import type { PageServerLoad } from './$types';
 
@@ -103,7 +103,23 @@ export const load: PageServerLoad = async ({ platform, locals, setHeaders }) => 
 		/**
 		 * Their own avatar, for the panel that is already only about them. It goes
 		 * out with the same `private, no-store` header as everything else here.
+		 *
+		 * Three sources, in the order of how much they are actually a picture of
+		 * this person on Discord:
+		 *
+		 * 1. The hash the Discord callback stored. Only sign-ins since the column
+		 *    existed have one, and nothing else can fill it in — this site keeps
+		 *    no provider token to ask Discord with, deliberately (`0012_`).
+		 * 2. Whatever avatar the account already carries here, which is what the
+		 *    nav has been showing them all along. A real photograph of them beats
+		 *    a correct-but-generic one.
+		 * 3. The default Discord serves for that snowflake, so the layout never
+		 *    has a hole in it.
 		 */
-		avatarUrl: account ? discordAvatarUrl(account.id, account.avatar) : null
+		avatarUrl: account
+			? (discordAvatarUrl(account.id, account.avatar) ??
+				locals.user?.avatarUrl ??
+				discordDefaultAvatarUrl(account.id))
+			: null
 	};
 };

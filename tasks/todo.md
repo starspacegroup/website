@@ -115,14 +115,27 @@ fail separately.
 - [x] Create this site's own Cloudflare resources and write the real ids into `wrangler.toml`.
       Done in `411c83a`. Verified: `bun run build` succeeds, and `bun run deploy` reaches the
       `starspace-website` Pages project, which the apex domain serves.
-- [ ] Generate `SESSION_SECRET` and `SETUP_SECRET` independently, set them as Pages secrets, and
-      run `/setup` once to establish owner identity. Acceptance: sign-in works against the
-      deployed app; `/setup` refuses to run a second time.
+- [x] Generate `SESSION_SECRET` and `SETUP_SECRET` independently and set them as Pages secrets.
+      Both are on the `starspace-website` production environment. Still open: run `/setup` once
+      against the deployed app to establish owner identity, and confirm it refuses a second run.
+
+- [x] Discord sign-in on the deployed site (2026-09-22). Its own Discord application, `*Space`
+      under the `*Space` team, client id `1551909332621197353` — deliberately not the bot's
+      application, whose secret could not be read back without resetting it and breaking
+      whatever holds it now. Redirects registered for `https://starspace.group` and
+      `http://localhost:5173`, both at `/api/auth/discord/callback`. `DISCORD_CLIENT_ID` and
+      `DISCORD_CLIENT_SECRET` are Pages secrets and are in the gitignored `.dev.vars` for local
+      work. Verified live: `GET /api/auth/discord` now 302s to `discord.com/api/oauth2/authorize`
+      with that client id and callback, where it previously bounced to
+      `/setup?error=oauth_not_configured`. The production D1 already carries `users`, `sessions`,
+      `oauth_accounts` and `oauth_transactions`. **Not verified: the round trip** — consenting on
+      Discord and landing back signed in needs a real Discord account and a browser.
 - [x] Decide the publication target and add it as a remote on purpose. David set `origin` to
       `starspacegroup/website` on 2026-09-06; NebulaKit stays as the `template` remote.
-- [ ] Point `starspace.group` at the new deployment and retire `starspace-group-svelte`.
-      Acceptance: the live domain serves this build; the old repository's README says where the
-      site moved.
+- [x] Point `starspace.group` at the new deployment. Already done, and earlier than this list
+      recorded: the apex is a custom domain on the `starspace-website` Pages project, and
+      `starspace-group-svelte` now has only its `.pages.dev`. Still open: the old repository's
+      README does not yet say where the site moved.
 
 ## Parked
 

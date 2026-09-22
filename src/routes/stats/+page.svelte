@@ -22,7 +22,7 @@
 	   find, because that is what gets shared. What is printed under the heading
 	   is allowed to know who is reading. */
 	const description =
-		'How busy the *Space Discord actually is — members, messages and time spent in voice, read from the server itself. Sign in with Discord to see your own figures alongside it.';
+		'How busy the *Space Discord actually is — members and time spent in voice, read from the server itself. Sign in with Discord to see your own figures alongside it.';
 
 	/* One clock for the whole render, so two figures measured at the same moment
 	   cannot describe it differently. */
@@ -39,11 +39,6 @@
 	$: totals = totalGuildDays(window30);
 	$: windowLabel = describeWindow(window30);
 
-	$: messageLine = sparklinePath(
-		window30.map((day) => day.messages),
-		100,
-		28
-	);
 	$: memberLine = sparklinePath(
 		window30.map((day) => day.netChange),
 		100,
@@ -256,27 +251,6 @@
 				</div>
 
 				<div class="tiles">
-					<div class="tile">
-						<p class="tile-figure">{formatCount(totals.messages)}</p>
-						<p class="tile-label">messages</p>
-						{#if messageLine}
-							<svg
-								class="spark"
-								viewBox="0 0 100 28"
-								preserveAspectRatio="none"
-								role="img"
-								aria-label={`Messages per day over ${totals.days} days, busiest day ${totals.busiestDayMessages}`}
-							>
-								<polyline points={messageLine} />
-							</svg>
-						{/if}
-						{#if totals.busiestDayMessages}
-							<p class="tile-note">
-								{formatCount(totals.busiestDayMessages)} on the busiest day.
-							</p>
-						{/if}
-					</div>
-
 					<div class="tile">
 						<p class="tile-figure">{voiceTotal ?? '—'}</p>
 						<p class="tile-label">spent in voice</p>

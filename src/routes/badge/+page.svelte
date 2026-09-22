@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { highlightSnippet } from '$lib/highlight';
 	import { page } from '$app/stores';
 	import SharingMeta from '$lib/components/SharingMeta.svelte';
 	import { site } from '$lib/site.config';
@@ -162,7 +163,11 @@
 					</button>
 				</div>
 				<p class="form-note">{form.note}</p>
-				<pre><code>{form.code}</code></pre>
+				<!-- `{@html}` because the highlighter returns markup. It escapes
+				     everything it is given — see `highlight.ts` — and what it is
+				     given is a snippet this site generated. The clipboard still
+				     gets `form.code`, the raw text. -->
+				<pre><code>{@html highlightSnippet(form.code, form.id)}</code></pre>
 			</article>
 		{/each}
 	</section>
@@ -406,6 +411,58 @@
 		font-size: 0.813rem;
 		line-height: 1.6;
 		color: var(--color-text);
+	}
+
+	/* The highlighted markup is injected, so Svelte's scoping never reaches it —
+	   these have to be :global. Roles rather than a full theme: six colours,
+	   each one checked against the page ground in both themes. Anything the
+	   grammar tags that is not listed keeps --color-text, which is the right
+	   default for code. */
+	pre :global(.hljs-comment),
+	pre :global(.hljs-quote),
+	pre :global(.hljs-meta) {
+		color: var(--code-comment);
+		font-style: italic;
+	}
+
+	pre :global(.hljs-punctuation),
+	pre :global(.hljs-operator) {
+		color: var(--code-punctuation);
+	}
+
+	pre :global(.hljs-tag),
+	pre :global(.hljs-name),
+	pre :global(.hljs-selector-tag),
+	pre :global(.hljs-selector-class),
+	pre :global(.hljs-selector-id),
+	pre :global(.hljs-section),
+	pre :global(.hljs-title) {
+		color: var(--code-tag);
+	}
+
+	pre :global(.hljs-attr),
+	pre :global(.hljs-attribute),
+	pre :global(.hljs-property),
+	pre :global(.hljs-variable),
+	pre :global(.hljs-symbol) {
+		color: var(--code-attr);
+	}
+
+	pre :global(.hljs-string),
+	pre :global(.hljs-number),
+	pre :global(.hljs-link),
+	pre :global(.hljs-regexp),
+	pre :global(.hljs-addition) {
+		color: var(--code-string);
+	}
+
+	pre :global(.hljs-keyword),
+	pre :global(.hljs-built_in),
+	pre :global(.hljs-literal),
+	pre :global(.hljs-type),
+	pre :global(.hljs-strong),
+	pre :global(.hljs-bullet) {
+		color: var(--code-keyword);
 	}
 
 	a {

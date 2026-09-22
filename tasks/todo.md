@@ -147,6 +147,20 @@ fail separately.
 
 ## Next — worth doing, not blocking
 
+- [x] Syntax highlighting on the `/badge` snippets (2026-09-22). They are built reactively from
+      the variant, the ground and the origin, so there is nothing to highlight at build time —
+      it runs in the server render and again in the browser. `src/lib/highlight.ts`, six colour
+      roles on `--code-*` tokens in `app.css`, every one of them over 5.9:1 against the page
+      ground in its own theme, because a comment nobody can read is where highlighters usually
+      fail contrast.
+
+      **Prism was tried first and reverted after it took `/badge` down.** Its language files are
+          not modules: each reads a global `Prism` the core assigns to `window`, a Worker has no
+          `window`, and the bundler hoists those initialisers above any assignment of our own — so
+          the page 500'd in production for about four minutes. highlight.js registers grammars
+          through a function call and has no globals. Verified in `wrangler pages dev`, which is a
+          real Workers runtime, **before** the second deploy rather than after it.
+
 - [ ] Reconnect SpaceBot after deploying. The Connect handshake now asks for `channels:read`,
       `commands:read` and `members:read` as well, and a key issued before those changes carries
       none of them — so `/guide` will show its "not available" notice, and `/stats` will show the
@@ -154,13 +168,13 @@ fail separately.
       reports each scope on its own row and says what each missing one costs.
 
       Now the only thing between a signed-in member and the personal panel. SpaceBot's own
-          deploy was the other half and is done: `116bfbd` sat unpushed, so the live bot 404'd
-          `/api/v1/members/:userId` and the panel fell to "not available" for a reason that looked
-          like a missing scope and was not one. Rebased onto five dependabot merges as `103336b`,
-          pushed, and Cloudflare built it. Verified: `spacebot.starspace.group/_app/version.json`
-          reads `103336b`, and the endpoint now answers
-          `403 {"error":"Insufficient scope. Required: members:read"}` — the right refusal, from a
-          key issued 2026-09-07.
+              deploy was the other half and is done: `116bfbd` sat unpushed, so the live bot 404'd
+              `/api/v1/members/:userId` and the panel fell to "not available" for a reason that looked
+              like a missing scope and was not one. Rebased onto five dependabot merges as `103336b`,
+              pushed, and Cloudflare built it. Verified: `spacebot.starspace.group/_app/version.json`
+              reads `103336b`, and the endpoint now answers
+              `403 {"error":"Insufficient scope. Required: members:read"}` — the right refusal, from a
+              key issued 2026-09-07.
 
 - [ ] Run `bun run test:e2e` and keep it green. Not run in this session; it needs
       `bunx playwright install` and a local D1 migration first.

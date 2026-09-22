@@ -128,6 +128,15 @@ export function maskKey(key: string): string {
 
 export type ScopeCheck = 'ok' | 'unauthorized' | 'forbidden' | 'error' | 'unreachable';
 
+/**
+ * The account the `members:read` probe asks about.
+ *
+ * Deliberately not a real one. A valid snowflake nobody holds proves the scope
+ * — SpaceBot answers 200 with `member: false` — without the site's own health
+ * check reading a member's record every time somebody opens the admin page.
+ */
+export const PROBE_USER_ID = '10000000000000000';
+
 export type SpaceBotStatus = {
 	connected: boolean;
 	source: SpaceBotConfig['source'];
@@ -143,6 +152,8 @@ export type SpaceBotStatus = {
 	channels: ScopeCheck | 'unconfigured';
 	/** `commands:read` — the command list on /guide. */
 	commands: ScopeCheck | 'unconfigured';
+	/** `members:read` — one member's own figures on /stats. */
+	members: ScopeCheck | 'unconfigured';
 	/** How many people are in the channel right now, when voice answered. */
 	inVoice: number | null;
 	/** How many days of member history came back, when stats answered. */
@@ -213,6 +224,7 @@ export async function verifySpaceBot(
 		stats: 'unconfigured',
 		channels: 'unconfigured',
 		commands: 'unconfigured',
+		members: 'unconfigured',
 		inVoice: null,
 		historyDays: null,
 		channelCount: null,
@@ -223,7 +235,7 @@ export async function verifySpaceBot(
 	if (!config.apiUrl || !config.apiKey) return base;
 
 	const origin = config.apiUrl.replace(/\/$/, '');
-	const [voice, stats, channels, commands] = await Promise.all([
+	const [voice, stats, channels, commands, members] = await Promise.all([
 		probe(
 			`${origin}/api/v1/voice?channel=${encodeURIComponent(config.channel)}`,
 			config.apiKey,
@@ -231,7 +243,11 @@ export async function verifySpaceBot(
 		),
 		probe(`${origin}/api/v1/stats/members?period=24h&granularity=daily`, config.apiKey, fetcher),
 		probe(`${origin}/api/v1/channels`, config.apiKey, fetcher),
-		probe(`${origin}/api/v1/commands?limit=1`, config.apiKey, fetcher)
+		probe(`${origin}/api/v1/commands?limit=1`, config.apiKey, fetcher),
+		// A snowflake nobody holds. SpaceBot answers 200 with `member: false` for
+		// an account it has never seen, so the scope is proved without naming a
+		// real person in a probe an owner might be watching the logs of.
+		probe(`${origin}/api/v1/members/${PROBE_USER_ID}`, config.apiKey, fetcher)
 	]);
 
 	const voiceBody = voice.body as { channels?: { members?: unknown[] }[] } | null;
@@ -241,11 +257,12 @@ export async function verifySpaceBot(
 
 	return {
 		...base,
-		connected: [voice, stats, channels, commands].some((result) => result.check === 'ok'),
+		connected: [voice, stats, channels, commands, members].some((result) => result.check === 'ok'),
 		voice: voice.check,
 		stats: stats.check,
 		channels: channels.check,
 		commands: commands.check,
+		members: members.check,
 		inVoice:
 			voice.check === 'ok' && Array.isArray(voiceBody?.channels)
 				? voiceBody.channels.reduce(
@@ -291,6 +308,7 @@ export async function clearSpaceBotConnection(platform: App.Platform | undefined
 	await Promise.all([
 		platform.env.KV.delete(SPACEBOT_KV_KEY),
 		platform.env.KV.delete('voice:ten-forward').catch(() => undefined),
-		platform.env.KV.delete('members:history').catch(() => undefined)
+		platform.env.KV.delete('members:history').catch(() => undefined),
+		platform.env.KV.delete('guild:stats').catch(() => undefined)
 	]);
 }

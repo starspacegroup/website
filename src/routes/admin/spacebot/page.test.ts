@@ -24,6 +24,7 @@ function status(over: Partial<SpaceBotStatus> = {}): SpaceBotStatus {
 		stats: 'unconfigured',
 		channels: 'unconfigured',
 		commands: 'unconfigured',
+		members: 'unconfigured',
 		inVoice: null,
 		historyDays: null,
 		channelCount: null,

@@ -158,6 +158,17 @@
 						{/if}
 					</em>
 				</li>
+				<li class:scope-ok={status.members === 'ok'}>
+					<code>members:read</code>
+					<span>{SCOPE_COPY[status.members]}</span>
+					<em>
+						{#if status.members === 'ok'}
+							Signed-in members see their own figures on <a href="/stats">the stats page</a>.
+						{:else}
+							<a href="/stats">The stats page</a> shows the server's figures and nothing personal.
+						{/if}
+					</em>
+				</li>
 			</ul>
 		{:else}
 			<p class="empty">
@@ -253,7 +264,7 @@
 				</li>
 				<li>
 					Create a key with <code>voice:read</code>, <code>stats:read</code>,
-					<code>channels:read</code> and <code>commands:read</code>.
+					<code>channels:read</code>, <code>commands:read</code> and <code>members:read</code>.
 				</li>
 				<li>Paste it here.</li>
 			</ol>

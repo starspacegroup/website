@@ -112,6 +112,13 @@
 			icon: '🧭'
 		},
 		{
+			id: 'stats',
+			label: 'Server stats',
+			description: 'How busy the server is, and how busy you have been',
+			action: () => goto('/stats'),
+			icon: '📈'
+		},
+		{
 			id: 'badge',
 			label: 'Badge',
 			description: 'Put the *Space badge on your project',

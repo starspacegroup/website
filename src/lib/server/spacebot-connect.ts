@@ -20,15 +20,23 @@
 
 /**
  * Everything this site reads from SpaceBot: the hero's live panel and member
- * graph, and the server guide's channel directory and command list. All four are
- * read-only. A key granted fewer still works — each surface fails to nothing on
- * its own rather than taking the others down.
+ * graph, the server guide's channel directory and command list, and one
+ * member's own figures on `/stats`. All five are read-only. A key granted fewer
+ * still works — each surface fails to nothing on its own rather than taking the
+ * others down.
+ *
+ * `members:read` is the one an owner should think about before approving. The
+ * other four read aggregates; this one lets the site ask what a single named
+ * account did. It is asked for because `/stats` shows a signed-in member their
+ * own counts, and it is the site's own job — not SpaceBot's — to make sure the
+ * only account anyone can ask about is the one they signed in with.
  */
 export const CONNECT_SCOPES = [
 	'voice:read',
 	'stats:read',
 	'channels:read',
-	'commands:read'
+	'commands:read',
+	'members:read'
 ] as const;
 
 /** Where the CSRF state lives between the redirect out and the callback. */

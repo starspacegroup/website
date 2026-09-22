@@ -5,6 +5,7 @@ import {
 	KEY_PATTERN,
 	maskKey,
 	normalizeApiUrl,
+	PROBE_USER_ID,
 	saveSpaceBotConnection,
 	SPACEBOT_KV_KEY,
 	verifySpaceBot
@@ -197,6 +198,22 @@ describe('verifySpaceBot', () => {
 		expect(status.checkedAt).not.toBeNull();
 	});
 
+	it('proves members:read against a snowflake nobody holds', async () => {
+		const asked: string[] = [];
+		const fetcher = vi.fn(async (url: string) => {
+			asked.push(url);
+			return { status: 200, ok: true, json: async () => ({}) };
+		}) as unknown as typeof fetch;
+
+		const status = await verifySpaceBot(config, fetcher);
+
+		expect(status.members).toBe('ok');
+		const probe = asked.find((url) => url.includes('/api/v1/members/'));
+		// A real member's record must not be read every time the admin page is
+		// opened, so the health check asks about an account that does not exist.
+		expect(probe).toBe(`https://bot.example/api/v1/members/${PROBE_USER_ID}`);
+	});
+
 	it('tells a missing scope apart from a bad key — the two need different fixes', async () => {
 		const half = await verifySpaceBot(
 			config,
@@ -283,7 +300,8 @@ describe('saveSpaceBotConnection / clearSpaceBotConnection', () => {
 		const kv = createKv({
 			[SPACEBOT_KV_KEY]: connection(),
 			'voice:ten-forward': '{}',
-			'members:history': '{}'
+			'members:history': '{}',
+			'guild:stats': '{}'
 		});
 		await clearSpaceBotConnection({ env: { KV: kv } } as never);
 		expect([...kv.store.keys()]).toEqual([]);

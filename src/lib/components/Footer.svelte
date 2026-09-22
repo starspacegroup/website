@@ -51,6 +51,7 @@
 						<li><a href="/">Home</a></li>
 						<li><a href="/projects">Projects</a></li>
 						<li><a href="/guide">Server guide</a></li>
+						<li><a href="/stats">Server stats</a></li>
 						<li><a href="/badge">Badge</a></li>
 						<li><a href="/chat">Chat</a></li>
 					</ul>

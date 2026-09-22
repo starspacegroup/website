@@ -91,6 +91,25 @@ fail separately.
       `JSON-LD probe </script>` rendering as `\u003c/script\u003e` with the page intact.
       Not verified live: this is local evidence only, on an undeployed change.
 
+- [x] `/stats` — the server's figures in public, and a member's own once they sign in with
+      Discord (2026-09-22). Anyone can sign in with Discord already; what was missing was
+      somewhere for it to be worth doing. The public half reads `GET /api/v1/stats` with the
+      `stats:read` the site already holds and caches it in KV for ten minutes, so it works the
+      moment SpaceBot is connected. The personal half needed a SpaceBot change, committed there
+      as `116bfbd`: `GET /api/v1/members/:userId` behind a new `members:read` scope that
+      `stats:read` deliberately does not imply, serving counts only — messages, voice time,
+      commands, and where those put somebody among everyone else that month. Membership comes
+      from `guild_members_cache`, so somebody who left stops being readable the moment the
+      gateway notices. The Discord id comes from `oauth_accounts` for the current session and
+      from nowhere else; SpaceBot cannot tell whether the asker owns the account, so that check
+      is this site's to keep. See `docs/PUBLIC_STATS.md`. One defect found and fixed in SpaceBot
+      while testing: an absent `days` parameter arrived as null and clamped the window to one
+      day instead of thirty. Verified: `bun run check` clean over 1,722 files;
+      `bun run test:coverage` 2,676 passing, all four metrics above the 95 floor, with the three
+      new modules at 100% lines; `bun run validate:contrast` clean; `bun run build:ci`;
+      `bunx prettier --check` on every touched file. Not verified live — local evidence only,
+      on an undeployed change, and the deployed key does not carry `members:read` yet.
+
 ## Next — before this can be deployed
 
 - [x] Create this site's own Cloudflare resources and write the real ids into `wrangler.toml`.
@@ -115,10 +134,11 @@ fail separately.
 
 ## Next — worth doing, not blocking
 
-- [ ] Reconnect SpaceBot after deploying. The Connect handshake now asks for `channels:read`
-      and `commands:read` as well, and a key issued before this change carries neither, so
-      `/guide` will show its "not available" notice until the owner reconnects.
-      `/admin/spacebot` reports each scope separately and says which half is missing.
+- [ ] Reconnect SpaceBot after deploying. The Connect handshake now asks for `channels:read`,
+      `commands:read` and `members:read` as well, and a key issued before those changes carries
+      none of them — so `/guide` will show its "not available" notice, and `/stats` will show the
+      server's figures with no personal panel, until the owner reconnects. `/admin/spacebot`
+      reports each scope on its own row and says what each missing one costs.
 
 - [ ] Run `bun run test:e2e` and keep it green. Not run in this session; it needs
       `bunx playwright install` and a local D1 migration first.

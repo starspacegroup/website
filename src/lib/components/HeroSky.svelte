@@ -1,25 +1,292 @@
 <script lang="ts">
-	import { SKY, starfield } from '$lib/hero-sky';
+	import { onMount } from 'svelte';
+	import { SKY, skyTransform, starfield } from '$lib/hero-sky';
 
 	/**
-	 * The sky behind the home hero: the share card's, on the page.
+	 * The sky behind the home hero: the share card's, on the page — and then
+	 * alive.
 	 *
-	 * Same gradient, same coral glow, same seeded starfield as
-	 * `brand/og-image.svg`, so the page a visitor lands on is the card they
-	 * clicked. The card's night is the dark theme's; the light theme gets the
-	 * same sky at dawn, its stars nearly out. Both are `--hero-*` tokens in
-	 * `app.css` — this component names no colour of its own. It is server-rendered markup and CSS — no script, no timers, no
-	 * filters — so it paints before hydration, stays crisp at any zoom, and
-	 * costs nothing once painted. Under prefers-reduced-motion the stars hold
-	 * still.
+	 * **Two layers, and the order matters.** The SVG below is server-rendered
+	 * markup and CSS with no script and no timers: same gradient, same coral
+	 * glow, same seeded starfield as `brand/og-image.svg`, so the page a
+	 * visitor lands on is the card they clicked, and it is painted before a
+	 * line of JavaScript has run. A canvas then takes over on mount and draws
+	 * *the same stars* — same seed, same `xMidYMid slice` mapping via
+	 * `skyTransform` — so the handover is invisible, and from there the field
+	 * answers the pointer, answers the scroll, and wanders on its own.
+	 *
+	 * The card's night is the dark theme's; the light theme gets the same sky
+	 * at dawn, its stars nearly out. Both are `--hero-*` tokens in `app.css` —
+	 * this component names no colour of its own, and the canvas reads them off
+	 * the element rather than repeating them.
+	 *
+	 * **Under prefers-reduced-motion the canvas never starts.** The SVG is
+	 * already the still version of this field, so the reduced-motion path is
+	 * not a degraded copy of the live one — it is the layer that was there
+	 * first, hover and all.
 	 *
 	 * Decorative, and hidden from assistive technology as a whole: the hero's
 	 * words say what this place is; the sky only says where.
 	 */
 	const stars = starfield();
+
+	let sky: HTMLDivElement;
+	let field: HTMLCanvasElement;
+	let live = false;
+
+	onMount(() => {
+		const still = matchMedia('(prefers-reduced-motion: reduce)');
+		const fine = matchMedia('(pointer: fine)');
+		const ctx = field?.getContext('2d');
+		if (!ctx || still.matches) return;
+
+		/* The hero is what the pointer is measured against, and the canvas only
+		   covers part of it on a tall screen. Both rectangles are read once per
+		   resize: the old mistake to avoid is `getBoundingClientRect()` inside a
+		   pointermove handler, which forces a layout hundreds of times a second
+		   to re-learn a rectangle that has not moved. */
+		let w = 0;
+		let h = 0;
+		let heroTop = 0;
+		let heroLeft = 0;
+		let heroWidth = 1;
+		let heroHeight = 1;
+		let raf = 0;
+
+		/* Pointer, eased. `px/py` is where it is, `tx/ty` is where the field has
+		   got to — a field that snaps to the cursor reads as a mirror, not as
+		   depth. */
+		let px = 0;
+		let py = 0;
+		let tx = 0;
+		let ty = 0;
+		let scroll = 0;
+		/* A coarse pointer has no cursor to answer, so once it has arrived there
+		   is nothing to keep drawing for. It sleeps, and scroll wakes it. */
+		let awakeUntil = 0;
+		const SETTLE_MS = 500;
+
+		let star = 'rgb(255, 255, 255)';
+		let fieldAlpha = 1;
+		let haloAlpha = 1;
+		let glow = 'rgb(255, 138, 101)';
+
+		const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
+		const wrap = (v: number, span: number) => ((v % span) + span) % span;
+
+		/* The themes live in `app.css`, so they are read off the element rather
+		   than restated here. Re-read on a theme change and on resize — never in
+		   the frame loop, where `getComputedStyle` would be a layout read sixty
+		   times a second. */
+		function readTheme() {
+			const style = getComputedStyle(sky);
+			star = style.getPropertyValue('--hero-star').trim() || star;
+			glow = style.getPropertyValue('--hero-glow').trim() || glow;
+			fieldAlpha = Number(style.getPropertyValue('--hero-star-opacity')) || 1;
+			const halo = style.getPropertyValue('--hero-halo-opacity').trim();
+			haloAlpha = halo === '' ? 1 : Number(halo);
+		}
+
+		/* `color-mix` rather than string surgery on the token: the tokens are
+		   hex today and could be anything CSS accepts tomorrow, and a regex that
+		   assumes `rgb(` is how this breaks quietly six months from now. */
+		const tint = (colour: string, alpha: number) =>
+			`color-mix(in srgb, ${colour} ${Math.round(clamp01(alpha) * 100)}%, transparent)`;
+
+		function size() {
+			const hero = sky.parentElement ?? sky;
+			const heroRect = hero.getBoundingClientRect();
+			heroTop = heroRect.top + window.scrollY;
+			heroLeft = heroRect.left + window.scrollX;
+			heroWidth = Math.max(heroRect.width, 1);
+			heroHeight = Math.max(heroRect.height, 1);
+
+			const rect = field.getBoundingClientRect();
+			w = rect.width;
+			h = rect.height;
+			// Capped: this field is soft-edged points, and a 3x ratio triples the
+			// fill cost of every one of them for nothing anybody can see.
+			const dpr = Math.min(window.devicePixelRatio || 1, fine.matches ? 2 : 1.5);
+			field.width = Math.round(w * dpr);
+			field.height = Math.round(h * dpr);
+			ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+			readTheme();
+		}
+
+		function draw(t: number) {
+			ctx!.clearRect(0, 0, w, h);
+			const { scale, offsetX, offsetY } = skyTransform(w, h);
+
+			tx += (px - tx) * 0.07;
+			ty += (py - ty) * 0.07;
+
+			// A pool of light where the cursor is, under the stars. The coral of
+			// the hero's own wash rather than a fifth colour.
+			if (fine.matches) {
+				const gx = (tx + 0.5) * w;
+				const gy = (ty + 0.5) * h;
+				const pool = ctx!.createRadialGradient(gx, gy, 0, gx, gy, 360);
+				pool.addColorStop(0, tint(glow, 0.06 * fieldAlpha));
+				pool.addColorStop(1, tint(glow, 0));
+				ctx!.fillStyle = pool;
+				ctx!.fillRect(0, 0, w, h);
+			}
+
+			const margin = 80;
+			for (const s of stars) {
+				// Everything is derived from depth. The near stars travel several
+				// times further than the far ones, which is the only thing that
+				// makes this read as a sky rather than as a sliding sheet.
+				const depth = 0.22 + s.z * 3.4;
+
+				const wanderX = Math.sin(t * s.speed + s.phase);
+				const wanderY = Math.cos(t * s.speed * 0.73 + s.phase);
+				const amp = 4 + s.z * 26;
+
+				const x = offsetX + s.x * scale + tx * 46 * depth + wanderX * s.driftX * amp;
+				const y =
+					wrap(
+						offsetY +
+							s.y * scale +
+							ty * 46 * depth +
+							wanderY * s.driftY * amp -
+							scroll * depth * 30 +
+							margin,
+						h + margin * 2
+					) - margin;
+
+				// Found by a cursor: the closer it is, the more the star lifts.
+				const near = fine.matches
+					? Math.max(0, 1 - Math.hypot(x - (tx + 0.5) * w, y - (ty + 0.5) * h) / 260)
+					: 0;
+				const lift = near * near;
+
+				// The twinkle the CSS layer does with an animation. Same quarter of
+				// the stars, same periods, so the two layers agree about which ones
+				// breathe.
+				const breath = s.twinkle
+					? 0.15 + 0.85 * (0.5 + 0.5 * Math.sin(((t / 1000 + s.delay) / s.period) * Math.PI))
+					: 1;
+
+				const radius = (s.r + s.z * 0.9) * scale * (1 + lift * 0.9);
+				const alpha = clamp01(s.opacity * breath * fieldAlpha * (1 + lift * 1.8));
+
+				// The soft halo the bright few carry, and the one a lifted star
+				// earns while the cursor is on it.
+				const haloStrength = (s.r >= 1.8 ? haloAlpha : 0) + lift * 0.9 * haloAlpha;
+				if (haloStrength > 0.01) {
+					const outer = radius * 7;
+					const halo = ctx!.createRadialGradient(x, y, 0, x, y, outer);
+					halo.addColorStop(0, tint(star, 0.45 * haloStrength * alpha));
+					halo.addColorStop(0.4, tint(star, 0.12 * haloStrength * alpha));
+					halo.addColorStop(1, tint(star, 0));
+					ctx!.fillStyle = halo;
+					ctx!.beginPath();
+					ctx!.arc(x, y, outer, 0, Math.PI * 2);
+					ctx!.fill();
+				}
+
+				ctx!.fillStyle = tint(star, alpha);
+				ctx!.beginPath();
+				ctx!.arc(x, y, radius, 0, Math.PI * 2);
+				ctx!.fill();
+			}
+		}
+
+		function frame(t: number) {
+			draw(t);
+			if (fine.matches) {
+				raf = requestAnimationFrame(frame);
+				return;
+			}
+			// Touch: draw while something is happening, then keep the last frame.
+			if (t > awakeUntil) {
+				stop();
+				return;
+			}
+			raf = requestAnimationFrame(frame);
+		}
+
+		function start() {
+			if (raf) return;
+			raf = requestAnimationFrame(frame);
+		}
+
+		function stop() {
+			if (raf) cancelAnimationFrame(raf);
+			raf = 0;
+		}
+
+		size();
+		draw(performance.now());
+		// Only now: the SVG stays until there is a painted canvas to replace it,
+		// so there is no frame with no sky in it.
+		live = true;
+
+		const onResize = () => {
+			size();
+			draw(performance.now());
+		};
+
+		const onMove = (e: PointerEvent) => {
+			px = (e.clientX - (heroLeft - window.scrollX)) / heroWidth - 0.5;
+			py = (e.clientY - (heroTop - window.scrollY)) / heroHeight - 0.5;
+		};
+
+		const onLeave = () => {
+			px = 0;
+			py = 0;
+		};
+
+		// 0 at the top of the hero, 1 once it has scrolled a full height away.
+		// Reads no layout — `scrollY - heroTop` is the same number as `-rect.top`.
+		const onScroll = () => {
+			scroll = clamp01((window.scrollY - heroTop) / heroHeight);
+			if (!fine.matches) {
+				awakeUntil = performance.now() + SETTLE_MS;
+				start();
+			}
+		};
+
+		// Nothing draws while the sky is off screen or the tab is in the
+		// background. A decorative field is the last thing that should be
+		// spending a battery it cannot be seen with.
+		const io = new IntersectionObserver(([entry]) => (entry.isIntersecting ? start() : stop()), {
+			threshold: 0
+		});
+		io.observe(field);
+
+		const onVisibility = () => (document.hidden ? stop() : start());
+		const theme = new MutationObserver(() => {
+			readTheme();
+			draw(performance.now());
+		});
+		theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+		window.addEventListener('resize', onResize, { passive: true });
+		window.addEventListener('scroll', onScroll, { passive: true });
+		document.addEventListener('visibilitychange', onVisibility);
+		if (fine.matches) {
+			sky.addEventListener('pointermove', onMove, { passive: true });
+			sky.addEventListener('pointerleave', onLeave, { passive: true });
+		}
+		onScroll();
+
+		return () => {
+			stop();
+			io.disconnect();
+			theme.disconnect();
+			window.removeEventListener('resize', onResize);
+			window.removeEventListener('scroll', onScroll);
+			document.removeEventListener('visibilitychange', onVisibility);
+			sky.removeEventListener('pointermove', onMove);
+			sky.removeEventListener('pointerleave', onLeave);
+		};
+	});
 </script>
 
-<div class="hero-sky" aria-hidden="true">
+<div class="hero-sky" class:is-live={live} bind:this={sky} aria-hidden="true">
+	<canvas class="live" bind:this={field}></canvas>
 	<svg class="stars" viewBox="0 0 {SKY.width} {SKY.height}" preserveAspectRatio="xMidYMid slice">
 		<defs>
 			<!-- The halo fades to nothing at its edge. A flat disc at low opacity
@@ -97,6 +364,33 @@
 		inset: 0;
 		width: 100%;
 		height: 100%;
+	}
+
+	/* The live layer sits exactly where the SVG does and draws exactly what it
+	   draws, so the swap is a swap and not a transition. It is only ever shown
+	   once a frame has been painted into it. */
+	/* Hidden with `opacity`, not `display`, and that is not a style choice:
+	   `size()` measures this canvas before the swap, and a `display: none`
+	   element has a zero-sized rect — the first version set its backing store
+	   to 0×0 and painted a sky nobody could see. It is laid out from the
+	   start; it is only invisible. */
+	.live {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		opacity: 0;
+	}
+
+	.hero-sky.is-live .live {
+		opacity: 1;
+	}
+
+	/* The server-rendered field steps aside rather than being removed: it is
+	   still the whole sky under reduced motion, with JavaScript off, and for
+	   every millisecond before hydration. */
+	.hero-sky.is-live .stars {
+		display: none;
 	}
 
 	/* The whole field dims together in the light theme: these are the last

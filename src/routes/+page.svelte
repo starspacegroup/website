@@ -573,12 +573,17 @@
 	   `bun run build:brand` — the same file the nav and footer use, so it is
 	   already in cache by the time anyone scrolls. Large, lit from behind by
 	   the card's coral nebula, thrown forward by its shadow, and drifting the
-	   way a thing does when nothing is holding it down. */
+	   way a thing does when nothing is holding it down.
+
+	   Not selectable, like the voice panel: a drag starting over the star
+	   painted it with selection highlight. It is a picture, not copy. */
 	.hero-mark-wrap {
 		position: relative;
 		z-index: 0;
 		flex: none;
 		width: fit-content;
+		-webkit-user-select: none;
+		user-select: none;
 	}
 
 	.hero-mark-wrap::before {

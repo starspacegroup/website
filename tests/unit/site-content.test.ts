@@ -1,7 +1,12 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { featuredProjects, projects } from '../../src/lib/data/projects';
+import {
+	communityProjects,
+	featuredProjects,
+	projects,
+	starspaceProjects
+} from '../../src/lib/data/projects';
 
 const staticFile = (path: string) => join(process.cwd(), 'static', path.replace(/^\//, ''));
 
@@ -42,6 +47,29 @@ describe('project directory', () => {
 			expect(project.description.length, project.id).toBeGreaterThan(40);
 			expect(project.tags.length, project.id).toBeGreaterThan(0);
 		}
+	});
+
+	it('splits every project into *Space’s own or the community’s, and nothing else', () => {
+		expect(starspaceProjects.length).toBeGreaterThan(0);
+		expect(communityProjects.length).toBeGreaterThan(0);
+		expect([...starspaceProjects, ...communityProjects].map((p) => p.id).sort()).toEqual(
+			projects.map((p) => p.id).sort()
+		);
+	});
+
+	// A community project is somebody's work outside *Space. The pill would say
+	// the opposite of the section heading it sits under.
+	it('never tags a community project "Made at *Space"', () => {
+		for (const project of communityProjects) {
+			expect(
+				project.tags.some((tag) => tag.tone === 'made-here'),
+				project.id
+			).toBe(false);
+		}
+	});
+
+	it('features only *Space’s own projects on the home page', () => {
+		for (const project of featuredProjects) expect(project.maker, project.id).toBe('starspace');
 	});
 
 	it('features the head of the same list, so one edit moves both surfaces', () => {

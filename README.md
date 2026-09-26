@@ -82,6 +82,11 @@ is worse than an old picture.
 `tests/unit/site-content.test.ts` fails when an entry names a file that is not there, so a
 renamed asset never reaches the page as a broken card.
 
+Each entry says who made it: `maker: 'starspace'` for *Space's own projects (code in the
+starspacegroup GitHub organisation) and `'community'` for things members made outside *Space.
+`/projects` lists them in those two sections, and only *Space's own carry the "Made at *Space"
+pill.
+
 `featuredProjects` is the first three entries of the same list, so a new project at the top of
 `projects.ts` leads the home page and the directory together.
 

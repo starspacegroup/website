@@ -9,6 +9,7 @@ const project = (over: Partial<Project> = {}): Project => ({
 	description: 'A project that exists for this test and nowhere else, long enough to count.',
 	url: 'https://demo.example/',
 	external: true,
+	maker: 'starspace',
 	screenshot: '/projects/demo-screenshot.webp',
 	tags: [{ label: 'Made at *Space', tone: 'made-here' }],
 	...over

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ProjectCard from '$lib/components/ProjectCard.svelte';
 	import SharingMeta from '$lib/components/SharingMeta.svelte';
-	import { projects } from '$lib/data/projects';
+	import { communityProjects, projects, starspaceProjects } from '$lib/data/projects';
 	import { DISCORD_INVITE } from '$lib/discord';
 	import { site } from '$lib/site.config';
 
@@ -31,11 +31,36 @@
 		<p class="page-lede">{description}</p>
 	</header>
 
-	<div class="grid">
-		{#each projects as project, index (project.id)}
-			<ProjectCard {project} eager={index < 3} />
-		{/each}
-	</div>
+	<!-- Two sections because they are two different claims: the first is
+	     *Space's own work, the second is work *Space's people did elsewhere. -->
+	<section class="group" aria-labelledby="starspace-heading">
+		<div class="group-head">
+			<h2 id="starspace-heading">Built by *Space</h2>
+			<p class="group-lede">Our own projects, built and run in the open by the community.</p>
+		</div>
+		<div class="grid">
+			{#each starspaceProjects as project, index (project.id)}
+				<ProjectCard {project} eager={index < 3} />
+			{/each}
+		</div>
+	</section>
+
+	{#if communityProjects.length}
+		<section class="group" aria-labelledby="community-heading">
+			<div class="group-head">
+				<h2 id="community-heading">From the community</h2>
+				<p class="group-lede">
+					Made by people in the *Space Discord, outside *Space itself — their projects, not ours,
+					and worth a look.
+				</p>
+			</div>
+			<div class="grid">
+				{#each communityProjects as project (project.id)}
+					<ProjectCard {project} />
+				{/each}
+			</div>
+		</section>
+	{/if}
 
 	<aside class="page-cta">
 		<h2>Want your project on this page?</h2>
@@ -77,6 +102,28 @@
 	.page-lede {
 		margin: 0;
 		font-size: 1.15rem;
+		line-height: 1.7;
+		color: var(--color-text-secondary);
+	}
+
+	.group + .group {
+		margin-top: var(--spacing-2xl);
+	}
+
+	.group-head {
+		max-width: 46rem;
+		margin-bottom: var(--spacing-lg);
+	}
+
+	.group-head h2 {
+		margin: 0 0 var(--spacing-xs);
+		font-size: clamp(1.6rem, 3vw, 2.1rem);
+		font-weight: 800;
+		letter-spacing: -0.02em;
+	}
+
+	.group-lede {
+		margin: 0;
 		line-height: 1.7;
 		color: var(--color-text-secondary);
 	}

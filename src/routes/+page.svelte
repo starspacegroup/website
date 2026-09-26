@@ -778,12 +778,19 @@
 
 	/* Centred under the whole hero rather than on the copy's rail: the rail
 	   moves with the viewport once the content is a centred column, and a cue
-	   that drifts is worse than one that simply sits in the middle. */
+	   that drifts is worse than one that simply sits in the middle.
+
+	   Centred by margins, not by `translateX(-50%)`. The cue also runs the
+	   `hero-in` entrance, whose last frame is `transform: none`, held by
+	   `animation-fill-mode: both` — so a transform here was overwritten the
+	   moment the fade finished, and the cue sat half its width right of centre. */
 	.hero-scroll {
 		position: absolute;
 		bottom: var(--spacing-sm);
-		left: 50%;
-		transform: translateX(-50%);
+		left: 0;
+		right: 0;
+		width: fit-content;
+		margin-inline: auto;
 		display: none;
 		align-items: center;
 		gap: 0.4rem;

@@ -719,12 +719,18 @@
 
 	/* The live column. Its two halves are the same width and share a left edge,
 	   with a rule between them, so the count reads as the panel's headline
-	   rather than as a stray number above a card. */
+	   rather than as a stray number above a card.
+
+	   Not selectable: the voice panel and its credit are a picture of the room,
+	   not copy, and a drag across them painted every name tile and badge. The
+	   hero's own words stay selectable — people quote those. */
 	.hero-aside {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		gap: var(--spacing-lg);
+		-webkit-user-select: none;
+		user-select: none;
 	}
 
 	.hero-demo {

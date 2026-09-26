@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import type { GuildDay } from '$lib/server/guild-stats';
+import type { GuildDay, GuildRole } from '$lib/server/guild-stats';
 import {
+	FEATURED_ROLES,
 	describeWindow,
+	featuredRoleCounts,
 	formatAhead,
 	formatCount,
 	formatNetChange,
@@ -214,5 +216,51 @@ describe('recentDays', () => {
 	it('returns nothing for a window of nothing', () => {
 		expect(recentDays(days, 0)).toEqual([]);
 		expect(recentDays(days, -1)).toEqual([]);
+	});
+});
+
+describe('featuredRoleCounts', () => {
+	const role = (id: string, name: string, members: number): GuildRole => ({ id, name, members });
+	const all = [
+		role('9', 'Moderator', 6),
+		role('5', 'Wearing Communicator Badge', 41),
+		role('3', 'Passenger', 312),
+		role('1', 'Lurker', 900)
+	];
+
+	it('features Passenger and Wearing Communicator Badge, in that order', () => {
+		expect(FEATURED_ROLES).toEqual(['Passenger', 'Wearing Communicator Badge']);
+		expect(featuredRoleCounts(all)).toEqual([
+			role('3', 'Passenger', 312),
+			role('5', 'Wearing Communicator Badge', 41)
+		]);
+	});
+
+	it('shows no other role, whatever SpaceBot sends', () => {
+		const names = featuredRoleCounts(all).map((r) => r.name);
+		expect(names).not.toContain('Moderator');
+		expect(names).not.toContain('Lurker');
+	});
+
+	it('matches names ignoring case and stray spaces, and keeps Discord’s spelling', () => {
+		const shown = featuredRoleCounts([role('3', ' passenger ', 312)]);
+		expect(shown).toEqual([role('3', ' passenger ', 312)]);
+	});
+
+	it('leaves out a featured role SpaceBot did not report, rather than printing zero', () => {
+		// Renamed or deleted in Discord: the page does not know how many hold it.
+		expect(featuredRoleCounts([role('3', 'Passenger', 312)])).toEqual([
+			role('3', 'Passenger', 312)
+		]);
+	});
+
+	it('takes the higher of two roles that share a name', () => {
+		const shown = featuredRoleCounts([role('8', 'Passenger', 10), role('2', 'Passenger', 99)]);
+		expect(shown).toEqual([role('8', 'Passenger', 10)]);
+	});
+
+	it('shows nothing when SpaceBot had no counts', () => {
+		expect(featuredRoleCounts(null)).toEqual([]);
+		expect(featuredRoleCounts(undefined)).toEqual([]);
 	});
 });

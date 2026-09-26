@@ -66,15 +66,39 @@ export type GuildDay = {
 	voicePeak: number;
 };
 
+/** How many people hold one role, as SpaceBot last counted from the member list. */
+export type GuildRole = {
+	id: string;
+	name: string;
+	/** People only: SpaceBot leaves bot accounts out of the count. */
+	members: number;
+};
+
 export type GuildStats = {
 	snapshot: GuildSnapshot | null;
 	/** Chronological, oldest first. Empty when SpaceBot had no rolled-up days. */
 	days: GuildDay[];
+	/**
+	 * Every role's head count, highest role first — or null when SpaceBot could
+	 * not say. It sends null when its member cache has never been filled (the
+	 * Server Members intent is off), because every count would then read 0 while
+	 * meaning "unknown"; a SpaceBot too old to know the field sends nothing.
+	 * Either way this site shows no role figures rather than a row of zeroes.
+	 */
+	roles: GuildRole[] | null;
+	/** When SpaceBot's member list was last read from Discord, if it said. */
+	rolesAt: string | null;
 	/** True when SpaceBot answered at all, whatever it had to say. */
 	available: boolean;
 };
 
-export const EMPTY_STATS: GuildStats = { snapshot: null, days: [], available: false };
+export const EMPTY_STATS: GuildStats = {
+	snapshot: null,
+	days: [],
+	roles: null,
+	rolesAt: null,
+	available: false
+};
 
 export type GuildStatsConfig = {
 	apiUrl?: string;
@@ -167,6 +191,27 @@ function toDay(raw: unknown): GuildDay | null {
 }
 
 /**
+ * Read the role counts, or null when there are none to trust.
+ *
+ * A row without an id, a name or a readable count is dropped rather than shown
+ * as zero, for the same reason a snapshot without a member count is.
+ */
+function toRoles(raw: unknown): GuildRole[] | null {
+	if (!Array.isArray(raw)) return null;
+	const roles: GuildRole[] = [];
+	for (const entry of raw) {
+		if (!entry || typeof entry !== 'object') continue;
+		const row = entry as Record<string, unknown>;
+		const id = str(row.role_id);
+		const name = str(row.name);
+		const members = maybeCount(row.member_count);
+		if (!id || !name || members === null || members < 0) continue;
+		roles.push({ id, name, members });
+	}
+	return roles;
+}
+
+/**
  * Ask SpaceBot what the server has been doing.
  *
  * @param fetcher injected so tests do not reach the network
@@ -196,7 +241,12 @@ export async function fetchGuildStats(
 	}
 	if (!response.ok) return EMPTY_STATS;
 
-	let payload: { current?: unknown; daily_stats?: unknown };
+	let payload: {
+		current?: unknown;
+		daily_stats?: unknown;
+		roles?: unknown;
+		roles_refreshed_at?: unknown;
+	};
 	try {
 		payload = (await response.json()) as typeof payload;
 	} catch {
@@ -216,5 +266,12 @@ export async function fetchGuildStats(
 	// answers newest first; a graph reads left to right.
 	const days = [...byDay.values()].sort((a, b) => (a.day < b.day ? -1 : a.day > b.day ? 1 : 0));
 
-	return { snapshot: toSnapshot(payload.current), days, available: true };
+	const roles = toRoles(payload.roles);
+	return {
+		snapshot: toSnapshot(payload.current),
+		days,
+		roles,
+		rolesAt: roles ? str(payload.roles_refreshed_at) : null,
+		available: true
+	};
 }

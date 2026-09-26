@@ -12,7 +12,7 @@
  * null so the page can print nothing at all.
  */
 
-import type { GuildDay } from '$lib/server/guild-stats';
+import type { GuildDay, GuildRole } from '$lib/server/guild-stats';
 
 /* The type comes from the server module that parses it; the functions below
    do not, because a component imports them and SvelteKit will not let client
@@ -197,4 +197,40 @@ export function totalGuildDays(days: GuildDay[]): GuildTotals {
 export function recentDays(days: GuildDay[], count: number): GuildDay[] {
 	if (count <= 0) return [];
 	return days.slice(-count);
+}
+
+/**
+ * The roles `/stats` puts a number on, in the order it shows them.
+ *
+ * Matched to SpaceBot's list by name, ignoring case and surrounding spaces,
+ * because role ids live in Discord and are not something this repository
+ * should hold. The catch is a rename: rename one of these in Discord and its
+ * figure disappears from the page until the name here is changed to match.
+ * That is the right way round — a missing figure is visible, a figure quietly
+ * attached to the wrong role is not.
+ */
+export const FEATURED_ROLES: readonly string[] = ['Passenger', 'Wearing Communicator Badge'];
+
+const roleKey = (name: string) => name.trim().toLowerCase();
+
+/**
+ * The featured roles SpaceBot reported, in `FEATURED_ROLES` order, each with
+ * the name as Discord spells it. A featured role SpaceBot did not report is
+ * left out, not shown as zero: it may have been renamed or deleted, and either
+ * way this page does not know how many people hold it.
+ */
+export function featuredRoleCounts(
+	roles: GuildRole[] | null | undefined,
+	featured: readonly string[] = FEATURED_ROLES
+): GuildRole[] {
+	if (!roles) return [];
+	const byName = new Map<string, GuildRole>();
+	for (const role of roles) {
+		// Discord allows two roles to share a name. The first is the higher one,
+		// which is the one a member sees at the top of the list.
+		if (!byName.has(roleKey(role.name))) byName.set(roleKey(role.name), role);
+	}
+	return featured
+		.map((name) => byName.get(roleKey(name)))
+		.filter((role): role is GuildRole => Boolean(role));
 }

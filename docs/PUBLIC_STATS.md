@@ -8,12 +8,12 @@ site's own traffic, owner-only. They share nothing but a word.
 
 ## What the page shows
 
-| To                                        | What                                                                                                          |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Anyone, signed in or not                  | The server right now (people, channels, boosts) and the last 30 days (messages, voice time, joins and leaves) |
-| Signed in, no Discord linked              | The same, plus an offer to link Discord                                                                       |
-| Signed in with Discord, not in the server | The same, plus an invite                                                                                      |
-| Signed in with Discord, in the server     | The same, plus their own counts, standing and join date                                                       |
+| To                                        | What                                                                                                                               |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Anyone, signed in or not                  | The server right now (people, channels, boosts), the featured roles, and the last 30 days (messages, voice time, joins and leaves) |
+| Signed in, no Discord linked              | The same, plus an offer to link Discord                                                                                            |
+| Signed in with Discord, not in the server | The same, plus an invite                                                                                                           |
+| Signed in with Discord, in the server     | The same, plus their own counts, standing and join date                                                                            |
 
 **Signing in is an offer, never a wall.** The public half is the whole page
 minus one panel. `page.test.ts` pins that: every signed-out case asserts the
@@ -24,10 +24,10 @@ server figures are still on screen.
 Both halves read SpaceBot. Neither is computed here, and nothing is hardcoded —
 if SpaceBot cannot say, this site does not say.
 
-| Half       | Endpoint                              | Scope          | Reader                             |
-| ---------- | ------------------------------------- | -------------- | ---------------------------------- |
-| The server | `GET /api/v1/stats?days=90`           | `stats:read`   | `src/lib/server/guild-stats.ts`    |
-| One member | `GET /api/v1/members/:userId?days=30` | `members:read` | `src/lib/server/member-profile.ts` |
+| Half       | Endpoint                                        | Scope          | Reader                             |
+| ---------- | ----------------------------------------------- | -------------- | ---------------------------------- |
+| The server | `GET /api/v1/stats?days=90` (incl. role counts) | `stats:read`   | `src/lib/server/guild-stats.ts`    |
+| One member | `GET /api/v1/members/:userId?days=30`           | `members:read` | `src/lib/server/member-profile.ts` |
 
 `stats:read` is already on every key this site holds — it is what draws the
 hero's member trend — so the public half works the moment SpaceBot is
@@ -42,6 +42,26 @@ component imports it, and SvelteKit will not let a component reach into
 `$lib/server`. It borrows `formatDuration`, `formatWhen` and `whenClause` from
 `channel-activity.ts` rather than growing a second set, so `/guide` and `/stats`
 cannot disagree about what "3.4 hours" or "yesterday" looks like.
+
+## The featured roles
+
+The page puts a number on two roles, Passenger and Wearing Communicator Badge,
+listed in `FEATURED_ROLES` in `src/lib/stats-copy.ts`. SpaceBot sends every
+role's head count with `/api/v1/stats` (`roles`, `roles_refreshed_at`, under the
+same `stats:read`), counted from the member list its daily cache refresh reads
+from Discord. People only: bots, `@everyone` and integration-managed roles are
+left out on SpaceBot's side.
+
+- **Matched by name, not id.** Role ids live in Discord, not here. Rename one of
+  these roles and its figure drops off the page until `FEATURED_ROLES` is
+  updated — visible, which beats a figure quietly attached to the wrong role.
+- **Never a zero it did not count.** SpaceBot sends `roles: null` when its
+  member cache has never been filled (the Server Members intent is off), and an
+  older SpaceBot sends nothing. Both render no Roles section. A featured role
+  missing from SpaceBot's list is left out rather than shown as 0.
+- **As old as the member list.** The section says when that was, from
+  `roles_refreshed_at`. The cache refreshes once a day, so these are
+  yesterday's figures at worst.
 
 ## The privacy line
 

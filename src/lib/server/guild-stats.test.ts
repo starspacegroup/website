@@ -198,6 +198,82 @@ describe('fetchGuildStats', () => {
 		const stats = await fetchGuildStats(config, fetcher);
 		// Available and empty is a real state — a freshly connected bot — and it
 		// is not the same as a failed read.
-		expect(stats).toEqual({ snapshot: null, days: [], available: true });
+		expect(stats).toEqual({
+			snapshot: null,
+			days: [],
+			roles: null,
+			rolesAt: null,
+			available: true
+		});
+	});
+});
+
+describe('fetchGuildStats — role counts', () => {
+	const role = (over: Record<string, unknown> = {}) => ({
+		role_id: '200000000000000001',
+		name: 'Passenger',
+		member_count: 312,
+		...over
+	});
+
+	it('reads each role’s head count and when it was counted', async () => {
+		const fetcher = ok({
+			current: snapshot(),
+			daily_stats: [],
+			roles: [role(), role({ role_id: '2', name: 'Wearing Communicator Badge', member_count: 41 })],
+			roles_refreshed_at: '2026-09-26 03:00:00'
+		});
+		const stats = await fetchGuildStats(config, fetcher);
+
+		expect(stats.roles).toEqual([
+			{ id: '200000000000000001', name: 'Passenger', members: 312 },
+			{ id: '2', name: 'Wearing Communicator Badge', members: 41 }
+		]);
+		expect(stats.rolesAt).toBe('2026-09-26 03:00:00');
+	});
+
+	it('keeps a role nobody holds — zero is a real count when SpaceBot sent it', async () => {
+		const stats = await fetchGuildStats(
+			config,
+			ok({ daily_stats: [], roles: [role({ member_count: 0 })] })
+		);
+		expect(stats.roles).toEqual([{ id: '200000000000000001', name: 'Passenger', members: 0 }]);
+	});
+
+	it('has no role figures when SpaceBot sends null, or is too old to send the field', async () => {
+		// null is SpaceBot saying its member cache was never filled; absent is a
+		// SpaceBot from before the field. Neither is a list of zeroes.
+		for (const body of [{ daily_stats: [], roles: null }, { daily_stats: [] }]) {
+			const stats = await fetchGuildStats(config, ok(body));
+			expect(stats.roles).toBeNull();
+			expect(stats.rolesAt).toBeNull();
+		}
+	});
+
+	it('drops a role row it cannot read rather than printing it as zero', async () => {
+		const stats = await fetchGuildStats(
+			config,
+			ok({
+				daily_stats: [],
+				roles: [
+					role(),
+					role({ member_count: 'many' }),
+					role({ member_count: -3 }),
+					role({ name: '  ' }),
+					role({ role_id: null }),
+					null,
+					'Passenger'
+				]
+			})
+		);
+		expect(stats.roles).toEqual([{ id: '200000000000000001', name: 'Passenger', members: 312 }]);
+	});
+
+	it('ignores a refresh time when there are no counts to date', async () => {
+		const stats = await fetchGuildStats(
+			config,
+			ok({ daily_stats: [], roles: null, roles_refreshed_at: '2026-09-26 03:00:00' })
+		);
+		expect(stats.rolesAt).toBeNull();
 	});
 });

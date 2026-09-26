@@ -4,6 +4,7 @@
 	import { DISCORD_INVITE } from '$lib/discord';
 	import {
 		describeWindow,
+		featuredRoleCounts,
 		formatAhead,
 		formatCount,
 		formatNetChange,
@@ -78,6 +79,14 @@
 	$: unrecordedLine = profile.unrecordedChannels
 		? ` ${plural(profile.unrecordedChannels, 'channel')} in the server ${profile.unrecordedChannels === 1 ? 'is' : 'are'} not logged at all, so nothing you post there is counted here.`
 		: '';
+
+	/* `?? null`: a KV entry written before SpaceBot sent role counts has no
+	   `roles` key at all, and lives for up to ten minutes after a deploy. */
+	$: roles = featuredRoleCounts(stats.roles ?? null);
+	$: rolesWhen = stats.rolesAt ? formatWhen(stats.rolesAt, now) : null;
+	$: rolesLine = rolesWhen
+		? `Counted from the member list ${whenClause(rolesWhen)}. People only — bots are not counted.`
+		: 'Counted from the member list. People only — bots are not counted.';
 
 	$: snapshotWhen = snapshot?.recordedAt ? formatWhen(snapshot.recordedAt, now) : null;
 	$: snapshotLine = snapshotWhen
@@ -252,6 +261,29 @@
 							{/if}
 						</div>
 					{/if}
+				</div>
+			</section>
+		{/if}
+
+		{#if roles.length}
+			<!-- Only the roles SpaceBot actually counted. A featured role it did not
+			     report is left off rather than printed as zero. -->
+			<section class="section" aria-labelledby="roles-heading">
+				<div class="section-head">
+					<h2 id="roles-heading">Roles</h2>
+					<p class="section-lede">{rolesLine}</p>
+				</div>
+
+				<div class="tiles">
+					{#each roles as role (role.id)}
+						<div class="tile">
+							<p class="tile-figure">{formatCount(role.members)}</p>
+							<p class="tile-label">{role.name}</p>
+							<p class="tile-note">
+								{role.members === 1 ? 'person has' : 'people have'} this role.
+							</p>
+						</div>
+					{/each}
 				</div>
 			</section>
 		{/if}

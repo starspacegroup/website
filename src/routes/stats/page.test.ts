@@ -42,6 +42,8 @@ const stats = (over: Partial<GuildStats> = {}): GuildStats => ({
 		recordedAt: '2026-09-21 06:00:00'
 	},
 	days: [day({ day: '2026-09-19' }), day()],
+	roles: null,
+	rolesAt: null,
 	...over
 });
 
@@ -195,5 +197,41 @@ describe('server stats', () => {
 		});
 		expect(screen.getByText('members')).toBeTruthy();
 		expect(screen.getByText('120')).toBeTruthy();
+	});
+});
+
+describe('stats — roles', () => {
+	const roles = [
+		{ id: '9', name: 'Moderator', members: 6 },
+		{ id: '5', name: 'Wearing Communicator Badge', members: 41 },
+		{ id: '3', name: 'Passenger', members: 312 }
+	];
+
+	it('shows how many people hold Passenger and Wearing Communicator Badge', () => {
+		draw({ stats: stats({ roles, rolesAt: '2026-09-21 03:00:00' }) });
+
+		expect(screen.getByRole('heading', { name: 'Roles' })).toBeTruthy();
+		expect(screen.getByText('Passenger')).toBeTruthy();
+		expect(screen.getByText('312')).toBeTruthy();
+		expect(screen.getByText('Wearing Communicator Badge')).toBeTruthy();
+		expect(screen.getByText('41')).toBeTruthy();
+		expect(screen.queryByText('Moderator')).toBeNull();
+		expect(screen.getByText(/bots are not counted/)).toBeTruthy();
+	});
+
+	it('has no Roles section when SpaceBot could not count them', () => {
+		draw({ stats: stats({ roles: null }) });
+		expect(screen.queryByRole('heading', { name: 'Roles' })).toBeNull();
+	});
+
+	it('survives a cached entry from before roles existed', () => {
+		// KV holds the stats for ten minutes, so the first visitors after a deploy
+		// get an entry written by the previous version, with no roles key at all.
+		const old: Partial<GuildStats> = stats();
+		delete old.roles;
+		draw({ stats: old });
+
+		expect(screen.queryByRole('heading', { name: 'Roles' })).toBeNull();
+		expect(screen.getByRole('heading', { name: 'The server right now' })).toBeTruthy();
 	});
 });

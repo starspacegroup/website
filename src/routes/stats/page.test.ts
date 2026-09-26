@@ -202,9 +202,9 @@ describe('server stats', () => {
 
 describe('stats — roles', () => {
 	const roles = [
-		{ id: '9', name: 'Moderator', members: 6 },
-		{ id: '5', name: 'Wearing Communicator Badge', members: 41 },
-		{ id: '3', name: 'Passenger', members: 312 }
+		{ id: '9', name: 'Moderator', members: 6, color: null },
+		{ id: '5', name: 'Wearing Communicator Badge', members: 41, color: null },
+		{ id: '3', name: 'Passenger', members: 312, color: '#1d6fd0' }
 	];
 
 	it('shows how many people hold Passenger and Wearing Communicator Badge', () => {
@@ -217,6 +217,26 @@ describe('stats — roles', () => {
 		expect(screen.getByText('41')).toBeTruthy();
 		expect(screen.queryByText('Moderator')).toBeNull();
 		expect(screen.getByText(/bots are not counted/)).toBeTruthy();
+	});
+
+	it('says what Passenger is, and keeps the plain note for a role it has nothing on', () => {
+		draw({ stats: stats({ roles }) });
+		expect(screen.getByText(/The role people get once they have joined voice chat/)).toBeTruthy();
+		expect(screen.getByText(/people have this role/)).toBeTruthy();
+	});
+
+	it('paints a role in its Discord colour, and leaves a colourless one plain', () => {
+		const { container } = draw({ stats: stats({ roles }) });
+		const [passenger, badge] = [...container.querySelectorAll('.role-tile')] as HTMLElement[];
+
+		expect(passenger.classList.contains('has-colour')).toBe(true);
+		expect(passenger.style.getPropertyValue('--role-colour')).toBe('#1d6fd0');
+		expect(passenger.style.getPropertyValue('--role-name-light')).toBe('#1d6fd0');
+		expect(passenger.querySelector('.role-dot')).toBeTruthy();
+
+		expect(badge.classList.contains('has-colour')).toBe(false);
+		expect(badge.style.getPropertyValue('--role-colour')).toBe('');
+		expect(badge.querySelector('.role-dot')).toBeNull();
 	});
 
 	it('has no Roles section when SpaceBot could not count them', () => {

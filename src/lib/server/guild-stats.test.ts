@@ -226,8 +226,8 @@ describe('fetchGuildStats — role counts', () => {
 		const stats = await fetchGuildStats(config, fetcher);
 
 		expect(stats.roles).toEqual([
-			{ id: '200000000000000001', name: 'Passenger', members: 312 },
-			{ id: '2', name: 'Wearing Communicator Badge', members: 41 }
+			{ id: '200000000000000001', name: 'Passenger', members: 312, color: null },
+			{ id: '2', name: 'Wearing Communicator Badge', members: 41, color: null }
 		]);
 		expect(stats.rolesAt).toBe('2026-09-26 03:00:00');
 	});
@@ -237,7 +237,9 @@ describe('fetchGuildStats — role counts', () => {
 			config,
 			ok({ daily_stats: [], roles: [role({ member_count: 0 })] })
 		);
-		expect(stats.roles).toEqual([{ id: '200000000000000001', name: 'Passenger', members: 0 }]);
+		expect(stats.roles).toEqual([
+			{ id: '200000000000000001', name: 'Passenger', members: 0, color: null }
+		]);
 	});
 
 	it('has no role figures when SpaceBot sends null, or is too old to send the field', async () => {
@@ -266,7 +268,34 @@ describe('fetchGuildStats — role counts', () => {
 				]
 			})
 		);
-		expect(stats.roles).toEqual([{ id: '200000000000000001', name: 'Passenger', members: 312 }]);
+		expect(stats.roles).toEqual([
+			{ id: '200000000000000001', name: 'Passenger', members: 312, color: null }
+		]);
+	});
+
+	it('turns Discord’s integer colour into hex, and 0 into no colour', async () => {
+		const stats = await fetchGuildStats(
+			config,
+			ok({
+				daily_stats: [],
+				roles: [
+					role({ role_id: 'a', color: 0x3498db }),
+					role({ role_id: 'b', color: 0x00000f }),
+					role({ role_id: 'c', color: 0 }),
+					role({ role_id: 'd', color: 0x1000000 }),
+					role({ role_id: 'e', color: 'blue' }),
+					role({ role_id: 'f' })
+				]
+			})
+		);
+		expect(stats.roles?.map((r) => r.color)).toEqual([
+			'#3498db',
+			'#00000f',
+			null,
+			null,
+			null,
+			null
+		]);
 	});
 
 	it('ignores a refresh time when there are no counts to date', async () => {

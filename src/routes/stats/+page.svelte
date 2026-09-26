@@ -5,6 +5,7 @@
 	import {
 		describeWindow,
 		featuredRoleCounts,
+		roleNameColor,
 		formatAhead,
 		formatCount,
 		formatNetChange,
@@ -276,11 +277,22 @@
 
 				<div class="tiles">
 					{#each roles as role (role.id)}
-						<div class="tile">
+						<!-- The role's own colour from Discord: always on the stripe and
+						     the dot, and on the name only in a theme where it reads. -->
+						<div
+							class="tile role-tile"
+							class:has-colour={role.color}
+							style:--role-colour={role.color}
+							style:--role-name-light={roleNameColor(role.color, 'light')}
+							style:--role-name-dark={roleNameColor(role.color, 'dark')}
+						>
 							<p class="tile-figure">{formatCount(role.members)}</p>
-							<p class="tile-label">{role.name}</p>
+							<p class="tile-label role-name">
+								{#if role.color}<span class="role-dot" aria-hidden="true"></span>{/if}{role.name}
+							</p>
 							<p class="tile-note">
-								{role.members === 1 ? 'person has' : 'people have'} this role.
+								{role.description ??
+									`${role.members === 1 ? 'person has' : 'people have'} this role.`}
 							</p>
 						</div>
 					{/each}
@@ -504,6 +516,31 @@
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
 		color: var(--color-text-secondary);
+	}
+
+	/* A missing custom property falls back to the page's own label colour, so
+	   a role with no colour, or one that would not read, looks like any tile. */
+	.role-tile.has-colour {
+		border-left: 4px solid var(--role-colour);
+	}
+
+	.role-name {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+		color: var(--role-name-light, var(--color-text-secondary));
+	}
+
+	:global([data-theme='dark']) .role-name {
+		color: var(--role-name-dark, var(--color-text-secondary));
+	}
+
+	.role-dot {
+		flex: none;
+		width: 0.7em;
+		height: 0.7em;
+		border-radius: 50%;
+		background: var(--role-colour);
 	}
 
 	.tile-note {

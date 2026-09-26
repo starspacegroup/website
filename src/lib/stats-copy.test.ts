@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { GuildDay, GuildRole } from '$lib/server/guild-stats';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import {
 	FEATURED_ROLES,
+	TILE_SURFACE,
 	describeWindow,
 	featuredRoleCounts,
 	formatAhead,
@@ -11,6 +14,7 @@ import {
 	ordinal,
 	plural,
 	recentDays,
+	roleNameColor,
 	sparklinePath,
 	sparklinePoints,
 	totalGuildDays
@@ -220,20 +224,41 @@ describe('recentDays', () => {
 });
 
 describe('featuredRoleCounts', () => {
-	const role = (id: string, name: string, members: number): GuildRole => ({ id, name, members });
+	const role = (
+		id: string,
+		name: string,
+		members: number,
+		color: string | null = null
+	): GuildRole => ({
+		id,
+		name,
+		members,
+		color
+	});
 	const all = [
 		role('9', 'Moderator', 6),
 		role('5', 'Wearing Communicator Badge', 41),
-		role('3', 'Passenger', 312),
+		role('3', 'Passenger', 312, '#3498db'),
 		role('1', 'Lurker', 900)
 	];
 
 	it('features Passenger and Wearing Communicator Badge, in that order', () => {
-		expect(FEATURED_ROLES).toEqual(['Passenger', 'Wearing Communicator Badge']);
-		expect(featuredRoleCounts(all)).toEqual([
-			role('3', 'Passenger', 312),
-			role('5', 'Wearing Communicator Badge', 41)
+		expect(FEATURED_ROLES.map((r) => r.name)).toEqual(['Passenger', 'Wearing Communicator Badge']);
+		expect(featuredRoleCounts(all).map((r) => [r.name, r.members])).toEqual([
+			['Passenger', 312],
+			['Wearing Communicator Badge', 41]
 		]);
+	});
+
+	it('says what Passenger means, and nothing invented for a role without a description', () => {
+		const [passenger, badge] = featuredRoleCounts(all);
+		expect(passenger.description).toMatch(/joined voice chat/);
+		expect(passenger.description).toMatch(/permissions above a basic member/);
+		expect(badge.description).toBeNull();
+	});
+
+	it('keeps the colour SpaceBot sent', () => {
+		expect(featuredRoleCounts(all)[0].color).toBe('#3498db');
 	});
 
 	it('shows no other role, whatever SpaceBot sends', () => {
@@ -243,24 +268,55 @@ describe('featuredRoleCounts', () => {
 	});
 
 	it('matches names ignoring case and stray spaces, and keeps Discord’s spelling', () => {
-		const shown = featuredRoleCounts([role('3', ' passenger ', 312)]);
-		expect(shown).toEqual([role('3', ' passenger ', 312)]);
+		expect(featuredRoleCounts([role('3', ' passenger ', 312)]).map((r) => r.name)).toEqual([
+			' passenger '
+		]);
 	});
 
 	it('leaves out a featured role SpaceBot did not report, rather than printing zero', () => {
 		// Renamed or deleted in Discord: the page does not know how many hold it.
-		expect(featuredRoleCounts([role('3', 'Passenger', 312)])).toEqual([
-			role('3', 'Passenger', 312)
+		expect(featuredRoleCounts([role('3', 'Passenger', 312)]).map((r) => r.name)).toEqual([
+			'Passenger'
 		]);
 	});
 
 	it('takes the higher of two roles that share a name', () => {
 		const shown = featuredRoleCounts([role('8', 'Passenger', 10), role('2', 'Passenger', 99)]);
-		expect(shown).toEqual([role('8', 'Passenger', 10)]);
+		expect(shown.map((r) => r.id)).toEqual(['8']);
 	});
 
 	it('shows nothing when SpaceBot had no counts', () => {
 		expect(featuredRoleCounts(null)).toEqual([]);
 		expect(featuredRoleCounts(undefined)).toEqual([]);
+	});
+});
+
+describe('roleNameColor', () => {
+	it('uses the role’s colour for its name where it reads on the tile', () => {
+		// A mid blue: fine on the dark tile, fine on the light one.
+		expect(roleNameColor('#1d6fd0', 'light')).toBe('#1d6fd0');
+		expect(roleNameColor('#5dade2', 'dark')).toBe('#5dade2');
+	});
+
+	it('falls back to the page colour where the role colour would not read', () => {
+		// Discord colours are picked for its dark client; a pale one vanishes on
+		// the light theme, and a very dark one on the dark theme.
+		expect(roleNameColor('#f1c40f', 'light')).toBeNull();
+		expect(roleNameColor('#1f1f5f', 'dark')).toBeNull();
+	});
+
+	it('has nothing to say about a role with no colour', () => {
+		expect(roleNameColor(null, 'light')).toBeNull();
+		expect(roleNameColor(null, 'dark')).toBeNull();
+	});
+
+	it('checks against the tile ground app.css actually paints', () => {
+		// TILE_SURFACE restates --color-surface; this is what keeps it honest.
+		const css = readFileSync(join(process.cwd(), 'src/app.css'), 'utf8');
+		const surfaces = [...css.matchAll(/--color-surface:\s*(#[0-9a-fA-F]{6})/g)].map((m) =>
+			m[1].toLowerCase()
+		);
+		expect(surfaces[0]).toBe(TILE_SURFACE.light);
+		expect(surfaces[1]).toBe(TILE_SURFACE.dark);
 	});
 });

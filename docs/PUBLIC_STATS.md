@@ -59,6 +59,16 @@ left out on SpaceBot's side.
   member cache has never been filled (the Server Members intent is off), and an
   older SpaceBot sends nothing. Both render no Roles section. A featured role
   missing from SpaceBot's list is left out rather than shown as 0.
+- **In the role's own colour, where it reads.** SpaceBot sends each role's
+  Discord colour (`color`, integer RGB; 0 means none). The tile's stripe and dot
+  always use it. The name uses it only in a theme where it clears 4.5:1 against
+  the tile (`roleNameColor`) — Discord colours are picked for Discord's dark
+  client and are often too pale for the light theme — and otherwise keeps the
+  page's label colour.
+- **Described where it helps.** A `FEATURED_ROLES` entry may carry a
+  `description`, shown under the count in place of the plain "people have this
+  role" note. Passenger has one; it is the role people get once they have
+  joined voice chat, with permissions above a basic member's.
 - **As old as the member list.** The section says when that was, from
   `roles_refreshed_at`. The cache refreshes once a day, so these are
   yesterday's figures at worst.

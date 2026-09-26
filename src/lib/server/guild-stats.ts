@@ -72,6 +72,8 @@ export type GuildRole = {
 	name: string;
 	/** People only: SpaceBot leaves bot accounts out of the count. */
 	members: number;
+	/** The role's colour in Discord as `#rrggbb`, or null when it has none. */
+	color: string | null;
 };
 
 export type GuildStats = {
@@ -191,6 +193,17 @@ function toDay(raw: unknown): GuildDay | null {
 }
 
 /**
+ * Discord's integer RGB as `#rrggbb`. Discord uses 0 for "this role has no
+ * colour" — it renders such a name in the default text colour, not black — so 0
+ * is null here too, as is anything outside 24 bits.
+ */
+function roleColor(value: unknown): string | null {
+	const parsed = Number(value);
+	if (!Number.isInteger(parsed) || parsed <= 0 || parsed > 0xffffff) return null;
+	return `#${parsed.toString(16).padStart(6, '0')}`;
+}
+
+/**
  * Read the role counts, or null when there are none to trust.
  *
  * A row without an id, a name or a readable count is dropped rather than shown
@@ -206,7 +219,7 @@ function toRoles(raw: unknown): GuildRole[] | null {
 		const name = str(row.name);
 		const members = maybeCount(row.member_count);
 		if (!id || !name || members === null || members < 0) continue;
-		roles.push({ id, name, members });
+		roles.push({ id, name, members, color: roleColor(row.color) });
 	}
 	return roles;
 }

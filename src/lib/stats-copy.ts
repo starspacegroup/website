@@ -13,6 +13,7 @@
  */
 
 import type { GuildDay, GuildRole } from '$lib/server/guild-stats';
+import { getContrastRatio } from '$lib/utils/contrast';
 
 /* The type comes from the server module that parses it; the functions below
    do not, because a component imports them and SvelteKit will not let client
@@ -199,6 +200,14 @@ export function recentDays(days: GuildDay[], count: number): GuildDay[] {
 	return days.slice(-count);
 }
 
+/** A role `/stats` puts a number on, and what the page says about it. */
+export type FeaturedRole = {
+	/** The role's name in Discord. */
+	name: string;
+	/** What the role means on this server, when there is something to say. */
+	description?: string;
+};
+
 /**
  * The roles `/stats` puts a number on, in the order it shows them.
  *
@@ -209,7 +218,17 @@ export function recentDays(days: GuildDay[], count: number): GuildDay[] {
  * That is the right way round — a missing figure is visible, a figure quietly
  * attached to the wrong role is not.
  */
-export const FEATURED_ROLES: readonly string[] = ['Passenger', 'Wearing Communicator Badge'];
+export const FEATURED_ROLES: readonly FeaturedRole[] = [
+	{
+		name: 'Passenger',
+		description:
+			'The role people get once they have joined voice chat. It carries permissions above a basic member’s.'
+	},
+	{ name: 'Wearing Communicator Badge' }
+];
+
+/** A counted role, with anything the page has to say about it. */
+export type ShownRole = GuildRole & { description: string | null };
 
 const roleKey = (name: string) => name.trim().toLowerCase();
 
@@ -221,8 +240,8 @@ const roleKey = (name: string) => name.trim().toLowerCase();
  */
 export function featuredRoleCounts(
 	roles: GuildRole[] | null | undefined,
-	featured: readonly string[] = FEATURED_ROLES
-): GuildRole[] {
+	featured: readonly FeaturedRole[] = FEATURED_ROLES
+): ShownRole[] {
 	if (!roles) return [];
 	const byName = new Map<string, GuildRole>();
 	for (const role of roles) {
@@ -230,7 +249,35 @@ export function featuredRoleCounts(
 		// which is the one a member sees at the top of the list.
 		if (!byName.has(roleKey(role.name))) byName.set(roleKey(role.name), role);
 	}
-	return featured
-		.map((name) => byName.get(roleKey(name)))
-		.filter((role): role is GuildRole => Boolean(role));
+	const shown: ShownRole[] = [];
+	for (const { name, description } of featured) {
+		const role = byName.get(roleKey(name));
+		if (role) shown.push({ ...role, description: description ?? null });
+	}
+	return shown;
+}
+
+/**
+ * The tile ground in each theme — `--color-surface` in `src/app.css`, resolved.
+ *
+ * Restated rather than read because the check below runs before any CSS does.
+ * `stats-copy.test.ts` reads `app.css` and fails when these drift from it.
+ */
+export const TILE_SURFACE = { light: '#f8f9fa', dark: '#1a1a1a' } as const;
+
+/**
+ * The role's own colour, if a role name written in it can be read on the tile
+ * in that theme (WCAG AA, 4.5:1); otherwise null, and the name keeps the
+ * page's text colour.
+ *
+ * A Discord role colour is chosen for Discord's dark client, so it is often too
+ * pale for the light theme — and the odd one is too dark for either. The colour
+ * still shows on the tile's stripe and dot, which are not text.
+ */
+export function roleNameColor(
+	color: string | null,
+	theme: keyof typeof TILE_SURFACE
+): string | null {
+	if (!color) return null;
+	return getContrastRatio(color, TILE_SURFACE[theme]) >= 4.5 ? color : null;
 }

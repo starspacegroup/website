@@ -25,6 +25,12 @@ export type Project = {
 	external: boolean;
 	/** Path under `static/` for the card art, if there is any. */
 	screenshot?: string;
+	/**
+	 * The same site captured asking for a light colour scheme, shown while this
+	 * site is in light mode. Only set when the project actually has a light look;
+	 * `bun run capture:projects` says which ones do.
+	 */
+	screenshotLight?: string;
 	/** Path under `static/` for a small square mark shown beside the name. */
 	logo?: string;
 	tags: ProjectTag[];
@@ -64,6 +70,7 @@ export const projects: Project[] = [
 		url: 'https://nebulakit.starspace.group/',
 		external: true,
 		screenshot: '/projects/nebulakit-screenshot.webp',
+		screenshotLight: '/projects/nebulakit-screenshot-light.webp',
 		tags: [madeHere, stack('SvelteKit'), stack('Cloudflare Workers')]
 	},
 	{
@@ -85,6 +92,7 @@ export const projects: Project[] = [
 		external: true,
 		logo: '/projects/agapeverse-logo.webp',
 		screenshot: '/projects/agapeverse-screenshot.webp',
+		screenshotLight: '/projects/agapeverse-screenshot-light.webp',
 		tags: [
 			madeHere,
 			stack('Deno Fresh'),
@@ -133,6 +141,7 @@ export const projects: Project[] = [
 		external: true,
 		logo: '/projects/metadock-logo.webp',
 		screenshot: '/projects/metadock-screenshot.webp',
+		screenshotLight: '/projects/metadock-screenshot-light.webp',
 		tags: [stack('Windows'), stack('C++'), stack('Qt')]
 	}
 ];

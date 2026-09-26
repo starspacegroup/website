@@ -12,6 +12,13 @@
  * It reads the ids and URLs from `src/lib/data/projects.ts`, so it can never
  * drift from the list it is illustrating.
  *
+ * Each site is captured twice, once asking for a dark colour scheme and once
+ * for a light one, because the card shows whichever matches the theme this site
+ * is in. The light shot is only kept when it actually differs: plenty of these
+ * sites are dark whatever the visitor prefers, and a second copy of the same
+ * picture would cost a download and prove nothing. When a light shot is kept,
+ * the entry in `projects.ts` needs `screenshotLight` — the script says which.
+ *
  * What it does NOT do is rewrite the descriptions. When a site has been
  * redesigned, the new screenshot usually means the copy beside it is stale too
  * — read the page and fix the entry by hand. A card whose picture and words
@@ -37,6 +44,11 @@ const OUT = join(ROOT, 'static', 'projects');
 const VIEWPORT = { width: 1440, height: 810 };
 /** Long enough for hero animations and lazy imagery to settle. */
 const SETTLE_MS = 3500;
+/**
+ * Below this normalised RMSE the two schemes are the same picture — the site has
+ * no light mode, and what differs is an animation caught at another frame.
+ */
+const SAME_PICTURE = 0.04;
 
 const only = new Set(process.argv.slice(2));
 const wanted = projects.filter((p) => (only.size ? only.has(p.id) : true));
@@ -53,12 +65,19 @@ if (only.size) {
 mkdirSync(TMP, { recursive: true });
 
 const browser = await chromium.launch();
-const context = await browser.newContext({ viewport: VIEWPORT, colorScheme: 'dark' });
+/* One context per scheme, so nothing a site stores in the first visit — a
+   theme choice in localStorage, say — leaks into the second. */
+const contexts = {
+	dark: await browser.newContext({ viewport: VIEWPORT, colorScheme: 'dark' }),
+	light: await browser.newContext({ viewport: VIEWPORT, colorScheme: 'light' })
+};
 
 const failed = [];
+const withLight = [];
 
-for (const project of wanted) {
-	const page = await context.newPage();
+/** Load a project in one scheme and screenshot it to a PNG. Returns the status. */
+async function shoot(project, scheme, path) {
+	const page = await contexts[scheme].newPage();
 	try {
 		const response = await page.goto(project.url, { waitUntil: 'networkidle', timeout: 45000 });
 		const status = response?.status() ?? 0;
@@ -78,21 +97,76 @@ for (const project of wanted) {
 		}
 
 		await page.waitForTimeout(SETTLE_MS);
-		const shot = join(TMP, `${project.id}.png`);
-		await page.screenshot({ path: shot });
+		await page.screenshot({ path });
+		return status;
+	} finally {
+		await page.close();
+	}
+}
 
-		const target = join(OUT, `${project.id}-screenshot.webp`);
-		execFileSync('magick', [shot, '-resize', '900x', '-quality', '82', '-strip', target]);
-		console.log(`✓ ${project.id.padEnd(18)} ${status}  ${project.url}`);
+/** Normalised RMSE between two same-sized PNGs: 0 is identical, 1 is opposite. */
+function difference(a, b) {
+	try {
+		execFileSync('magick', ['compare', '-metric', 'RMSE', a, b, 'null:'], { stdio: 'pipe' });
+		return 0;
+	} catch (error) {
+		// `compare` exits 1 when the images differ, and prints the metric on stderr
+		// as "absolute (normalised)".
+		const match = String(error.stderr).match(/\(([\d.e-]+)\)/);
+		if (!match) throw error;
+		return Number(match[1]);
+	}
+}
+
+const webp = (png, target) =>
+	execFileSync('magick', [png, '-resize', '900x', '-quality', '82', '-strip', target]);
+
+for (const project of wanted) {
+	try {
+		const darkPng = join(TMP, `${project.id}-dark.png`);
+		const lightPng = join(TMP, `${project.id}-light.png`);
+		const status = await shoot(project, 'dark', darkPng);
+		await shoot(project, 'light', lightPng);
+
+		webp(darkPng, join(OUT, `${project.id}-screenshot.webp`));
+
+		const lightTarget = join(OUT, `${project.id}-screenshot-light.webp`);
+		const delta = difference(darkPng, lightPng);
+		let note = 'dark only';
+		if (delta >= SAME_PICTURE) {
+			webp(lightPng, lightTarget);
+			withLight.push(project.id);
+			note = 'light + dark';
+		} else {
+			// No light mode (any more). A stale light shot would show an old design.
+			rmSync(lightTarget, { force: true });
+		}
+		console.log(`✓ ${project.id.padEnd(18)} ${status}  ${note.padEnd(12)} ${project.url}`);
 	} catch (error) {
 		failed.push([project.id, String(error).split('\n')[0]]);
 		console.log(`✗ ${project.id.padEnd(18)} ${String(error).split('\n')[0]}`);
 	}
-	await page.close();
 }
 
 await browser.close();
 rmSync(TMP, { recursive: true, force: true });
+
+/* Said before any failure exit, so a single site that is down does not hide the
+   edits the others need. Only projects that were captured are judged. */
+const failedIds = new Set(failed.map(([id]) => id));
+const outOfStep = wanted.filter(
+	(p) => !failedIds.has(p.id) && withLight.includes(p.id) !== Boolean(p.screenshotLight)
+);
+if (outOfStep.length) {
+	console.log('\nprojects.ts is out of step with the light shots:');
+	for (const p of outOfStep) {
+		console.log(
+			withLight.includes(p.id)
+				? `  ${p.id}: add screenshotLight: '/projects/${p.id}-screenshot-light.webp'`
+				: `  ${p.id}: remove screenshotLight — the site has no light mode now`
+		);
+	}
+}
 
 if (failed.length) {
 	// A project whose site is down keeps its previous card rather than losing it.

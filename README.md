@@ -71,6 +71,11 @@ bun run capture:projects              # all of them
 bun run capture:projects athena game  # just these
 ```
 
+Each site is captured twice, asking once for a dark colour scheme and once for a light one, and
+the card shows whichever matches the theme the reader has this site in. The light capture is only
+kept when it actually differs — most of these sites are dark whatever you ask — and when one is
+kept the entry needs `screenshotLight`; the script prints which entries are out of step.
+
 It only replaces the pictures. When a site has been redesigned the copy beside it is usually
 stale too, so read the page and fix the entry by hand — a card whose picture and words disagree
 is worse than an old picture.

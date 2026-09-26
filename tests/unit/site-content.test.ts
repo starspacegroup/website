@@ -9,7 +9,7 @@ const staticFile = (path: string) => join(process.cwd(), 'static', path.replace(
  *  `static/` is otherwise invisible until someone loads the page and sees a
  *  broken card. */
 const imagePaths = projects
-	.flatMap((project) => [project.screenshot, project.logo])
+	.flatMap((project) => [project.screenshot, project.screenshotLight, project.logo])
 	.filter((path): path is string => typeof path === 'string');
 
 describe('project directory', () => {
@@ -55,6 +55,21 @@ describe('card artwork', () => {
 		for (const path of imagePaths) {
 			expect(path).toMatch(/^\//);
 			expect(existsSync(staticFile(path)), `${path} is missing from static/`).toBe(true);
+		}
+	});
+
+	// The dark capture is the one every card shows in dark mode and the fallback
+	// in light mode, so a light capture on its own would leave dark mode blank.
+	it('never gives a project a light capture without the dark one', () => {
+		for (const project of projects) {
+			if (project.screenshotLight) expect(project.screenshot, project.id).toBeTruthy();
+		}
+	});
+
+	it('names light captures the way capture:projects writes them', () => {
+		for (const project of projects) {
+			if (!project.screenshotLight) continue;
+			expect(project.screenshotLight).toBe(`/projects/${project.id}-screenshot-light.webp`);
 		}
 	});
 });

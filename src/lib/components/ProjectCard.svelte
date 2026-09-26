@@ -17,8 +17,15 @@
 		<!-- The screenshot is the biggest target on the card, so it goes where the
 		     title goes. Out of the tab order and the accessibility tree, because
 		     the title already says the same thing. -->
+		<!-- Two captures when the project has a light look: CSS shows the one that
+		     matches this site's theme. Not <picture media="(prefers-color-scheme)">,
+		     because the theme here is the reader's toggle, stamped on <html> as
+		     data-theme before first paint, and the OS preference can disagree
+		     with it. A lazy image that is display:none is never fetched, so below
+		     the fold only the visible one costs a download. -->
 		<a href={project.url} {target} {rel} tabindex="-1" aria-hidden="true" class="card-art">
 			<img
+				class:shot-dark={project.screenshotLight}
 				src={project.screenshot}
 				alt=""
 				loading={eager ? 'eager' : 'lazy'}
@@ -26,6 +33,17 @@
 				width="900"
 				height="506"
 			/>
+			{#if project.screenshotLight}
+				<img
+					class="shot-light"
+					src={project.screenshotLight}
+					alt=""
+					loading={eager ? 'eager' : 'lazy'}
+					decoding="async"
+					width="900"
+					height="506"
+				/>
+			{/if}
 		</a>
 	{/if}
 
@@ -109,6 +127,13 @@
 
 	.card:hover .card-art img {
 		transform: scale(1.03);
+	}
+
+	/* Each theme hides the capture that is not its own. Anything but an explicit
+	   dark theme counts as light, which is app.css's default too. */
+	:global(:root:not([data-theme='dark'])) .card-art .shot-dark,
+	:global([data-theme='dark']) .card-art .shot-light {
+		display: none;
 	}
 
 	.card-body {

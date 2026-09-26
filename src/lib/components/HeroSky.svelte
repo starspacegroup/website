@@ -40,6 +40,14 @@
 		const ctx = field?.getContext('2d');
 		if (!ctx || still.matches) return;
 
+		/* The hero, not the sky, is what listens. The sky sits underneath the
+		   hero's copy, buttons and voice panel, which are its siblings — so a
+		   pointer over any of them never reaches it, and a listener on the sky
+		   froze the field whenever the cursor was on the part of the hero people
+		   actually look at. On the hero, moves over those blocks bubble up, and
+		   `pointerleave` fires only when the pointer leaves the hero itself. */
+		const hero = sky.parentElement ?? sky;
+
 		/* The hero is what the pointer is measured against, and the canvas only
 		   covers part of it on a tall screen. Both rectangles are read once per
 		   resize: the old mistake to avoid is `getBoundingClientRect()` inside a
@@ -94,7 +102,6 @@
 			`color-mix(in srgb, ${colour} ${Math.round(clamp01(alpha) * 100)}%, transparent)`;
 
 		function size() {
-			const hero = sky.parentElement ?? sky;
 			const heroRect = hero.getBoundingClientRect();
 			heroTop = heroRect.top + window.scrollY;
 			heroLeft = heroRect.left + window.scrollX;
@@ -267,8 +274,8 @@
 		window.addEventListener('scroll', onScroll, { passive: true });
 		document.addEventListener('visibilitychange', onVisibility);
 		if (fine.matches) {
-			sky.addEventListener('pointermove', onMove, { passive: true });
-			sky.addEventListener('pointerleave', onLeave, { passive: true });
+			hero.addEventListener('pointermove', onMove, { passive: true });
+			hero.addEventListener('pointerleave', onLeave, { passive: true });
 		}
 		onScroll();
 
@@ -279,8 +286,8 @@
 			window.removeEventListener('resize', onResize);
 			window.removeEventListener('scroll', onScroll);
 			document.removeEventListener('visibilitychange', onVisibility);
-			sky.removeEventListener('pointermove', onMove);
-			sky.removeEventListener('pointerleave', onLeave);
+			hero.removeEventListener('pointermove', onMove);
+			hero.removeEventListener('pointerleave', onLeave);
 		};
 	});
 </script>

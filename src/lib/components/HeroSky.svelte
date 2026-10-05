@@ -47,12 +47,16 @@
 		   stars stay hidden and this field arrives in their place. */
 		const liveStars = starfield(Math.floor(Math.random() * 2 ** 32));
 
-		/* The arrival. The stars come in left to right over about a second and
-		   a half, rising into place out of depth — near stars land last and
-		   travel furthest — and fading up as they go. One orchestrated moment;
-		   after it, the drift and the pointer take over. */
+		/* The arrival. The field zooms in: every star starts pulled toward the
+		   centre and flies outward to its place over about a second and a half,
+		   growing and fading up as it comes — far stars first, near stars last
+		   and from deepest in, so the layers open out like flying into the sky.
+		   One orchestrated moment; after it, the drift and the pointer take over. */
 		const INTRO_MS = 1100;
 		const INTRO_STAGGER = 0.45;
+		/* How far toward the centre a star starts: the far layer at 35% of its
+		   distance, the nearest at 0%. */
+		const ZOOM_FROM = 0.35;
 		const introAt = performance.now();
 		const easeOut = (v: number) => 1 - Math.pow(1 - v, 3);
 
@@ -169,23 +173,25 @@
 				// moved a far star about a pixel, which is still in practice.
 				const amp = 5 + s.z * 40;
 
-				// Left to right, near stars last, so the layers land in order.
-				const at = (s.x / SKY.width) * INTRO_STAGGER * (0.7 + s.z * 0.5);
+				// Far stars first, near stars last, so the layers open out in order.
+				const at = s.z * INTRO_STAGGER;
 				const p = easeOut(clamp01(intro * (1 + INTRO_STAGGER) - at));
 				if (p <= 0) continue;
+				const zoom = p >= 1 ? 1 : ZOOM_FROM * (1 - s.z) + (1 - ZOOM_FROM * (1 - s.z)) * p;
 
-				const x = offsetX + s.x * scale + tx * 46 * depth + wanderX * s.driftX * amp;
-				const y =
+				const settledX = offsetX + s.x * scale + tx * 46 * depth + wanderX * s.driftX * amp;
+				const settledY =
 					wrap(
 						offsetY +
 							s.y * scale +
 							ty * 46 * depth +
 							wanderY * s.driftY * amp -
-							scroll * depth * 30 -
-							(1 - p) * 46 * depth +
+							scroll * depth * 30 +
 							margin,
 						h + margin * 2
 					) - margin;
+				const x = w / 2 + (settledX - w / 2) * zoom;
+				const y = h / 2 + (settledY - h / 2) * zoom;
 
 				// Found by a cursor: the closer it is, the more the star lifts.
 				const near = fine.matches
@@ -200,7 +206,7 @@
 					? 0.15 + 0.85 * (0.5 + 0.5 * Math.sin(((t / 1000 + s.delay) / s.period) * Math.PI))
 					: 1;
 
-				const radius = (s.r + s.z * 0.9) * scale * (1 + lift * 0.9) * (0.55 + p * 0.45);
+				const radius = (s.r + s.z * 0.9) * scale * (1 + lift * 0.9) * (0.3 + p * 0.7);
 				const alpha = clamp01(s.opacity * breath * fieldAlpha * (1 + lift * 1.8)) * p;
 
 				// The soft halo the bright few carry, and the one a lifted star

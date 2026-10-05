@@ -150,12 +150,12 @@
 	--chart-content: #b01e5c;
 	--chart-usage: #d97706;
 
-	/* Home hero — night, straight off the share card. Contrast against
-	   --hero-sky, the lightest point of the gradient: text 14.1:1,
-	   text-secondary 9.0:1, primary 5.7:1, secondary 5.7:1, success 5.9:1.
+	/* Home hero — night, a shade darker than the share card. Contrast against
+	   --hero-sky, the lightest point of the gradient: text 16.5:1,
+	   text-secondary 10.6:1, primary 6.7:1, secondary 6.7:1, success 6.9:1.
 	   See the note in :root. */
-	--hero-sky: #1b2450;
-	--hero-sky-deep: #070c1f;
+	--hero-sky: #10173a;
+	--hero-sky-deep: #03060f;
 	--hero-star: #ffffff;
 	--hero-star-opacity: 1;
 	--hero-halo-opacity: 1;
@@ -164,8 +164,8 @@
 	--hero-text-secondary: #c3c9e0;
 	--hero-title-glow: rgb(254 121 93 / 0.3);
 	--hero-mark-shadow: rgb(0 0 0 / 0.55);
-	--hero-background: #0a1030;
-	--hero-surface: rgb(22 31 74 / 0.78);
+	--hero-background: #060a1f;
+	--hero-surface: rgb(16 23 56 / 0.8);
 	--hero-surface-hover: rgb(255 255 255 / 0.1);
 	--hero-border: rgb(255 255 255 / 0.14);
 	--hero-primary: #fe795d;

@@ -35,7 +35,7 @@ export type Star = {
 	/** Direction and reach of the star's own slow wander, in units. */
 	driftX: number;
 	driftY: number;
-	/** Radians per millisecond: one cycle every 26–60 seconds. */
+	/** Radians per millisecond: one cycle every 18–40 seconds. */
 	speed: number;
 	/** Where in that cycle it starts, so the field never moves in unison. */
 	phase: number;
@@ -105,9 +105,10 @@ export function starfield(seed = SKY_SEED, count = 140): Star[] {
 		star.z = round(motion() ** 1.6, 3);
 		star.driftX = round((0.16 + motion() * 0.19) * sign(), 3);
 		star.driftY = round((0.16 + motion() * 0.19) * sign(), 3);
-		// 26s to 60s for a full cycle. Slower than the Braille field on
-		// davis9001.com, because a star that visibly circles is a firefly.
-		star.speed = (2 * Math.PI) / (26000 + motion() * 34000);
+		// 18s to 40s for a full cycle, the Braille field's pace on
+		// davis9001.com: slow enough to read as drift, quick enough that a
+		// resting pointer still sees the sky move.
+		star.speed = (2 * Math.PI) / (18000 + motion() * 22000);
 		star.phase = motion() * Math.PI * 2;
 	}
 

@@ -10,9 +10,9 @@
 	 * markup and CSS with no script and no timers: same gradient, same coral
 	 * glow, same seeded starfield as `brand/og-image.svg`, so the page a
 	 * visitor lands on is the card they clicked, and it is painted before a
-	 * line of JavaScript has run. A canvas then takes over on mount and draws
-	 * *the same stars* — same seed, same `xMidYMid slice` mapping via
-	 * `skyTransform` — so the handover is invisible, and from there the field
+	 * line of JavaScript has run — the gradient always, the stars when there is
+	 * no script or motion is reduced. Otherwise a canvas takes over on mount
+	 * with a fresh random sky, brings its stars in, and from there the field
 	 * answers the pointer, answers the scroll, and wanders on its own.
 	 *
 	 * The card's night is the dark theme's; the light theme gets the same sky
@@ -39,6 +39,22 @@
 		const fine = matchMedia('(pointer: fine)');
 		const ctx = field?.getContext('2d');
 		if (!ctx || still.matches) return;
+
+		/* A new night on every visit. The SVG keeps the share card's seeded
+		   sky for the still paths — reduced motion, no script — but the live
+		   field draws its own, the way davis9001.com scatters its cells fresh
+		   on each load. The two never show at once: with script on, the SVG
+		   stars stay hidden and this field arrives in their place. */
+		const liveStars = starfield(Math.floor(Math.random() * 2 ** 32));
+
+		/* The arrival. The stars come in left to right over about a second and
+		   a half, rising into place out of depth — near stars land last and
+		   travel furthest — and fading up as they go. One orchestrated moment;
+		   after it, the drift and the pointer take over. */
+		const INTRO_MS = 1100;
+		const INTRO_STAGGER = 0.45;
+		const introAt = performance.now();
+		const easeOut = (v: number) => 1 - Math.pow(1 - v, 3);
 
 		/* The hero, not the sky, is what listens. The sky sits underneath the
 		   hero's copy, buttons and voice panel, which are its siblings — so a
@@ -126,6 +142,7 @@
 
 			tx += (px - tx) * 0.07;
 			ty += (py - ty) * 0.07;
+			const intro = clamp01((t - introAt) / (INTRO_MS * (1 + INTRO_STAGGER)));
 
 			// A pool of light where the cursor is, under the stars. The coral of
 			// the hero's own wash rather than a fifth colour.
@@ -140,7 +157,7 @@
 			}
 
 			const margin = 80;
-			for (const s of stars) {
+			for (const s of liveStars) {
 				// Everything is derived from depth. The near stars travel several
 				// times further than the far ones, which is the only thing that
 				// makes this read as a sky rather than as a sliding sheet.
@@ -148,7 +165,14 @@
 
 				const wanderX = Math.sin(t * s.speed + s.phase);
 				const wanderY = Math.cos(t * s.speed * 0.73 + s.phase);
-				const amp = 4 + s.z * 26;
+				// Wide enough to see while the pointer rests: the first version
+				// moved a far star about a pixel, which is still in practice.
+				const amp = 5 + s.z * 40;
+
+				// Left to right, near stars last, so the layers land in order.
+				const at = (s.x / SKY.width) * INTRO_STAGGER * (0.7 + s.z * 0.5);
+				const p = easeOut(clamp01(intro * (1 + INTRO_STAGGER) - at));
+				if (p <= 0) continue;
 
 				const x = offsetX + s.x * scale + tx * 46 * depth + wanderX * s.driftX * amp;
 				const y =
@@ -157,7 +181,8 @@
 							s.y * scale +
 							ty * 46 * depth +
 							wanderY * s.driftY * amp -
-							scroll * depth * 30 +
+							scroll * depth * 30 -
+							(1 - p) * 46 * depth +
 							margin,
 						h + margin * 2
 					) - margin;
@@ -175,8 +200,8 @@
 					? 0.15 + 0.85 * (0.5 + 0.5 * Math.sin(((t / 1000 + s.delay) / s.period) * Math.PI))
 					: 1;
 
-				const radius = (s.r + s.z * 0.9) * scale * (1 + lift * 0.9);
-				const alpha = clamp01(s.opacity * breath * fieldAlpha * (1 + lift * 1.8));
+				const radius = (s.r + s.z * 0.9) * scale * (1 + lift * 0.9) * (0.55 + p * 0.45);
+				const alpha = clamp01(s.opacity * breath * fieldAlpha * (1 + lift * 1.8)) * p;
 
 				// The soft halo the bright few carry, and the one a lifted star
 				// earns while the cursor is on it.
@@ -206,8 +231,9 @@
 				raf = requestAnimationFrame(frame);
 				return;
 			}
-			// Touch: draw while something is happening, then keep the last frame.
-			if (t > awakeUntil) {
+			// Touch: arrive, draw while something is happening, then keep the
+			// last frame.
+			if (t > awakeUntil && t - introAt > INTRO_MS * (1 + INTRO_STAGGER) + 120) {
 				stop();
 				return;
 			}
@@ -398,6 +424,23 @@
 	   every millisecond before hydration. */
 	.hero-sky.is-live .stars {
 		display: none;
+	}
+
+	/* With script on and motion allowed, the live field brings its own stars
+	   in, so the SVG's must not be painted first — the visitor would see one
+	   sky and then watch it swap for another. The sky's colour still paints at
+	   once; only the points wait. The fade is the fallback: if the canvas never
+	   takes over, the still stars come up on their own after two seconds. */
+	@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+		.hero-sky:not(.is-live) .stars {
+			animation: stars-fallback 0.6s ease 2s both;
+		}
+	}
+
+	@keyframes stars-fallback {
+		from {
+			opacity: 0;
+		}
 	}
 
 	/* The whole field dims together in the light theme: these are the last

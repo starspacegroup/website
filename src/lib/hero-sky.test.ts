@@ -118,11 +118,11 @@ describe('starfield motion', () => {
 		expect(stars.some((star) => star.driftY < 0)).toBe(true);
 	});
 
-	it('wanders slowly: one cycle every 26 to 60 seconds', () => {
+	it('wanders slowly: one cycle every 18 to 40 seconds', () => {
 		for (const star of starfield()) {
 			const seconds = (2 * Math.PI) / star.speed / 1000;
-			expect(seconds).toBeGreaterThanOrEqual(26);
-			expect(seconds).toBeLessThanOrEqual(60);
+			expect(seconds).toBeGreaterThanOrEqual(18);
+			expect(seconds).toBeLessThanOrEqual(40);
 		}
 	});
 

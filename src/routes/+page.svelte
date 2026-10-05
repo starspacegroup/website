@@ -99,7 +99,7 @@
 						</svg>
 						Join on Discord
 					</a>
-					<a class="hero-secondary" href="/projects">See what we build</a>
+					<a class="hero-secondary" href="/guide">Server guide</a>
 				</div>
 
 				<!-- The numbers close the copy column rather than starting a second one.

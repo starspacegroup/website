@@ -186,21 +186,20 @@
 					<div class="feature-icon">
 						<svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
 							<circle cx="20" cy="20" r="15" stroke="var(--color-primary)" stroke-width="2.5" />
-							<circle cx="14" cy="17" r="3.5" fill="var(--color-secondary)" />
-							<circle cx="26" cy="17" r="3.5" fill="var(--color-secondary)" />
 							<path
-								d="M13 26c2 2.5 4.5 3.5 7 3.5s5-1 7-3.5"
+								d="M5 20h30M20 5c4.5 4 6.5 9 6.5 15s-2 11-6.5 15c-4.5-4-6.5-9-6.5-15s2-11 6.5-15z"
 								stroke="var(--color-primary)"
 								stroke-width="2.5"
-								stroke-linecap="round"
+								stroke-linejoin="round"
 							/>
+							<circle cx="29" cy="11" r="3.5" fill="var(--color-secondary)" />
 						</svg>
 					</div>
-					<h3 class="feature-title">Body doubling that works</h3>
+					<h3 class="feature-title">Open at every hour</h3>
 				</div>
 				<p class="feature-description">
-					Drop into a focus channel and work next to someone. It is the oldest productivity trick
-					there is, and it is the reason people keep coming back at the same hour every day.
+					Members work from every time zone, so whenever you sit down there is usually a voice
+					channel with people in it and a screen worth watching. Join, say hi, get to work.
 				</p>
 			</div>
 

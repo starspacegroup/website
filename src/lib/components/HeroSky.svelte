@@ -81,6 +81,14 @@
 		let heroHeight = 1;
 		let raf = 0;
 
+		/* Where the hero's words are, in canvas coordinates: one box per line of
+		   text, padded. A star fades out as it nears one, so no point of light
+		   ever sits on or beside a letter. Measured with the rest of the layout,
+		   never in the frame loop. */
+		let textBoxes: { l: number; t: number; r: number; b: number }[] = [];
+		const TEXT_CLEAR = 12;
+		const TEXT_FADE = 40;
+
 		/* Pointer, eased. `px/py` is where it is, `tx/ty` is where the field has
 		   got to — a field that snaps to the cursor reads as a mirror, not as
 		   depth. */
@@ -138,6 +146,44 @@
 			field.height = Math.round(h * dpr);
 			ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
 			readTheme();
+			measureText(rect);
+		}
+
+		function measureText(canvasRect: DOMRect) {
+			const boxes: typeof textBoxes = [];
+			const walker = document.createTreeWalker(hero, NodeFilter.SHOW_TEXT, {
+				acceptNode: (node) =>
+					node.textContent?.trim() && !sky.contains(node)
+						? NodeFilter.FILTER_ACCEPT
+						: NodeFilter.FILTER_REJECT
+			});
+			const range = document.createRange();
+			for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+				range.selectNodeContents(node);
+				for (const r of range.getClientRects()) {
+					if (r.width === 0 || r.height === 0) continue;
+					boxes.push({
+						l: r.left - canvasRect.left,
+						t: r.top - canvasRect.top,
+						r: r.right - canvasRect.left,
+						b: r.bottom - canvasRect.top
+					});
+				}
+			}
+			textBoxes = boxes;
+		}
+
+		/* 0 on or right beside a word, 1 once clear of every word. */
+		function clearOfText(x: number, y: number) {
+			let nearest = Infinity;
+			for (const box of textBoxes) {
+				const dx = Math.max(box.l - x, 0, x - box.r);
+				const dy = Math.max(box.t - y, 0, y - box.b);
+				const d = dx > 0 && dy > 0 ? Math.hypot(dx, dy) : dx + dy;
+				if (d < nearest) nearest = d;
+				if (nearest <= TEXT_CLEAR) return 0;
+			}
+			return clamp01((nearest - TEXT_CLEAR) / TEXT_FADE);
 		}
 
 		function draw(t: number) {
@@ -199,6 +245,9 @@
 					: 0;
 				const lift = near * near;
 
+				const clear = clearOfText(x, y);
+				if (clear <= 0) continue;
+
 				// The twinkle the CSS layer does with an animation. Same quarter of
 				// the stars, same periods, so the two layers agree about which ones
 				// breathe.
@@ -206,8 +255,11 @@
 					? 0.15 + 0.85 * (0.5 + 0.5 * Math.sin(((t / 1000 + s.delay) / s.period) * Math.PI))
 					: 1;
 
-				const radius = (s.r + s.z * 0.9) * scale * (1 + lift * 0.9) * (0.3 + p * 0.7);
-				const alpha = clamp01(s.opacity * breath * fieldAlpha * (1 + lift * 1.8)) * p;
+				const radius = (s.r * 0.65 + s.z * 0.35) * scale * (1 + lift * 0.9) * (0.3 + p * 0.7);
+				// Skewed dim, so a near-full star is rare, and capped below the
+				// theme's ceiling even when the cursor lifts it.
+				const alpha =
+					Math.min(0.9, s.opacity ** 1.6 * breath * (1 + lift * 1.8)) * fieldAlpha * p * clear;
 
 				// The soft halo the bright few carry, and the one a lifted star
 				// earns while the cursor is on it.
@@ -302,6 +354,13 @@
 		});
 		theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
+		/* The words move without the window resizing: the copy animates in,
+		   the web font swaps, the voice panel fills. Re-measure for each. */
+		const layout = new ResizeObserver(onResize);
+		layout.observe(hero);
+		document.fonts?.ready.then(onResize);
+		const settled = window.setTimeout(onResize, 2500);
+
 		window.addEventListener('resize', onResize, { passive: true });
 		window.addEventListener('scroll', onScroll, { passive: true });
 		document.addEventListener('visibilitychange', onVisibility);
@@ -315,6 +374,8 @@
 			stop();
 			io.disconnect();
 			theme.disconnect();
+			layout.disconnect();
+			window.clearTimeout(settled);
 			window.removeEventListener('resize', onResize);
 			window.removeEventListener('scroll', onScroll);
 			document.removeEventListener('visibilitychange', onVisibility);

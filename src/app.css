@@ -156,8 +156,10 @@
 	   See the note in :root. */
 	--hero-sky: #080c22;
 	--hero-sky-deep: #010205;
-	--hero-star: #ffffff;
-	--hero-star-opacity: 1;
+	/* Never pure white: the stars sit a step below the hero's own white text,
+	   so the words stay the brightest thing in the sky. */
+	--hero-star: #d9deeb;
+	--hero-star-opacity: 0.85;
 	--hero-halo-opacity: 1;
 	--hero-glow: #fe795d;
 	--hero-text: #f8f9fa;

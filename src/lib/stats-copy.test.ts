@@ -250,11 +250,15 @@ describe('featuredRoleCounts', () => {
 		]);
 	});
 
-	it('says what Passenger means, and nothing invented for a role without a description', () => {
+	it('says what each featured role means, and nothing invented for a role without a description', () => {
 		const [passenger, badge] = featuredRoleCounts(all);
 		expect(passenger.description).toMatch(/joined voice chat/);
 		expect(passenger.description).toMatch(/permissions above a basic member/);
-		expect(badge.description).toBeNull();
+		expect(badge.description).toMatch(
+			/notified when someone in voice chat is trying to get more people/
+		);
+		const [lone] = featuredRoleCounts(all, [{ name: 'Moderator' }]);
+		expect(lone.description).toBeNull();
 	});
 
 	it('keeps the colour SpaceBot sent', () => {

@@ -67,8 +67,10 @@ left out on SpaceBot's side.
   page's label colour.
 - **Described where it helps.** A `FEATURED_ROLES` entry may carry a
   `description`, shown under the count in place of the plain "people have this
-  role" note. Passenger has one; it is the role people get once they have
-  joined voice chat, with permissions above a basic member's.
+  role" note. Both have one: Passenger is the role people get once they have
+  joined voice chat, with permissions above a basic member's, and Wearing
+  Communicator Badge marks people who want to be notified when someone in
+  voice chat is trying to get more people to join.
 - **As old as the member list.** The section says when that was, from
   `roles_refreshed_at`. The cache refreshes once a day, so these are
   yesterday's figures at worst.

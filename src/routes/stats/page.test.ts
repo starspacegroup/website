@@ -219,10 +219,15 @@ describe('stats — roles', () => {
 		expect(screen.getByText(/bots are not counted/)).toBeTruthy();
 	});
 
-	it('says what Passenger is, and keeps the plain note for a role it has nothing on', () => {
+	it('says what each featured role is, and keeps the plain note for a role it has nothing on', () => {
 		draw({ stats: stats({ roles }) });
 		expect(screen.getByText(/The role people get once they have joined voice chat/)).toBeTruthy();
-		expect(screen.getByText(/people have this role/)).toBeTruthy();
+		expect(
+			screen.getByText(
+				/want to be notified when someone in voice chat is trying to get more people/
+			)
+		).toBeTruthy();
+		expect(screen.queryByText(/people have this role/)).toBeNull();
 	});
 
 	it('paints a role in its Discord colour, and leaves a colourless one plain', () => {

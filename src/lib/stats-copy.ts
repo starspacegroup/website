@@ -224,7 +224,11 @@ export const FEATURED_ROLES: readonly FeaturedRole[] = [
 		description:
 			'The role people get once they have joined voice chat. It carries permissions above a basic member’s.'
 	},
-	{ name: 'Wearing Communicator Badge' }
+	{
+		name: 'Wearing Communicator Badge',
+		description:
+			'People who want to be notified when someone in voice chat is trying to get more people to join.'
+	}
 ];
 
 /** A counted role, with anything the page has to say about it. */

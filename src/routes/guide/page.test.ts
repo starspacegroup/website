@@ -178,6 +178,9 @@ describe('server guide', () => {
 	it('states outright what the lobby channel is for', () => {
 		const { container } = render(Page, { props: { data: { directory: used() } } as never });
 		expect(container.querySelector('.channel-purpose')?.textContent).toMatch(/room of your own/);
+		// A voice channel has no topic in Discord, so the page says what the room
+		// is for from its own notes — and still prints the lobby line after it.
+		expect(container.textContent).toMatch(/The quiet room/);
 	});
 
 	it('prints no numbers when SpaceBot sent none', () => {

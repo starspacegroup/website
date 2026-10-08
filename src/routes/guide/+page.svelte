@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SharingMeta from '$lib/components/SharingMeta.svelte';
 	import { describeChannelUse, describeLobby } from '$lib/channel-activity';
+	import { channelNote } from '$lib/channel-notes';
 	import { DISCORD_INVITE } from '$lib/discord';
 	import { site } from '$lib/site.config';
 	import type { PageData } from './$types';
@@ -106,7 +107,8 @@
 					<h2 id="channels-heading">Channels</h2>
 					<p class="section-lede">
 						{channelCount} public channels, in the order they appear in Discord. Descriptions are the
-						channel topics, written by the people who run them.{#if directory.activityDays}
+						channel topics, written by the people who run them. Discord gives a voice channel no topic,
+						so for those this page says what the room is for.{#if directory.activityDays}
 							The line underneath each one is what actually happened in it over the last {directory.activityDays}
 							days — counts only, never who said what. Voice channels are drop-in rooms: nobody schedules
 							them, so the useful thing to know is when people are usually in there.
@@ -129,6 +131,11 @@
 										</p>
 										{#if channel.topic}
 											<p class="channel-topic">{channel.topic}</p>
+										{/if}
+										{#if channelNote(channel.name)}
+											<!-- Voice channels have no topic, so this site keeps its own
+											     note on what each room is for. See channel-notes.ts. -->
+											<p class="channel-topic">{channelNote(channel.name)}</p>
 										{/if}
 										{#if describeLobby(channel.activity)}
 											<!-- The only voice channel whose purpose is a fact rather than a

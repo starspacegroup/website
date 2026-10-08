@@ -35,7 +35,7 @@ export const CHANNEL_NOTES: readonly ChannelNote[] = [
 	},
 	{
 		name: 'The Archive',
-		note: 'The quiet room. The muted speaker in its name is the rule: nobody talks here. Park yourself in it when you step away from your desk, or when you want company with the sound off.'
+		note: 'The focus room. Everyone is server-muted the moment they join, so nobody can talk here. Sit in it to work or study alongside other people with the sound off.'
 	}
 ];
 

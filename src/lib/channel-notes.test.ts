@@ -5,7 +5,7 @@ describe('channelNote', () => {
 	it('says what each voice room is for', () => {
 		expect(channelNote('Ten Forward')).toMatch(/main room/);
 		expect(channelNote('Engineering')).toMatch(/work room/);
-		expect(channelNote('The Archive')).toMatch(/quiet room/);
+		expect(channelNote('The Archive')).toMatch(/focus room/);
 	});
 
 	it('ignores emoji, case and spacing in the channel name', () => {

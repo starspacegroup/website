@@ -180,7 +180,7 @@ describe('server guide', () => {
 		expect(container.querySelector('.channel-purpose')?.textContent).toMatch(/room of your own/);
 		// A voice channel has no topic in Discord, so the page says what the room
 		// is for from its own notes — and still prints the lobby line after it.
-		expect(container.textContent).toMatch(/The quiet room/);
+		expect(container.textContent).toMatch(/The focus room/);
 	});
 
 	it('prints no numbers when SpaceBot sent none', () => {

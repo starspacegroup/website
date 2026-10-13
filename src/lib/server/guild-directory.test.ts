@@ -266,6 +266,42 @@ describe('fetchGuildDirectory', () => {
 			expect(directory.categories.map((c) => c.name)).toEqual(['Lobby']);
 		});
 
+		it('never shows an archived category, however it is cased or decorated', async () => {
+			for (const label of ['Archived', 'ARCHIVED', 'archive', '📦 Archived', '— archived —']) {
+				const directory = await fetchGuildDirectory(
+					CONFIG,
+					fetcherFor({
+						'/api/v1/channels': channelsBody({
+							categories: [
+								{
+									category: label,
+									channels: [{ id: '9', name: 'online-tools', type: 'text' }]
+								},
+								{ category: 'Lobby', channels: [{ id: '1', name: 'general', type: 'text' }] }
+							]
+						}),
+						'/api/v1/commands': commandsBody()
+					})
+				);
+				expect(directory.categories.map((c) => c.name)).toEqual(['Lobby']);
+			}
+		});
+
+		it('keeps a category that merely mentions archives', async () => {
+			const directory = await fetchGuildDirectory(
+				CONFIG,
+				fetcherFor({
+					'/api/v1/channels': channelsBody({
+						categories: [
+							{ category: 'Archive Projects', channels: [{ id: '9', name: 'x', type: 'text' }] }
+						]
+					}),
+					'/api/v1/commands': commandsBody()
+				})
+			);
+			expect(directory.categories.map((c) => c.name)).toEqual(['Archive Projects']);
+		});
+
 		it('treats an empty topic as absent rather than printing a blank line', async () => {
 			const directory = await fetchGuildDirectory(
 				CONFIG,

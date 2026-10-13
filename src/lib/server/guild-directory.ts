@@ -149,6 +149,20 @@ function isRenderableType(value: unknown): value is ChannelType {
 	return RENDERABLE_TYPES.includes(value as ChannelType);
 }
 
+/**
+ * True for a category that holds retired channels.
+ *
+ * Discord has no archive flag for a category, and SpaceBot sends none. The
+ * server's convention is a category named "Archived" (or "Archive"), and the
+ * channels filed under it are kept for the record, not for use. A newcomer
+ * reading this page is choosing where to speak today, so an archived room is
+ * never shown — however much history it has.
+ */
+function isArchivedCategory(name: string | null): boolean {
+	if (!name) return false;
+	return /^\W*archived?\W*$/i.test(name);
+}
+
 /** A count, or 0. A number this site cannot read is not a number it prints. */
 const count = (value: unknown): number => {
 	const parsed = Number(value);
@@ -319,12 +333,14 @@ export async function fetchGuildDirectory(
 	for (const rawCategory of rawCategories) {
 		if (!rawCategory || typeof rawCategory !== 'object') continue;
 		const group = rawCategory as Record<string, unknown>;
+		const name = str(group.category);
+		if (isArchivedCategory(name)) continue;
 		const channels = (Array.isArray(group.channels) ? group.channels : [])
 			.map(toChannel)
 			.filter((channel): channel is DirectoryChannel => channel !== null);
 		// A category whose channels were all unrenderable is not a heading worth
 		// drawing.
-		if (channels.length) categories.push({ name: str(group.category), channels });
+		if (channels.length) categories.push({ name, channels });
 	}
 
 	const rawCommands = Array.isArray(commandsBody?.commands) ? commandsBody.commands : [];

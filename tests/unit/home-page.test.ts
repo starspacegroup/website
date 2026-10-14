@@ -30,7 +30,7 @@ describe.skip('Home Page Hero', () => {
 
 	it('should render the tagline and the supporting copy', () => {
 		render(Page);
-		expect(screen.getByText(/Work, create and collaborate/i)).toBeTruthy();
+		expect(screen.getByText(/Where rising stars unite/i)).toBeTruthy();
 		expect(screen.getByText(/inclusive digital coworking space on Discord/i)).toBeTruthy();
 	});
 

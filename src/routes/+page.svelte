@@ -81,7 +81,7 @@
 
 					<div class="hero-heading">
 						<h1 class="main-title">{site.name}</h1>
-						<p class="hero-tagline">Work, create and collaborate — with chaos and fun.</p>
+						<p class="hero-tagline">Where rising stars unite</p>
 					</div>
 				</div>
 

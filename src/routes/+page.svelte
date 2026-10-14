@@ -618,7 +618,9 @@
 	}
 
 	.main-title {
-		margin: 0 0 var(--spacing-xs);
+		/* In em so the gap grows with the wordmark: the p's descender hangs below
+		   a line-height of 1, and a fixed gap let the tagline sit right on it. */
+		margin: 0 0 0.24em;
 		font-size: clamp(2.75rem, 5vw + 1rem, 6.5rem);
 		font-weight: 800;
 		line-height: 1;

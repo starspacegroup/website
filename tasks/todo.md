@@ -147,6 +147,19 @@ fail separately.
 
 ## Next — worth doing, not blocking
 
+- [x] Members can put a project forward from `/projects` (2026-10-13). The "want your project
+      here?" box now knows who is reading it: a visitor is offered Discord sign-in, a session
+      with no Discord account is offered linking, a linked account SpaceBot says is not in the
+      server gets the invite, and a member gets a form — name, link, description, a note for
+      the reviewer. Membership is SpaceBot's `members:read` answer, read on the render and
+      **again on the post**; "could not be asked" keeps the form shut rather than opening it.
+      Three pending per person, no duplicate links. Rows live in `project_submissions`
+      (migration 0016); the queue is `/admin/project-submissions`, approve or reject with a
+      line the member sees under "Your submissions". **Approving records a decision, it does
+      not publish** — the directory is still `src/lib/data/projects.ts`, so the reviewer adds
+      the card by hand. Needs `bun run db:migrate` on production before the first deploy that
+      carries it, and the SpaceBot reconnect below for the `members:read` scope.
+
 - [x] Syntax highlighting on the `/badge` snippets (2026-09-22). They are built reactively from
       the variant, the ground and the origin, so there is nothing to highlight at build time —
       it runs in the server render and again in the browser. `src/lib/highlight.ts`, six colour

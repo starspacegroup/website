@@ -18,7 +18,8 @@
 		{ path: '/admin/ai-keys', label: 'AI Keys', icon: 'sparkles' },
 		{ path: '/admin/spacebot', label: 'SpaceBot', icon: 'sparkles' },
 		{ path: '/admin/cms', label: 'Content', icon: 'document' },
-		{ path: '/admin/contact-form-submissions', label: 'Contact Forms', icon: 'mail' }
+		{ path: '/admin/contact-form-submissions', label: 'Contact Forms', icon: 'mail' },
+		{ path: '/admin/project-submissions', label: 'Project Submissions', icon: 'sparkles' }
 	];
 
 	// PII reveal state shared with admin views via context. The store tracks the

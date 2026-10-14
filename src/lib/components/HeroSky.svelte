@@ -47,16 +47,13 @@
 		   stars stay hidden and this field arrives in their place. */
 		const liveStars = starfield(Math.floor(Math.random() * 2 ** 32));
 
-		/* The arrival. The field zooms in: every star starts pulled toward the
-		   centre and flies outward to its place over about a second and a half,
-		   growing and fading up as it comes — far stars first, near stars last
-		   and from deepest in, so the layers open out like flying into the sky.
-		   One orchestrated moment; after it, the drift and the pointer take over. */
+		/* The arrival. The field rises: every star starts below the bottom edge
+		   and climbs to its place over about a second and a half, fading up as
+		   it comes — far stars first, near stars last and from furthest down, so
+		   the layers lift into the sky in order. One orchestrated moment; after
+		   it, the drift and the pointer take over. */
 		const INTRO_MS = 1100;
 		const INTRO_STAGGER = 0.45;
-		/* How far toward the centre a star starts: the far layer at 35% of its
-		   distance, the nearest at 0%. */
-		const ZOOM_FROM = 0.35;
 		const introAt = performance.now();
 		const easeOut = (v: number) => 1 - Math.pow(1 - v, 3);
 
@@ -223,7 +220,8 @@
 				const at = s.z * INTRO_STAGGER;
 				const p = easeOut(clamp01(intro * (1 + INTRO_STAGGER) - at));
 				if (p <= 0) continue;
-				const zoom = p >= 1 ? 1 : ZOOM_FROM * (1 - s.z) + (1 - ZOOM_FROM * (1 - s.z)) * p;
+				// Near stars start further down, so they travel further and overtake.
+				const rise = (1 - p) * (h * (0.5 + s.z * 0.6) + margin);
 
 				const settledX = offsetX + s.x * scale + tx * 46 * depth + wanderX * s.driftX * amp;
 				const settledY =
@@ -236,8 +234,8 @@
 							margin,
 						h + margin * 2
 					) - margin;
-				const x = w / 2 + (settledX - w / 2) * zoom;
-				const y = h / 2 + (settledY - h / 2) * zoom;
+				const x = settledX;
+				const y = settledY + rise;
 
 				// Found by a cursor: the closer it is, the more the star lifts.
 				const near = fine.matches

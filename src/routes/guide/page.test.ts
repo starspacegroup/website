@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/svelte';
+import { fireEvent, render, screen } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
 import Page from './+page.svelte';
 import type { GuildDirectory } from '$lib/server/guild-directory';
@@ -196,5 +196,81 @@ describe('server guide', () => {
 		const joins = screen.getAllByRole('link', { name: /join on discord/i });
 		expect(joins.length).toBeGreaterThan(0);
 		expect(joins[0].getAttribute('href')).toContain('discord');
+	});
+
+	describe('finding your way', () => {
+		const many = () =>
+			directory({
+				categories: [
+					{
+						name: 'Lobby',
+						channels: [
+							{ id: '1', name: 'general', type: 'text', topic: 'Say hello', activity: noActivity },
+							{ id: '2', name: 'ten-forward', type: 'voice', topic: null, activity: noActivity }
+						]
+					},
+					{
+						name: 'Making',
+						channels: [
+							{
+								id: '3',
+								name: 'show-and-tell',
+								type: 'text',
+								topic: 'Share work',
+								activity: noActivity
+							}
+						]
+					}
+				]
+			});
+
+		it('offers a way to jump to each section, and to each category', () => {
+			const { container } = render(Page, { props: { data: { directory: many() } } as never });
+			const jump = screen.getByRole('navigation', { name: /on this page/i });
+			expect([...jump.querySelectorAll('a')].map((a) => a.getAttribute('href'))).toEqual([
+				'#channels',
+				'#commands'
+			]);
+			const cats = container.querySelector('.category-jump');
+			expect([...(cats?.querySelectorAll('a') ?? [])].map((a) => a.getAttribute('href'))).toEqual([
+				'#cat-lobby',
+				'#cat-making'
+			]);
+			expect(container.querySelector('#cat-making')).toBeTruthy();
+		});
+
+		it('narrows the channels as you type, and says when nothing matches', async () => {
+			const { container } = render(Page, { props: { data: { directory: many() } } as never });
+			const box = screen.getByRole('searchbox');
+
+			await fireEvent.input(box, { target: { value: 'share' } });
+			expect(container.querySelectorAll('.channel')).toHaveLength(1);
+			expect(container.textContent).toMatch(/Showing 1 of 3 channels/);
+
+			await fireEvent.input(box, { target: { value: 'zzzz' } });
+			expect(container.querySelectorAll('.channel')).toHaveLength(0);
+			expect(screen.getAllByRole('status').length).toBeGreaterThan(0);
+
+			await fireEvent.click(screen.getAllByRole('button', { name: /clear/i })[0]);
+			expect(container.querySelectorAll('.channel')).toHaveLength(3);
+		});
+
+		it('filters by channel type', async () => {
+			const { container } = render(Page, { props: { data: { directory: many() } } as never });
+			await fireEvent.click(screen.getByRole('button', { name: 'Voice' }));
+			expect([...container.querySelectorAll('.channel-name')].map((n) => n.textContent)).toEqual([
+				expect.stringContaining('ten-forward')
+			]);
+			// A channel-type filter says nothing about commands.
+			expect(container.querySelectorAll('.command')).toHaveLength(2);
+		});
+
+		it('searches the commands too', async () => {
+			const { container } = render(Page, { props: { data: { directory: many() } } as never });
+			await fireEvent.input(screen.getByRole('searchbox'), { target: { value: 'greet' } });
+			expect([...container.querySelectorAll('.command code')].map((n) => n.textContent)).toEqual([
+				'/welcome'
+			]);
+		});
 	});
 });

@@ -560,11 +560,20 @@
 		}
 	}
 
+	/* One number sizes the whole lockup. The wordmark's size is the only thing
+	   chosen; the tagline, the mark and every gap between them are fractions of
+	   it, so the three keep the same proportions at every width instead of each
+	   running its own clamp and drifting apart. */
 	.hero-lockup {
+		--title-size: clamp(2.75rem, 5vw + 1rem, 6.5rem);
+		/* How large the star is against the wordmark. Stacked it leads the page;
+		   beside the words it is as tall as the two lines it stands next to. */
+		--mark-ratio: 2.2;
+
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: var(--spacing-md);
+		gap: calc(var(--title-size) * 0.25);
 		margin-bottom: var(--spacing-lg);
 	}
 
@@ -601,7 +610,7 @@
 
 	.hero-mark {
 		display: block;
-		width: clamp(112px, 12vw, 216px);
+		width: calc(var(--title-size) * var(--mark-ratio));
 		height: auto;
 		aspect-ratio: 1;
 		filter: drop-shadow(0 18px 28px var(--hero-mark-shadow));
@@ -620,15 +629,15 @@
 	.main-title {
 		/* In em so the gap grows with the wordmark: the p's descender hangs below
 		   a line-height of 1, and a fixed gap let the tagline sit right on it. */
-		margin: 0 0 0.24em;
-		font-size: clamp(2.75rem, 5vw + 1rem, 6.5rem);
+		margin: 0 0 0.22em;
+		font-size: var(--title-size);
 		font-weight: 800;
 		line-height: 1;
 		/* The wordmark opens on an asterisk, which carries no visual left edge.
 		   Pulling it back by its own side bearing puts the stem of the S — what
 		   the eye actually reads as the start of the line — over the mark's
 		   left edge and over everything below it. */
-		margin-left: -0.06em;
+		margin-left: -0.015em;
 		letter-spacing: -0.035em;
 		color: var(--color-text);
 		text-shadow: 0 0 48px var(--hero-title-glow);
@@ -636,7 +645,9 @@
 
 	.hero-tagline {
 		margin: 0;
-		font-size: clamp(1.125rem, 1vw + 0.85rem, 1.75rem);
+		/* A third of the wordmark, floored where that gets too small to read
+		   and capped where it stops adding anything. */
+		font-size: clamp(1.125rem, calc(var(--title-size) * 0.3), 2.1rem);
 		font-weight: 600;
 		line-height: 1.3;
 		letter-spacing: -0.01em;
@@ -846,6 +857,21 @@
 			padding-bottom: clamp(5.5rem, 10vh, 8rem);
 		}
 
+		.hero-scroll {
+			display: inline-flex;
+		}
+	}
+
+	/* The two-column composition needs room for both columns: below this the
+	   copy column is under 400px, the buttons stack, the count's label wraps and
+	   the subtitle runs to six lines. Narrower than this the hero is the stacked
+	   one, which has the width to be generous. */
+	@media (min-width: 1180px) {
+		.hero {
+			/* Narrower panel on the smaller desktops, so the words keep their room. */
+			--hero-panel-width: clamp(21rem, 28vw, 26rem);
+		}
+
 		.hero-content {
 			/* The live column is a fixed measure; the copy takes what is left and
 			   caps itself, so extra width on a large screen opens the gap between
@@ -875,12 +901,15 @@
 
 		.hero-lockup {
 			display: contents;
+			--mark-ratio: 1.5;
 		}
 
+		/* Centred on the wordmark and tagline, not hung from the top of the
+		   column: it is the first row's height, and it is as tall as that row. */
 		.hero-mark-wrap {
 			grid-column: 1;
-			grid-row: 1 / span 4;
-			align-self: start;
+			grid-row: 1;
+			align-self: center;
 		}
 
 		.hero-heading,
@@ -931,10 +960,6 @@
 		.hero-stats-link {
 			grid-column: 1 / -1;
 			margin-top: 0;
-		}
-
-		.hero-scroll {
-			display: inline-flex;
 		}
 	}
 

@@ -577,14 +577,6 @@
 		margin-bottom: var(--spacing-lg);
 	}
 
-	/* The smallest phones cannot hold the name and its line side by side at the
-	   normal floor, and a wrapped lockup is the fallback, not the design. */
-	@media (max-width: 340px) {
-		.hero-lockup {
-			--title-size: 2.5rem;
-		}
-	}
-
 	/* The carved-wood star, straight from brand/starspace-mark.png via
 	   `bun run build:brand` — the same file the nav and footer use, so it is
 	   already in cache by the time anyone scrolls. Large, lit from behind by
@@ -649,39 +641,29 @@
 		text-shadow: 0 0 48px var(--hero-title-glow);
 	}
 
-	/* The wordmark and its promise are one lockup, side by side: the name, then
-	   the line that explains it, set as two short lines whose height is the
-	   wordmark's cap height. Three lines would be a paragraph and one long one
-	   would crowd the name, so the width is capped in em to break it after
-	   "rising" at every size, and the size is chosen so the two lines run from
-	   the top of the capitals to the baseline of the word beside them.
-
-	   A row that wraps is the fallback, not the design: on a screen too narrow
-	   for both the line drops under the name and centres, which is the stacked
-	   lockup this used to be. */
+	/* The name, with its promise tucked under the right-hand end of it. The
+	   block is only as wide as the wordmark, so "right" means the wordmark's own
+	   right edge, at every size. */
 	.hero-heading {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: flex-start;
-		justify-content: center;
-		column-gap: calc(var(--title-size) * 0.3);
-		row-gap: calc(var(--title-size) * 0.2);
+		display: grid;
+		width: fit-content;
+		max-width: 100%;
+		margin-inline: auto;
 	}
 
 	.hero-tagline {
-		max-width: 6.6em;
-		/* The first line's capitals start where the wordmark's do. The wordmark's
-		   box is one em tall with its capitals 0.137em down; this line's box has
-		   0.287em above its own capitals. */
-		margin: calc(var(--title-size) * 0.137 - 0.287em) 0 0;
-		/* 0.36 of the wordmark is what makes two lines of this reach from cap
-		   height to baseline; the floor keeps it readable on a small phone. */
-		font-size: clamp(1.0625rem, calc(var(--title-size) * 0.36), 2.4rem);
+		justify-self: end;
+		/* Pulled up into the space under the wordmark: its line box leaves a
+		   descender's room below the baseline, which a line of capitals and
+		   lowercase does not need. In em of the heading, so it scales with it. */
+		margin: calc(var(--title-size) * -0.03) 0 0;
+		/* A third of the wordmark, floored where that gets too small to read
+		   and capped where it stops adding anything. */
+		font-size: clamp(1rem, calc(var(--title-size) * 0.26), 1.85rem);
 		font-weight: 600;
 		line-height: 1.3;
 		letter-spacing: -0.01em;
-		text-align: left;
-		text-wrap: balance;
+		text-align: right;
 		color: var(--color-text);
 	}
 
@@ -931,21 +913,19 @@
 
 		.hero-lockup {
 			display: contents;
-			--mark-ratio: 1.6;
+			--mark-ratio: 1.5;
 		}
 
-		/* Centred on the wordmark's capitals. It is taller than the wordmark, so
-		   the overhang is taken back in negative margins and the row stays the
-		   wordmark's height: the paragraph below does not move for the star. */
+		/* Centred on the wordmark and tagline, not hung from the top of the
+		   column: it is the first row's height, and it is as tall as that row. */
 		.hero-mark-wrap {
 			grid-column: 1;
 			grid-row: 1;
 			align-self: center;
-			margin-block: calc(var(--title-size) * -0.3);
 		}
 
 		.hero-heading {
-			justify-content: flex-start;
+			margin-inline: 0;
 		}
 
 		.hero-heading,

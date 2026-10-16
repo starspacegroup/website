@@ -118,9 +118,12 @@ describe('Footer', () => {
 		expect(resourcesLink).toHaveAttribute('rel', 'noopener noreferrer');
 	});
 
-	it('should render the brand badge', () => {
+	it('should render the built-with badge linking to NebulaKit', () => {
 		render(Footer);
-		expect(screen.getByText('Coworking on Discord')).toBeInTheDocument();
+		const badge = screen.getByRole('link', { name: 'Built with NebulaKit' });
+		expect(badge).toHaveAttribute('href', 'https://nebulakit.starspace.group/');
+		expect(badge).toHaveAttribute('target', '_blank');
+		expect(badge).toHaveAttribute('rel', 'noopener noreferrer');
 	});
 
 	it('should link the community section to the Discord invite', () => {

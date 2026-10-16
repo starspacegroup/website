@@ -26,7 +26,12 @@
 				<p class="footer-tagline">
 					{site.tagline}
 				</p>
-				<div class="footer-badge">
+				<a
+					class="footer-badge"
+					href="https://nebulakit.starspace.group/"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
 					<svg
 						width="16"
 						height="16"
@@ -39,8 +44,8 @@
 						<path d="M2 17l10 5 10-5" />
 						<path d="M2 12l10 5 10-5" />
 					</svg>
-					<span>Coworking on Discord</span>
-				</div>
+					<span>Built with NebulaKit</span>
+				</a>
 			</div>
 
 			<!-- Navigation Links -->
@@ -199,6 +204,15 @@
 		font-size: 0.75rem;
 		color: var(--color-text-secondary);
 		width: fit-content;
+		text-decoration: none;
+		transition:
+			color var(--transition-fast),
+			border-color var(--transition-fast);
+	}
+
+	.footer-badge:hover {
+		color: var(--color-primary);
+		border-color: var(--color-primary);
 	}
 
 	.footer-badge svg {

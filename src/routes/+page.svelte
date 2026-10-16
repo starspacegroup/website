@@ -653,10 +653,9 @@
 
 	.hero-tagline {
 		justify-self: end;
-		/* Pulled up into the space under the wordmark: its line box leaves a
-		   descender's room below the baseline, which a line of capitals and
-		   lowercase does not need. In em of the heading, so it scales with it. */
-		margin: calc(var(--title-size) * -0.03) 0 0;
+		/* Clears the descender of the "p" in the wordmark, which hangs into this
+		   gap. In em of the heading, so the clearance scales with it. */
+		margin: calc(var(--title-size) * 0.12) 0 0;
 		/* A third of the wordmark, floored where that gets too small to read
 		   and capped where it stops adding anything. */
 		font-size: clamp(1rem, calc(var(--title-size) * 0.26), 1.85rem);

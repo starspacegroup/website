@@ -7,6 +7,9 @@
 	import { site } from '$lib/site.config';
 	import type { PageData } from './$types';
 
+	/** The community playlist. The `si` share-tracking parameter is left off. */
+	const PLAYLIST_URL = 'https://open.spotify.com/playlist/62PnpmFkW5Dh6YNgo7MmOc';
+
 	export let data: PageData;
 
 	const description =
@@ -419,6 +422,11 @@
 			Join on Discord
 		</a>
 	</aside>
+
+	<p class="playlist">
+		Want something to work to?
+		<a href={PLAYLIST_URL} target="_blank" rel="noopener noreferrer">Our playlist on Spotify</a>
+	</p>
 </div>
 
 <style>
@@ -890,6 +898,23 @@
 		margin: 0 0 var(--spacing-lg);
 		line-height: 1.7;
 		color: var(--color-text-secondary);
+	}
+
+	.playlist {
+		margin: var(--spacing-xl) 0 0;
+		text-align: center;
+		color: var(--color-text-secondary);
+	}
+
+	.playlist a {
+		color: var(--color-primary);
+		font-weight: 600;
+		text-underline-offset: 0.2em;
+	}
+
+	.playlist a:hover,
+	.playlist a:focus-visible {
+		color: var(--color-secondary);
 	}
 
 	.page-cta {

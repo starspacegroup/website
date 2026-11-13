@@ -51,6 +51,17 @@ describe('server guide', () => {
 		expect(screen.getByText('Say hello')).toBeTruthy();
 	});
 
+	it('ends with a link to the community Spotify playlist', () => {
+		draw({ available: false });
+		const link = screen.getByRole('link', { name: /our playlist on spotify/i });
+		expect(link).toHaveAttribute(
+			'href',
+			'https://open.spotify.com/playlist/62PnpmFkW5Dh6YNgo7MmOc'
+		);
+		expect(link).toHaveAttribute('target', '_blank');
+		expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+	});
+
 	it('says when the channel list was last read', () => {
 		draw();
 		expect(screen.getByText(/last read from the server on/i)).toBeTruthy();

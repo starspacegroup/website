@@ -44,6 +44,11 @@
 		(total, category) => total + category.channels.length,
 		0
 	);
+	$: voiceCount = directory.categories.reduce(
+		(total, category) =>
+			total + category.channels.filter((channel) => kindOf(channel.type) === 'voice').length,
+		0
+	);
 	/* The room command is what the "make your own" section is about. If SpaceBot
 	   stops offering it, that section stops claiming it exists. */
 	$: roomCommand = directory.commands.find((command) => command.name === 'room');
@@ -182,8 +187,20 @@
 
 <div class="page" style="--guide-nav-offset: {navOffset}px">
 	<header class="page-header">
+		<p class="eyebrow">Find your way around</p>
 		<h1>Server guide</h1>
 		<p class="page-lede">{description}</p>
+		{#if directory.available && channelCount}
+			<ul class="stats" aria-label="The server at a glance">
+				<li><strong>{channelCount}</strong><span>channels</span></li>
+				{#if voiceCount}
+					<li><strong>{voiceCount}</strong><span>voice rooms</span></li>
+				{/if}
+				{#if directory.commands.length}
+					<li><strong>{directory.commands.length}</strong><span>commands</span></li>
+				{/if}
+			</ul>
+		{/if}
 		{#if syncedOn}
 			<p class="page-meta">Channels last read from the server on {syncedOn}.</p>
 		{/if}
@@ -292,36 +309,44 @@
 					<div class="categories">
 						{#each shownCategories as category (category.name ?? 'uncategorised')}
 							<section class="category" id="cat-{slug(category.name ?? 'other')}">
-								<h3 class="category-name">{category.name ?? 'No category'}</h3>
+								<h3 class="category-name">
+									{category.name ?? 'No category'}
+									<span class="category-count" aria-hidden="true">{category.channels.length}</span>
+								</h3>
 								<ul class="channels">
 									{#each category.channels as channel (channel.id)}
 										<li class="channel">
-											<p class="channel-name">
-												<span class="channel-prefix" aria-hidden="true"
-													>{PREFIX[channel.type] ?? '#'}</span
-												>{channel.name}
-												{#if channel.type !== 'text'}
-													<span class="channel-type"
-														>{TYPE_LABEL[channel.type] ?? channel.type}</span
-													>
+											<span
+												class="channel-icon"
+												class:voice={kindOf(channel.type) === 'voice'}
+												aria-hidden="true">{PREFIX[channel.type] ?? '#'}</span
+											>
+											<div class="channel-body">
+												<p class="channel-name">
+													{channel.name}
+													{#if channel.type !== 'text'}
+														<span class="channel-type"
+															>{TYPE_LABEL[channel.type] ?? channel.type}</span
+														>
+													{/if}
+												</p>
+												{#if channel.topic}
+													<p class="channel-topic">{channel.topic}</p>
 												{/if}
-											</p>
-											{#if channel.topic}
-												<p class="channel-topic">{channel.topic}</p>
-											{/if}
-											{#if channelNote(channel.name)}
-												<!-- Voice channels have no topic, so this site keeps its own
-												     note on what each room is for. See channel-notes.ts. -->
-												<p class="channel-topic">{channelNote(channel.name)}</p>
-											{/if}
-											{#if describeLobby(channel.activity)}
-												<!-- The only voice channel whose purpose is a fact rather than a
-												     pattern: SpaceBot builds a room when you join it. -->
-												<p class="channel-purpose">{describeLobby(channel.activity)}</p>
-											{/if}
-											{#if usage(channel)}
-												<p class="channel-activity">{usage(channel)}</p>
-											{/if}
+												{#if channelNote(channel.name)}
+													<!-- Voice channels have no topic, so this site keeps its own
+													     note on what each room is for. See channel-notes.ts. -->
+													<p class="channel-topic">{channelNote(channel.name)}</p>
+												{/if}
+												{#if describeLobby(channel.activity)}
+													<!-- The only voice channel whose purpose is a fact rather than a
+													     pattern: SpaceBot builds a room when you join it. -->
+													<p class="channel-purpose">{describeLobby(channel.activity)}</p>
+												{/if}
+												{#if usage(channel)}
+													<p class="channel-activity">{usage(channel)}</p>
+												{/if}
+											</div>
 										</li>
 									{/each}
 								</ul>
@@ -441,17 +466,80 @@
 		padding: var(--spacing-2xl) var(--spacing-md);
 	}
 
+	/* A lit header: the same warm glow the home page hero sits in, so the guide
+	   reads as part of the same place rather than a plain document. */
 	.page-header {
+		position: relative;
 		max-width: 46rem;
 		margin: 0 auto var(--spacing-2xl);
+		padding-top: var(--spacing-lg);
 		text-align: center;
+		isolation: isolate;
+	}
+
+	.page-header::before {
+		content: '';
+		position: absolute;
+		inset: -4rem -1rem -2rem;
+		z-index: -1;
+		background: radial-gradient(
+			ellipse 50% 60% at 50% 25%,
+			color-mix(in srgb, var(--color-primary) 16%, transparent),
+			transparent 70%
+		);
+		pointer-events: none;
+	}
+
+	.eyebrow {
+		display: inline-block;
+		margin: 0 0 var(--spacing-md);
+		padding: 0.25rem 0.8rem;
+		border: 1px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+		color: var(--color-primary);
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
 	}
 
 	.page-header h1 {
 		margin: 0 0 var(--spacing-sm);
-		font-size: clamp(2.25rem, 6vw, 3.25rem);
+		font-size: clamp(2.5rem, 7vw, 4rem);
 		font-weight: 800;
-		letter-spacing: -0.02em;
+		line-height: 1.05;
+		letter-spacing: -0.03em;
+		text-shadow: 0 0 48px var(--hero-title-glow);
+	}
+
+	.stats {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: var(--spacing-sm);
+		margin: var(--spacing-lg) 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.stats li {
+		display: flex;
+		align-items: baseline;
+		gap: 0.4rem;
+		padding: 0.45rem 1rem;
+		border: 1px solid var(--color-border);
+		border-radius: 999px;
+		background: var(--color-surface);
+		color: var(--color-text-secondary);
+		font-size: 0.9375rem;
+	}
+
+	.stats strong {
+		color: var(--color-primary);
+		font-size: 1.25rem;
+		font-weight: 800;
+		font-variant-numeric: tabular-nums;
 	}
 
 	.page-lede {
@@ -498,6 +586,8 @@
 	}
 
 	.category {
+		position: relative;
+		overflow: hidden;
 		break-inside: avoid;
 		margin-bottom: var(--spacing-lg);
 		scroll-margin-top: calc(var(--guide-nav-offset, 4rem) + 4.5rem);
@@ -505,15 +595,40 @@
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-lg);
 		background: var(--color-surface);
+		box-shadow: var(--shadow-sm, 0 1px 2px rgb(0 0 0 / 0.04));
+	}
+
+	/* A thin lit edge along the top of each card. */
+	.category::before {
+		content: '';
+		position: absolute;
+		inset: 0 0 auto;
+		height: 3px;
+		background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+		opacity: 0.85;
 	}
 
 	.category-name {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 		margin: 0 0 var(--spacing-md);
 		font-size: 0.8125rem;
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
 		color: var(--color-text-secondary);
+	}
+
+	.category-count {
+		min-width: 1.5rem;
+		padding: 0.05rem 0.45rem;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+		color: var(--color-primary);
+		font-size: 0.75rem;
+		text-align: center;
+		letter-spacing: 0;
 	}
 
 	.channels,
@@ -523,10 +638,42 @@
 		list-style: none;
 	}
 
+	.channel {
+		display: flex;
+		gap: var(--spacing-md);
+		align-items: flex-start;
+	}
+
 	.channel + .channel {
 		margin-top: var(--spacing-md);
 		padding-top: var(--spacing-md);
 		border-top: 1px solid var(--color-border);
+	}
+
+	.channel-body {
+		flex: 1;
+		min-width: 0;
+	}
+
+	/* A tile for the room's kind: a hash for somewhere you type, a speaker for
+	   somewhere you sit. Tinted differently so the two read apart at a glance. */
+	.channel-icon {
+		flex: none;
+		display: grid;
+		place-items: center;
+		width: 2.25rem;
+		height: 2.25rem;
+		border-radius: var(--radius-md);
+		background: color-mix(in srgb, var(--color-text) 7%, transparent);
+		color: var(--color-text-secondary);
+		font-size: 1.05rem;
+		font-weight: 700;
+	}
+
+	.channel-icon.voice {
+		background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+		color: var(--color-primary);
+		font-size: 1rem;
 	}
 
 	.channel-name {
@@ -537,10 +684,6 @@
 		margin: 0;
 		font-weight: 600;
 		color: var(--color-text);
-	}
-
-	.channel-prefix {
-		color: var(--color-text-secondary);
 	}
 
 	.channel-type {
@@ -573,9 +716,14 @@
 	/* The measured line. Quieter than the topic on purpose: it is context for
 	   the channel, not a second description of it. */
 	.channel-activity {
-		margin: 0.35rem 0 0;
-		font-size: 0.875rem;
-		line-height: 1.55;
+		width: fit-content;
+		max-width: 100%;
+		margin: 0.5rem 0 0;
+		padding: 0.2rem 0.65rem;
+		border-radius: var(--radius-sm);
+		background: color-mix(in srgb, var(--color-text) 5%, transparent);
+		font-size: 0.8125rem;
+		line-height: 1.5;
 		color: var(--color-text-secondary);
 	}
 
@@ -600,8 +748,28 @@
 	.command {
 		padding: var(--spacing-md) var(--spacing-lg);
 		border: 1px solid var(--color-border);
+		border-left: 3px solid var(--color-primary);
 		border-radius: var(--radius-lg);
 		background: var(--color-surface);
+		transition:
+			transform var(--transition-fast),
+			box-shadow var(--transition-fast),
+			border-color var(--transition-fast);
+	}
+
+	.command:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 24px color-mix(in srgb, var(--color-primary) 14%, transparent);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.command {
+			transition: none;
+		}
+
+		.command:hover {
+			transform: none;
+		}
 	}
 
 	.command-name {
@@ -664,13 +832,13 @@
 		flex: none;
 		display: grid;
 		place-items: center;
-		width: 1.75rem;
-		height: 1.75rem;
+		width: 2.25rem;
+		height: 2.25rem;
 		border-radius: 999px;
-		background: color-mix(in srgb, var(--color-primary) 14%, transparent);
-		color: var(--color-primary);
+		background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+		color: var(--color-background);
 		font-weight: 800;
-		font-size: 0.875rem;
+		font-size: 1rem;
 	}
 
 	.steps code {
@@ -922,17 +1090,21 @@
 		padding: var(--spacing-xl);
 		border: 1px solid color-mix(in srgb, var(--color-primary) 45%, transparent);
 		border-radius: var(--radius-xl);
-		background: linear-gradient(
-			135deg,
-			color-mix(in srgb, var(--color-primary) 10%, var(--color-surface)),
-			var(--color-surface)
-		);
+		background:
+			radial-gradient(
+				ellipse 60% 90% at 50% 0%,
+				color-mix(in srgb, var(--color-primary) 18%, transparent),
+				transparent 70%
+			),
+			var(--color-surface);
 		text-align: center;
 	}
 
 	.page-cta h2 {
 		margin: 0 0 var(--spacing-sm);
-		font-size: 1.5rem;
+		font-size: clamp(1.5rem, 3vw, 2rem);
+		font-weight: 800;
+		letter-spacing: -0.02em;
 	}
 
 	.page-cta p {

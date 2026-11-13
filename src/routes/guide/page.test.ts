@@ -51,6 +51,19 @@ describe('server guide', () => {
 		expect(screen.getByText('Say hello')).toBeTruthy();
 	});
 
+	it('sums up the server at the top: channels, voice rooms and commands', () => {
+		draw();
+		const stats = screen.getByRole('list', { name: /at a glance/i });
+		expect(stats.textContent).toContain('2channels');
+		expect(stats.textContent).toContain('1voice rooms');
+		expect(stats.textContent).toContain('2commands');
+	});
+
+	it('shows no summary when the listing is unavailable', () => {
+		draw({ available: false, categories: [], commands: [] });
+		expect(screen.queryByRole('list', { name: /at a glance/i })).toBeNull();
+	});
+
 	it('ends with a link to the community Spotify playlist', () => {
 		draw({ available: false });
 		const link = screen.getByRole('link', { name: /our playlist on spotify/i });

@@ -97,7 +97,8 @@ export const GET: RequestHandler = async ({ url, cookies, platform, locals }) =>
 			email: discordUser.email,
 			linkingUserId: transaction.intent === 'link' ? existingUser?.id : undefined,
 			createUser: async (id) => {
-				// Discord cannot bootstrap ownership; privilege comes from a canonical linked account.
+				// Creating a user grants nothing. Ownership is resolved afterwards by numeric
+				// account id only (resolveOwnerStatus: GITHUB_OWNER_ID / DISCORD_OWNER_ID).
 				await db
 					.prepare(
 						`INSERT INTO users (id, email, name, created_at)

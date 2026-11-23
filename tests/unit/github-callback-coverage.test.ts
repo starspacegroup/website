@@ -322,7 +322,7 @@ describe('GitHub Callback Server - Extended Coverage', () => {
 	});
 
 	describe('Owner ID checking', () => {
-		it('should use username as owner when GITHUB_OWNER_ID is not numeric', async () => {
+		it('never treats a non-numeric GITHUB_OWNER_ID as a login name', async () => {
 			const mockKV = {
 				get: vi.fn().mockResolvedValue(null),
 				put: vi.fn().mockResolvedValue(undefined)
@@ -361,8 +361,8 @@ describe('GitHub Callback Server - Extended Coverage', () => {
 
 			const response = await GET(withDatabase(mockEvent) as any);
 			expect(response.status).toBe(302);
-			// Should redirect to /admin since username matches
-			expect(response.headers.get('Location')).toContain('/admin');
+			// A user name is not an identity: no owner grant.
+			expect(response.headers.get('Location')).not.toContain('/admin');
 		});
 
 		it('should fetch owner ID from KV when env var not set', async () => {
@@ -412,7 +412,7 @@ describe('GitHub Callback Server - Extended Coverage', () => {
 			expect(response.headers.get('Location')).toContain('/admin');
 		});
 
-		it('should check github_owner_username from KV', async () => {
+		it('ignores KV github_owner_username (no grant by login name)', async () => {
 			const mockKV = {
 				get: vi.fn().mockImplementation((key: string) => {
 					if (key === 'github_owner_username') {
@@ -455,7 +455,7 @@ describe('GitHub Callback Server - Extended Coverage', () => {
 
 			const response = await GET(withDatabase(mockEvent) as any);
 			expect(response.status).toBe(302);
-			expect(response.headers.get('Location')).toContain('/admin');
+			expect(response.headers.get('Location')).not.toContain('/admin');
 		});
 
 		it('should handle KV.get error for owner ID gracefully', async () => {

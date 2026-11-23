@@ -45,6 +45,8 @@ declare global {
 				GITHUB_CLIENT_ID?: string;
 				GITHUB_CLIENT_SECRET?: string;
 				GITHUB_OWNER_ID?: string;
+				/** Discord user id (snowflake) of the owner; numeric id only, never a name. */
+				DISCORD_OWNER_ID?: string;
 				DISCORD_CLIENT_ID?: string;
 				DISCORD_CLIENT_SECRET?: string;
 				SESSION_SECRET?: string;

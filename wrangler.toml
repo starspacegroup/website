@@ -57,3 +57,7 @@ bucket_name = "starspace-group-files"
 # GITHUB_OWNER_ID - Set this to your GitHub user ID to enable admin access
 # To find your GitHub ID: visit https://api.github.com/users/YOUR_USERNAME
 # GITHUB_OWNER_ID = "YOUR_GITHUB_USER_ID_HERE"
+# Discord owner, matched by the numeric Discord user id ONLY (never a user name,
+# which can change hands). Public, not a secret. Remove to make GitHub the only
+# owner path.
+DISCORD_OWNER_ID = "293484886726279168"

@@ -52,54 +52,82 @@ export async function findUserByEmailOrAlias(
 	}
 }
 
+/** A GitHub user id is digits only. Anything else (a login name) never counts. */
+const GITHUB_ID = /^\d{1,20}$/;
+/** A Discord user id (snowflake) is 15-21 digits. */
+const DISCORD_ID = /^\d{15,21}$/;
+
+/** Returns the id when it is a plain numeric id of the given shape, else null. */
+export function numericOwnerId(raw: unknown, shape: RegExp = GITHUB_ID): string | null {
+	if (typeof raw !== 'string') return null;
+	const id = raw.trim();
+	return shape.test(id) ? id : null;
+}
+
+/**
+ * Is this user the site owner?
+ *
+ * Ownership is matched by an immutable numeric account id only: the GitHub owner
+ * id (`GITHUB_OWNER_ID`, else KV `github_owner_id`, which setup stores) and,
+ * opt-in, the Discord owner id (`DISCORD_OWNER_ID`). A user NAME is never an
+ * identity: GitHub and Discord names can be renamed, released and claimed by
+ * someone else. Earlier versions treated a non-numeric `GITHUB_OWNER_ID`, or KV
+ * `github_owner_username`, as a login name to compare against `github_login`;
+ * that grant is gone (port of Arizona 2ddf6bb / davis9001.dev 523be5b). A value
+ * that is not a plain numeric id elevates nobody.
+ */
 export async function resolveOwnerStatus(
 	platform: App.Platform | undefined,
 	user: Pick<AuthIdentityRecord, 'id' | 'github_login'>
 ): Promise<boolean> {
-	let ownerId = platform?.env?.GITHUB_OWNER_ID;
-	let ownerUsername: string | null = null;
+	let ownerId = numericOwnerId(platform?.env?.GITHUB_OWNER_ID);
 	if (ownerId && user.id === ownerId) {
 		return true;
 	}
 
-	if (ownerId && Number.isNaN(Number.parseInt(ownerId, 10))) {
-		ownerUsername = ownerId;
-		ownerId = undefined;
-	}
-
-	if (platform?.env?.KV) {
+	if (!ownerId && platform?.env?.KV) {
 		try {
-			if (!ownerId) {
-				ownerId = (await platform.env.KV.get('github_owner_id')) || undefined;
-			}
-			if (!ownerUsername) {
-				ownerUsername = await platform.env.KV.get('github_owner_username');
-			}
+			ownerId = numericOwnerId(await platform.env.KV.get('github_owner_id'));
 		} catch {
 			// Ignore owner lookup failures.
 		}
 	}
 
-	if (ownerUsername && user.github_login?.toLowerCase() === ownerUsername.toLowerCase()) {
-		return true;
-	}
+	const discordOwnerId = numericOwnerId(platform?.env?.DISCORD_OWNER_ID, DISCORD_ID);
 
-	if (!ownerId || !platform?.env?.DB) {
+	if ((!ownerId && !discordOwnerId) || !platform?.env?.DB) {
 		return false;
 	}
 
-	if (user.id === ownerId) {
+	if (ownerId && user.id === ownerId) {
 		return true;
 	}
 
 	try {
-		const githubLink = await platform.env.DB.prepare(
-			'SELECT provider_account_id FROM oauth_accounts WHERE user_id = ? AND provider = ?'
-		)
-			.bind(user.id, 'github')
-			.first<{ provider_account_id: string }>();
-
-		return githubLink?.provider_account_id === ownerId;
+		if (ownerId) {
+			const githubLink = await platform.env.DB.prepare(
+				'SELECT provider_account_id FROM oauth_accounts WHERE user_id = ? AND provider = ?'
+			)
+				.bind(user.id, 'github')
+				.first<{ provider_account_id: string }>();
+			if (githubLink?.provider_account_id != null && String(githubLink.provider_account_id) === ownerId) {
+				return true;
+			}
+		}
+		if (discordOwnerId) {
+			const discordLink = await platform.env.DB.prepare(
+				'SELECT provider_account_id FROM oauth_accounts WHERE user_id = ? AND provider = ?'
+			)
+				.bind(user.id, 'discord')
+				.first<{ provider_account_id: string }>();
+			if (
+				discordLink?.provider_account_id != null &&
+				String(discordLink.provider_account_id) === discordOwnerId
+			) {
+				return true;
+			}
+		}
+		return false;
 	} catch {
 		return false;
 	}

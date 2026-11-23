@@ -19,13 +19,20 @@ describe('OAuth login finalization', () => {
 	});
 
 	it.each([
-		['owner', identity({ github_login: 'owner' }), { GITHUB_OWNER_ID: 'owner' }, '/admin', true],
+		['owner', identity({ id: '424242', github_login: 'owner' }), { GITHUB_OWNER_ID: '424242' }, '/admin', true],
+		[
+			'user whose github login equals a non-numeric GITHUB_OWNER_ID',
+			identity({ github_login: 'owner' }),
+			{ GITHUB_OWNER_ID: 'owner' },
+			'/',
+			false
+		],
 		['admin', identity({ is_admin: 1 }), {}, '/admin', false],
 		['normal user', identity(), {}, '/', false],
 		[
 			'standalone Discord user',
 			identity({ id: 'discord_42', github_login: null }),
-			{ GITHUB_OWNER_ID: 'github-owner' },
+			{ GITHUB_OWNER_ID: '424242' },
 			'/',
 			false
 		]
@@ -48,12 +55,23 @@ describe('OAuth login finalization', () => {
 	it('marks a Discord login only when its canonical account is the configured GitHub owner', async () => {
 		const kv = kvNamespace();
 		const user = identity({ id: 'account-1', github_login: 'owner' });
-		const db = userDatabase(user);
+		// users row first, then the linked github oauth_accounts row
+		const db = {
+			prepare: vi.fn((sql: string) => ({
+				bind: vi.fn(() => ({
+					first: vi
+						.fn()
+						.mockResolvedValue(
+							sql.includes('oauth_accounts') ? { provider_account_id: '424242' } : user
+						)
+				}))
+			}))
+		};
 		const { finalizeOAuthLogin } = await import('../../src/lib/server/oauth-finalization');
 		const response = await finalizeOAuthLogin({
 			db: db as never,
 			platform: {
-				env: { DB: db, KV: kv, SESSION_SECRET: 'secret', GITHUB_OWNER_ID: 'owner' }
+				env: { DB: db, KV: kv, SESSION_SECRET: 'secret', GITHUB_OWNER_ID: '424242' }
 			} as never,
 			url: new URL('https://example.com/callback'),
 			userId: user.id

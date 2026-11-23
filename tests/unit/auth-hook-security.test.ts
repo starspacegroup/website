@@ -152,14 +152,14 @@ describe('server-authenticated session hook', () => {
 			'opaque-session-token-123',
 			database(
 				sessionDataRow({
-					id: 'user-1',
+					id: '1001',
 					login: 'stale-login',
 					email: 'stale@example.com',
 					isOwner: false,
 					isAdmin: false
 				}),
 				{
-					id: 'user-1',
+					id: '1001',
 					email: 'owner@example.com',
 					name: 'Current Owner',
 					github_login: 'current-owner',
@@ -168,14 +168,14 @@ describe('server-authenticated session hook', () => {
 					can_view_stats: 1
 				}
 			),
-			'user-1'
+			'1001'
 		);
 
 		await runAuth(event);
 
 		expect(event.locals).toMatchObject({
 			user: {
-				id: 'user-1',
+				id: '1001',
 				login: 'current-owner',
 				email: 'owner@example.com',
 				isOwner: true,
@@ -236,14 +236,14 @@ describe('server-authenticated session hook', () => {
 
 	it('falls back to the pre-stats user query for an unmigrated local database', async () => {
 		const session = sessionDataRow({
-			id: 'legacy-user',
+			id: '1002',
 			login: 'legacy',
 			email: 'legacy@example.com',
 			isOwner: false,
 			isAdmin: false
 		});
 		const legacyUser = {
-			id: 'legacy-user',
+			id: '1002',
 			email: 'legacy@example.com',
 			name: 'Legacy User',
 			github_login: null,
@@ -264,13 +264,13 @@ describe('server-authenticated session hook', () => {
 		const event = eventFor(
 			'opaque-session-token-123',
 			db as ReturnType<typeof database>,
-			'legacy-user'
+			'1002'
 		);
 
 		await runAuth(event);
 
 		expect(event.locals).toMatchObject({
-			user: { id: 'legacy-user', isOwner: true, isAdmin: true, canViewStats: false }
+			user: { id: '1002', isOwner: true, isAdmin: true, canViewStats: false }
 		});
 		// getAuthSession + can_view_stats query (throws) + fallback query.
 		expect(db.prepare).toHaveBeenCalledTimes(3);

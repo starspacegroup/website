@@ -331,7 +331,7 @@ describe('Password Auth APIs', () => {
 		).rejects.toMatchObject({ status: 401, body: { message: 'Invalid email or password.' } });
 	});
 
-	it('logs in as owner when the configured owner username matches github login', async () => {
+	it('does not make a user owner because GITHUB_OWNER_ID equals their github login', async () => {
 		const { hashPassword } = await import('../../src/lib/utils/passwords');
 		const { POST } = await import('../../src/routes/api/auth/login/+server');
 
@@ -368,7 +368,7 @@ describe('Password Auth APIs', () => {
 		const payload = await response.json();
 
 		expect(response.status).toBe(200);
-		expect(payload.redirectTo).toBe('/admin');
+		expect(payload.redirectTo).not.toBe('/admin');
 		expect(response.headers.get('set-cookie')).toContain('Secure');
 	});
 
@@ -488,7 +488,7 @@ describe('Password Auth APIs', () => {
 		expect(payload.redirectTo).toBe('/');
 	});
 
-	it('logs in as owner when KV provides the owner username', async () => {
+	it('does not make a user owner because KV holds a matching owner username', async () => {
 		const { hashPassword } = await import('../../src/lib/utils/passwords');
 		const { POST } = await import('../../src/routes/api/auth/login/+server');
 
@@ -531,7 +531,7 @@ describe('Password Auth APIs', () => {
 
 		const payload = await response.json();
 
-		expect(payload.redirectTo).toBe('/admin');
+		expect(payload.redirectTo).not.toBe('/admin');
 	});
 
 	it('falls back to a non-owner login when github link lookup throws', async () => {

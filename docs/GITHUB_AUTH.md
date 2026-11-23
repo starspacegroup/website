@@ -112,6 +112,8 @@ GITHUB_OWNER_ID = "583231"  # Replace with your actual GitHub user ID
 - `SESSION_SECRET`: Random secret used to sign opaque session and OAuth-state cookies
 - `SETUP_SECRET`: Separate bearer secret accepted only during first-time bootstrap
 
+🔒 **Numeric ids only (2026-11-23).** The owner is matched by numeric account id: `GITHUB_OWNER_ID` (or KV `github_owner_id`, which `/setup` stores) and, optionally, `DISCORD_OWNER_ID` (a Discord user id, in `wrangler.toml` `[vars]`, matched against the linked Discord account). A non-numeric `GITHUB_OWNER_ID` and the KV `github_owner_username` no longer grant anything: a user name can be renamed, released and claimed by someone else.
+
 ⚠️ **Important:** Without setting `GITHUB_OWNER_ID`, you will be able to log in with GitHub, but `isOwner` will be `false` and you won't have admin access.
 
 ## How It Works

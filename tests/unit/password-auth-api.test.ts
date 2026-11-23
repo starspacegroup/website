@@ -406,7 +406,9 @@ describe('Password Auth APIs', () => {
 		expect(payload.redirectTo).toBe('/admin');
 		// One prepare for the user lookup, one for the server-side session INSERT
 		// (the B3 throttle's own login_throttle statements are counted apart).
-		const nonThrottle = prepare.mock.calls.filter(([sql]) => !String(sql).includes('login_throttle'));
+		const nonThrottle = prepare.mock.calls.filter(
+			([sql]) => !String(sql).includes('login_throttle')
+		);
 		expect(nonThrottle).toHaveLength(2);
 	});
 

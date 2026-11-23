@@ -110,7 +110,10 @@ export async function resolveOwnerStatus(
 			)
 				.bind(user.id, 'github')
 				.first<{ provider_account_id: string }>();
-			if (githubLink?.provider_account_id != null && String(githubLink.provider_account_id) === ownerId) {
+			if (
+				githubLink?.provider_account_id != null &&
+				String(githubLink.provider_account_id) === ownerId
+			) {
 				return true;
 			}
 		}

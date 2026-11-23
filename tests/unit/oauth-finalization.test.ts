@@ -19,7 +19,13 @@ describe('OAuth login finalization', () => {
 	});
 
 	it.each([
-		['owner', identity({ id: '424242', github_login: 'owner' }), { GITHUB_OWNER_ID: '424242' }, '/admin', true],
+		[
+			'owner',
+			identity({ id: '424242', github_login: 'owner' }),
+			{ GITHUB_OWNER_ID: '424242' },
+			'/admin',
+			true
+		],
 		[
 			'user whose github login equals a non-numeric GITHUB_OWNER_ID',
 			identity({ github_login: 'owner' }),

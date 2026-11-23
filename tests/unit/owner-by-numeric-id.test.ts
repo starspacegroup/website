@@ -80,10 +80,13 @@ describe('B9: owner is matched by numeric account id only', () => {
 			})
 		).toBe(true);
 		expect(
-			await resolveOwnerStatus(platformWith({ GITHUB_OWNER_ID: GITHUB_OWNER }, { github: GITHUB_OWNER }), {
-				id: 'u2',
-				github_login: null
-			})
+			await resolveOwnerStatus(
+				platformWith({ GITHUB_OWNER_ID: GITHUB_OWNER }, { github: GITHUB_OWNER }),
+				{
+					id: 'u2',
+					github_login: null
+				}
+			)
 		).toBe(true);
 		const kv = { get: async (k: string) => (k === 'github_owner_id' ? GITHUB_OWNER : null) };
 		expect(

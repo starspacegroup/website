@@ -39,6 +39,14 @@ export function authHandler(input: {
 	resolve: (event: any) => Response | Promise<Response>;
 }): Promise<Response>;
 export async function authHandler({ event, resolve }: Parameters<Handle>[0]): Promise<Response> {
+	// B4: media files are public and `/media` never reads `locals.user`; looking up who
+	// is asking cost a signed-in visitor several D1/KV reads per file for nothing
+	// (ported from the Pinfool fork, fba97dc). This site has no coming-soon gate, so
+	// the fast path is unconditional.
+	if (event.url?.pathname?.startsWith('/media/')) {
+		return resolve(event);
+	}
+
 	const sessionToken = event.cookies.get('session');
 
 	if (sessionToken) {

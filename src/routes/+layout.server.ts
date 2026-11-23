@@ -1,33 +1,13 @@
-import { getCommandPaletteContentItems, syncContentTypes } from '$lib/services/cms';
+import { loadLayoutChrome } from '$lib/server/layout-chrome';
 import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async ({ locals, fetch, platform }) => {
-	// Check if AI providers are enabled
-	let hasAIProviders = false;
-	let cmsPaletteItems: Awaited<ReturnType<typeof getCommandPaletteContentItems>> = [];
-	try {
-		const response = await fetch('/api/admin/ai-keys/status');
-		if (response.ok) {
-			const data = await response.json();
-			hasAIProviders = data.hasProviders || false;
-		}
-	} catch (error) {
-		console.error('Failed to check AI provider status:', error);
-	}
-
-	const db = platform?.env?.DB;
-	if (db) {
-		try {
-			await syncContentTypes(db);
-			cmsPaletteItems = await getCommandPaletteContentItems(db);
-		} catch (error) {
-			console.error('Failed to load CMS command palette items:', error);
-		}
-	}
-
-	return {
-		user: locals.user || null,
-		hasAIProviders,
-		cmsPaletteItems
-	};
+export const load: LayoutServerLoad = async ({ locals, platform, depends }) => {
+	// Re-run when an admin changes something the palette shows (invalidate('app:palette')).
+	depends?.('app:palette');
+	// B4: the chrome (AI flag, palette items) is the same for every visitor, so it is
+	// shared for a few minutes; an admin reads it fresh (src/lib/server/layout-chrome.ts).
+	// No self-request to /api/admin/ai-keys/status, no content-type sync per view.
+	const admin = !!(locals.user?.isAdmin || locals.user?.isOwner);
+	const chrome = await loadLayoutChrome(platform, admin);
+	return { user: locals.user || null, ...chrome };
 };

@@ -261,11 +261,7 @@ describe('server-authenticated session hook', () => {
 				}))
 			}))
 		};
-		const event = eventFor(
-			'opaque-session-token-123',
-			db as ReturnType<typeof database>,
-			'1002'
-		);
+		const event = eventFor('opaque-session-token-123', db as ReturnType<typeof database>, '1002');
 
 		await runAuth(event);
 
@@ -277,3 +273,33 @@ describe('server-authenticated session hook', () => {
 	});
 });
 import '../helpers/server-response';
+
+describe('B4: media files skip the session lookup (ported from Pinfool fba97dc)', () => {
+	const user = {
+		id: '1001',
+		email: 'ada@example.com',
+		name: 'Ada',
+		github_login: null,
+		github_avatar_url: null,
+		is_admin: 1
+	};
+	const session = sessionDataRow({ id: '1001', email: 'ada@example.com' });
+
+	it('reads nothing from the database for /media and leaves the cookie alone', async () => {
+		const db = database(session, user);
+		const event = eventFor('token', db);
+		event.url = new URL('https://site.example/media/uploads/a.webp');
+		await runAuth(event);
+		expect(db.prepare).not.toHaveBeenCalled();
+		expect((event.locals as { user?: unknown }).user).toBeUndefined();
+		expect(event.cookies.delete).not.toHaveBeenCalled();
+	});
+
+	it('still resolves the session for a page that merely mentions media', async () => {
+		const db = database(session, user);
+		const event = eventFor('token', db);
+		event.url = new URL('https://site.example/admin/media');
+		await runAuth(event);
+		expect(db.prepare).toHaveBeenCalled();
+	});
+});

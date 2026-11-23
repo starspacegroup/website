@@ -404,8 +404,10 @@ describe('Password Auth APIs', () => {
 		const payload = await response.json();
 
 		expect(payload.redirectTo).toBe('/admin');
-		// One prepare for the user lookup, one for the server-side session INSERT.
-		expect(prepare).toHaveBeenCalledTimes(2);
+		// One prepare for the user lookup, one for the server-side session INSERT
+		// (the B3 throttle's own login_throttle statements are counted apart).
+		const nonThrottle = prepare.mock.calls.filter(([sql]) => !String(sql).includes('login_throttle'));
+		expect(nonThrottle).toHaveLength(2);
 	});
 
 	it('logs in as owner when the numeric owner id matches the linked github account', async () => {

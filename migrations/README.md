@@ -93,3 +93,4 @@ Migrations that have already run are **skipped automatically** - they will never
 | `0012_minimize_oauth_tokens.sql`        | Remove legacy provider credentials; retain identity links only                      |
 | `0013_session_payload.sql`              | `sessions.data` — server-side session payload behind the opaque session cookie      |
 | `0017_request_limits.sql`               | B5: per-address fixed-window request counters (contact, sign-up, OAuth start)       |
+| `0018_login_throttle.sql`               | B3: failed-password counters for sign-in and account merge (D1, not KV)             |

@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from '$lib/server/outbound';
 /**
  * Minimal hand-rolled RFC 3161 trusted-timestamp client.
  *
@@ -183,11 +184,15 @@ export async function requestTimestamp(
 ): Promise<TimestampResult> {
 	try {
 		const query = encodeTimeStampReq(hashHex, { certReq: true });
-		const res = await fetch(tsaUrl, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/timestamp-query' },
-			body: query as BodyInit
-		});
+		const res = await fetchWithTimeout(
+			tsaUrl,
+			{
+				method: 'POST',
+				headers: { 'Content-Type': 'application/timestamp-query' },
+				body: query as BodyInit
+			},
+			{ timeoutMs: 15_000 }
+		);
 
 		if (!res.ok) {
 			return { ok: false, tsaUrl, error: `TSA request failed: HTTP ${res.status}` };

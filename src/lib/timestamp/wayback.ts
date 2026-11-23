@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from '$lib/server/outbound';
 /**
  * Wayback Machine integration — a second, independent, credential-less
  * witness layer alongside the RFC 3161 timestamp proof.
@@ -18,7 +19,12 @@ const AVAILABLE_URL = 'https://archive.org/wayback/available';
  */
 export async function triggerWaybackCapture(url: string): Promise<void> {
 	try {
-		await fetch(`${SAVE_URL_PREFIX}${encodeURIComponent(url)}`, { method: 'GET' });
+		// A Wayback capture is slow; this runs in waitUntil, after the response.
+		await fetchWithTimeout(
+			`${SAVE_URL_PREFIX}${encodeURIComponent(url)}`,
+			{ method: 'GET' },
+			{ timeoutMs: 30_000 }
+		);
 	} catch {
 		// Best-effort only — nothing to do if this fails.
 	}
@@ -38,7 +44,7 @@ export async function checkWaybackSnapshot(
 		const params = new URLSearchParams({ url });
 		if (timestampYYYYMMDD) params.set('timestamp', timestampYYYYMMDD);
 
-		const res = await fetch(`${AVAILABLE_URL}?${params.toString()}`);
+		const res = await fetchWithTimeout(`${AVAILABLE_URL}?${params.toString()}`);
 		if (!res.ok) return { ok: false };
 
 		const body = (await res.json()) as {

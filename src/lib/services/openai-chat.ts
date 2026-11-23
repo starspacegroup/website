@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from '$lib/server/outbound';
 /**
  * OpenAI Chat Service
  * Handles streaming text chat and realtime voice chat with OpenAI API
@@ -136,21 +137,26 @@ export async function* streamChatCompletion(
 ): AsyncGenerator<StreamChunk, void, unknown> {
 	const { model = 'gpt-4o', temperature = 0.7, maxTokens = 2048 } = options;
 
-	const response = await fetch('https://api.openai.com/v1/chat/completions', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${apiKey}`
+	// The answer streams for as long as it takes; only the first byte is bounded.
+	const response = await fetchWithTimeout(
+		'https://api.openai.com/v1/chat/completions',
+		{
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${apiKey}`
+			},
+			body: JSON.stringify({
+				model,
+				messages,
+				temperature,
+				max_tokens: maxTokens,
+				stream: true,
+				stream_options: { include_usage: true }
+			})
 		},
-		body: JSON.stringify({
-			model,
-			messages,
-			temperature,
-			max_tokens: maxTokens,
-			stream: true,
-			stream_options: { include_usage: true }
-		})
-	});
+		{ timeoutMs: 30_000, untilHeaders: true }
+	);
 
 	if (!response.ok) {
 		throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
@@ -212,7 +218,7 @@ export async function createRealtimeSession(
 	apiKey: string,
 	model: string = 'gpt-4o-realtime-preview-2024-12-17'
 ): Promise<RealtimeSessionResponse> {
-	const response = await fetch('https://api.openai.com/v1/realtime/sessions', {
+	const response = await fetchWithTimeout('https://api.openai.com/v1/realtime/sessions', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

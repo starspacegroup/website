@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from '$lib/server/outbound';
 import { reconcileOAuthAccount } from '$lib/server/oauth-account';
 import { finalizeOAuthLogin } from '$lib/server/oauth-finalization';
 import { getAuthProviderCredentials } from '$lib/utils/auth-provider-config';
@@ -56,7 +57,7 @@ export const GET: RequestHandler = async ({ url, cookies, platform, locals }) =>
 			throw redirect(302, '/auth/login?error=not_configured');
 		}
 
-		const tokenResponse = await fetch('https://discord.com/api/oauth2/token', {
+		const tokenResponse = await fetchWithTimeout('https://discord.com/api/oauth2/token', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			body: new URLSearchParams({
@@ -82,7 +83,7 @@ export const GET: RequestHandler = async ({ url, cookies, platform, locals }) =>
 		);
 		if (!transaction) throw redirect(302, '/auth/login?error=invalid_state');
 
-		const userResponse = await fetch('https://discord.com/api/users/@me', {
+		const userResponse = await fetchWithTimeout('https://discord.com/api/users/@me', {
 			headers: { Authorization: `Bearer ${accessToken}` }
 		});
 		if (!userResponse.ok) throw redirect(302, '/auth/login?error=user_fetch_failed');

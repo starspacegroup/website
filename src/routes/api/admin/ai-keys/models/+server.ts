@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from '$lib/server/outbound';
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
@@ -247,7 +248,7 @@ export const GET: RequestHandler = async ({ platform, locals, url }) => {
 
 	try {
 		// Fetch models from OpenAI API
-		const response = await fetch('https://api.openai.com/v1/models', {
+		const response = await fetchWithTimeout('https://api.openai.com/v1/models', {
 			headers: {
 				Authorization: `Bearer ${apiKey}`
 			}

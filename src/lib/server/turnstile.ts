@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from './outbound';
 /**
  * Cloudflare Turnstile verification (server-side).
  *
@@ -54,7 +55,11 @@ export async function verifyTurnstile(options: TurnstileVerifyOptions): Promise<
 	if (remoteIp) body.append('remoteip', remoteIp);
 
 	try {
-		const resp = await fetchImpl(SITEVERIFY_URL, { method: 'POST', body });
+		const resp = await fetchWithTimeout(
+			SITEVERIFY_URL,
+			{ method: 'POST', body },
+			{ fetchImpl, timeoutMs: 5000 }
+		);
 		if (!resp.ok) return false;
 		const payload = (await resp.json()) as { success?: boolean };
 		return Boolean(payload.success);

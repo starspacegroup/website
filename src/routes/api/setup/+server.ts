@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from '$lib/server/outbound';
 import { requireOwner } from '$lib/server/auth-guards';
 import { error, isHttpError, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
@@ -72,7 +73,7 @@ export const POST: RequestHandler = async ({ request, platform, locals }) => {
 			throw error(400, 'Initial setup only supports GitHub');
 		}
 
-		const userResponse = await fetch(`https://api.github.com/users/${trimmedUsername}`, {
+		const userResponse = await fetchWithTimeout(`https://api.github.com/users/${trimmedUsername}`, {
 			headers: {
 				Accept: 'application/vnd.github.v3+json',
 				'User-Agent': '*Space'

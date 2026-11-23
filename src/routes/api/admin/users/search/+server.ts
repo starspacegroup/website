@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from '$lib/server/outbound';
 import { requireAdmin } from '$lib/server/auth-guards';
 import { isPiiRevealed, maskGeneric, PII_REVEAL_COOKIE } from '$lib/server/pii-mask';
 import { error, json } from '@sveltejs/kit';
@@ -13,14 +14,15 @@ export const GET: RequestHandler = async ({ url, locals, fetch, cookies }) => {
 
 	try {
 		// Search GitHub for users
-		const response = await fetch(
+		const response = await fetchWithTimeout(
 			`https://api.github.com/search/users?q=${encodeURIComponent(query)}&per_page=10`,
 			{
 				headers: {
 					Accept: 'application/vnd.github.v3+json',
 					'User-Agent': '*Space'
 				}
-			}
+			},
+			{ fetchImpl: fetch }
 		);
 
 		if (!response.ok) {

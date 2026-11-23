@@ -17,7 +17,7 @@ describe('triggerWaybackCapture', () => {
 
 		expect(fetchMock).toHaveBeenCalledWith(
 			'https://web.archive.org/save/https%3A%2F%2Fexample.com%2Fpredictions%2Ffoo',
-			{ method: 'GET' }
+			expect.objectContaining({ method: 'GET', signal: expect.any(AbortSignal) })
 		);
 	});
 

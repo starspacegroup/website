@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from '$lib/server/outbound';
 import { reconcileOAuthAccount } from '$lib/server/oauth-account';
 import { finalizeOAuthLogin } from '$lib/server/oauth-finalization';
 import { resolveOwnerStatus } from '$lib/utils/auth-identity';
@@ -57,7 +58,7 @@ export const GET: RequestHandler = async ({ url, cookies, platform, locals }) =>
 			throw redirect(302, '/auth/login?error=not_configured');
 		}
 
-		const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
+		const tokenResponse = await fetchWithTimeout('https://github.com/login/oauth/access_token', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
 			body: JSON.stringify({
@@ -83,7 +84,7 @@ export const GET: RequestHandler = async ({ url, cookies, platform, locals }) =>
 		);
 		if (!transaction) throw redirect(302, '/auth/login?error=invalid_state');
 
-		const userResponse = await fetch('https://api.github.com/user', {
+		const userResponse = await fetchWithTimeout('https://api.github.com/user', {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
 				Accept: 'application/vnd.github.v3+json',

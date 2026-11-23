@@ -1,3 +1,4 @@
+import { limitRequest, SIGNUP_LIMITS, tooManyRequests } from '$lib/server/request-limit';
 import { createAuthSession } from '$lib/utils/db';
 import { hashPassword, validatePassword } from '$lib/utils/passwords';
 import { buildSessionCookieHeader, createSessionUser } from '$lib/utils/session';
@@ -31,6 +32,11 @@ export const POST: RequestHandler = async ({ platform, request, url }) => {
 	if (passwordValidationError) {
 		throw error(400, passwordValidationError);
 	}
+
+	// Each sign-up writes a user and runs a password hash. Counted after the cheap checks above,
+	// so a typo costs the visitor nothing.
+	const limit = await limitRequest(platform, SIGNUP_LIMITS, request);
+	if (!limit.allowed) return tooManyRequests(limit);
 
 	const existingUser = await platform.env.DB.prepare(
 		`SELECT u.id

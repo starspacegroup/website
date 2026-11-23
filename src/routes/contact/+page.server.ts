@@ -3,6 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { createContactFormSubmission } from '$lib/services/contact';
 import { validateContactInput } from '$lib/utils/contact-validation';
 import { getTurnstileConfig, verifyTurnstile } from '$lib/server/turnstile';
+import { FORM_LIMITS, limitRequest } from '$lib/server/request-limit';
 
 export const load: PageServerLoad = async ({ platform }) => {
 	const config = getTurnstileConfig(
@@ -19,6 +20,10 @@ export const actions: Actions = {
 	default: async ({ request, platform }) => {
 		const db = platform?.env?.DB;
 		if (!db) return fail(500, { error: 'Unable to send your message right now.' });
+		// Each message is a D1 write; Turnstile is optional, so this is the floor.
+		if (!(await limitRequest(platform, FORM_LIMITS, request)).allowed) {
+			return fail(429, { error: 'Too many messages from this connection. Try again later.' });
+		}
 
 		const form = await request.formData();
 		const result = validateContactInput({

@@ -92,3 +92,4 @@ Migrations that have already run are **skipped automatically** - they will never
 | `0011_oauth_transactions.sql`           | One-time, expiring OAuth login/link transactions with session binding               |
 | `0012_minimize_oauth_tokens.sql`        | Remove legacy provider credentials; retain identity links only                      |
 | `0013_session_payload.sql`              | `sessions.data` — server-side session payload behind the opaque session cookie      |
+| `0017_request_limits.sql`               | B5: per-address fixed-window request counters (contact, sign-up, OAuth start)       |

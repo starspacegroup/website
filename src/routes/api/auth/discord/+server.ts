@@ -7,10 +7,11 @@ import {
 	oauthStateCookieOptions
 } from '$lib/utils/oauth-state';
 import { findValidSession } from '$lib/utils/db';
+import { limitRequest, OAUTH_START_LIMITS } from '$lib/server/request-limit';
 import type { RequestHandler } from './$types';
 
 // GET - Redirect to Discord OAuth
-export const GET: RequestHandler = async ({ platform, url, cookies, locals }) => {
+export const GET: RequestHandler = async ({ platform, url, cookies, locals, request }) => {
 	const { clientId } = await getAuthProviderCredentials(platform, 'discord');
 
 	// Check if Discord OAuth is configured
@@ -38,6 +39,10 @@ export const GET: RequestHandler = async ({ platform, url, cookies, locals }) =>
 	}
 	const db = platform?.env?.DB;
 	if (!db) throw error(503, 'OAuth state storage is unavailable');
+	// Each start writes an oauth_transactions row, and anyone may start one.
+	if (!(await limitRequest(platform, OAUTH_START_LIMITS, request)).allowed) {
+		throw error(429, 'Too many sign-in attempts. Try again in a minute.');
+	}
 	// Opaque scheme: the raw cookie is the session token; bind the transaction
 	// only to a session that is live in the DB right now.
 	const rawSessionToken = linking ? cookies.get('session') : undefined;

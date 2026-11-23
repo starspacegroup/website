@@ -44,6 +44,9 @@ declare global {
 				TURNSTILE_SITE_KEY?: string;
 				GITHUB_CLIENT_ID?: string;
 				GITHUB_CLIENT_SECRET?: string;
+				/** Optional Workers Rate Limiting binding (`[[ratelimits]]`): a fast path in
+				 *  front of the D1 request limiter (src/lib/server/request-limit.ts). */
+				REQUEST_RATE_LIMITER?: { limit(options: { key: string }): Promise<{ success: boolean }> };
 				GITHUB_OWNER_ID?: string;
 				/** Discord user id (snowflake) of the owner; numeric id only, never a name. */
 				DISCORD_OWNER_ID?: string;

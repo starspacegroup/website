@@ -8,6 +8,7 @@ import {
 } from '$lib/services/contact';
 import { validateContactInput } from '$lib/utils/contact-validation';
 import { getTurnstileConfig, verifyTurnstile } from '$lib/server/turnstile';
+import { FORM_LIMITS, limitRequest, tooManyRequests } from '$lib/server/request-limit';
 import { isPiiRevealed, maskName, maskEmail, PII_REVEAL_COOKIE } from '$lib/server/pii-mask';
 
 /**
@@ -47,6 +48,8 @@ export const GET: RequestHandler = async ({ locals, platform, url, cookies }) =>
 export const POST: RequestHandler = async ({ request, platform }) => {
 	const db = platform?.env?.DB;
 	if (!db) throw error(500, 'Database not available');
+	const limit = await limitRequest(platform, FORM_LIMITS, request);
+	if (!limit.allowed) return tooManyRequests(limit);
 
 	const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
 	const result = validateContactInput(body);

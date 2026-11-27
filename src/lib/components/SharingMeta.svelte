@@ -16,6 +16,7 @@
 	import { site } from '$lib/site.config';
 	import {
 		buildPageGraph,
+		canonicalUrl,
 		jsonLdScript,
 		type Breadcrumb,
 		type ListEntry
@@ -29,7 +30,7 @@
 	export let image: string = '';
 	/** Alt text for the share image */
 	export let imageAlt: string = '';
-	/** Canonical URL for this page */
+	/** Optional canonical override (path or URL); defaults to the current pathname */
 	export let url: string = '';
 	/** Open Graph content type */
 	export let type: 'website' | 'article' | 'profile' = 'website';
@@ -81,6 +82,11 @@
 	// Resolve root-relative image paths to absolute URLs for OG/Twitter compliance
 	$: absoluteImage = image && image.startsWith('/') ? `${$page.url.origin}${image}` : image;
 
+	// Every indexable page gets exactly one absolute canonical on the canonical
+	// host, query and fragment stripped. A noindex page gets none: it must never
+	// point a crawler at a public page, and the robots meta already covers it.
+	$: canonical = noindex ? '' : canonicalUrl(url || $page.url.pathname);
+
 	// A noindex page emits no JSON-LD. Every one of them is an admin or account
 	// surface, so describing it to a crawler that has been told not to look is
 	// noise at best, and at worst it names internal pages in a payload the
@@ -125,8 +131,8 @@
 	{/if}
 
 	<!-- Canonical -->
-	{#if url}
-		<link rel="canonical" href={url} />
+	{#if canonical}
+		<link rel="canonical" href={canonical} />
 	{/if}
 
 	<!-- Open Graph -->
@@ -145,8 +151,8 @@
 			<meta property="og:image:height" content={String(imageHeight)} />
 		{/if}
 	{/if}
-	{#if url}
-		<meta property="og:url" content={url} />
+	{#if canonical}
+		<meta property="og:url" content={canonical} />
 	{/if}
 	<meta property="og:site_name" content={siteName || site.name} />
 	<meta property="og:locale" content={locale} />

@@ -103,6 +103,29 @@ export function absoluteUrl(pathOrUrl: string): string {
 	return path === '/' ? `${site.url}/` : `${site.url}${path}`;
 }
 
+/**
+ * The canonical URL for a page: canonical host + pathname, with the query
+ * string and fragment dropped and any trailing slash removed (except the root).
+ *
+ * Accepts a pathname, a path with `?query`/`#hash`, or a full URL on any host.
+ * A full URL is reduced to its pathname and re-homed on the canonical host, so
+ * `?utm_*`, `?page=`, `?tag=` and preview/www hosts all collapse to one URL.
+ */
+export function canonicalUrl(pathOrUrl: string): string {
+	let path = pathOrUrl || '/';
+	if (/^https?:\/\//i.test(path)) {
+		try {
+			path = new URL(path).pathname;
+		} catch {
+			path = '/';
+		}
+	}
+	path = path.split('#')[0].split('?')[0];
+	if (!path.startsWith('/')) path = `/${path}`;
+	if (path.length > 1) path = path.replace(/\/+$/, '') || '/';
+	return absoluteUrl(path);
+}
+
 /** The community itself: the node every other page node points `publisher` at. */
 export function organizationNode(): JsonLdNode {
 	return {

@@ -123,12 +123,12 @@ describe('SharingMeta', () => {
 		expect(ogImageAlt?.getAttribute('content')).toBe('My Title');
 	});
 
-	it('should render og:url when url is provided', () => {
+	it('should render og:url on the canonical host when url is provided', () => {
 		render(SharingMeta, {
-			props: { title: 'Test', url: 'https://example.com/page' }
+			props: { title: 'Test', url: 'https://example.com/page?utm_source=x' }
 		});
 		const ogUrl = document.querySelector('meta[property="og:url"]');
-		expect(ogUrl?.getAttribute('content')).toBe('https://example.com/page');
+		expect(ogUrl?.getAttribute('content')).toBe(`${site.url}/page`);
 	});
 
 	it('should render og:site_name', () => {
@@ -221,20 +221,29 @@ describe('SharingMeta', () => {
 	});
 
 	// Canonical URL
-	it('should render canonical link when url is provided', () => {
+	it('should render canonical link on the canonical host when url is provided', () => {
 		render(SharingMeta, {
-			props: { title: 'Test', url: 'https://example.com/canonical' }
+			props: { title: 'Test', url: 'https://example.com/canonical#frag' }
 		});
 		const canonical = document.querySelector('link[rel="canonical"]');
-		expect(canonical?.getAttribute('href')).toBe('https://example.com/canonical');
+		expect(canonical?.getAttribute('href')).toBe(`${site.url}/canonical`);
 	});
 
-	it('should not render canonical link when url is not provided', () => {
+	it('should default the canonical to the current pathname, absolute', () => {
 		render(SharingMeta, {
 			props: { title: 'Test' }
 		});
-		const canonical = document.querySelector('link[rel="canonical"]');
-		expect(canonical).not.toBeInTheDocument();
+		const all = document.querySelectorAll('link[rel="canonical"]');
+		expect(all).toHaveLength(1);
+		expect(all[0].getAttribute('href')).toMatch(/^https:\/\/starspace\.group\//);
+		expect(all[0].getAttribute('href')).not.toMatch(/[?#]/);
+	});
+
+	it('should not render a canonical on a noindex page', () => {
+		render(SharingMeta, {
+			props: { title: 'Test', noindex: true }
+		});
+		expect(document.querySelector('link[rel="canonical"]')).not.toBeInTheDocument();
 	});
 
 	// Article-specific meta tags
@@ -331,7 +340,7 @@ describe('SharingMeta', () => {
 			'Full image alt'
 		);
 		expect(document.querySelector('meta[property="og:url"]')?.getAttribute('content')).toBe(
-			'https://example.com/full'
+			`${site.url}/full`
 		);
 		expect(document.querySelector('meta[property="og:site_name"]')?.getAttribute('content')).toBe(
 			'TestSite'
@@ -361,7 +370,7 @@ describe('SharingMeta', () => {
 			'@creator'
 		);
 		expect(document.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(
-			'https://example.com/full'
+			`${site.url}/full`
 		);
 		expect(
 			document.querySelector('meta[property="article:published_time"]')?.getAttribute('content')

@@ -100,6 +100,10 @@ export default defineConfig({
 				'scripts/',
 				// Dependency-free config data — nothing to unit test.
 				'src/lib/site.config.ts',
+				// Dafny compiler output (scripts/build-dafny.mjs): each file inlines
+				// the whole Dafny runtime, ~1500 lines nothing here wrote. The rule
+				// is proven in dafny/*.dfy; the TS wrappers that call it are measured.
+				'src/lib/server/generated/**',
 				// Svelte components contain UI logic that's hard to unit test branches
 				// These are tested via E2E tests for user interaction flows
 				'**/*.svelte',

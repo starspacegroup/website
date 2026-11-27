@@ -141,7 +141,7 @@ Numbering is the part that actually goes wrong here, twice now. An earlier state
 ### Test topology
 
 - Two homes: colocated `src/**/*.test.ts` and the bulk in `tests/unit/`. Both are in the vitest `include`. E2E is `tests/e2e/` (Playwright, excluded from vitest).
-- Coverage **excludes** `**/*.svelte`, `src/routes/**/+page.ts`, `src/lib/site.config.ts`, `scripts/`, and `.remember/` tool scratch data. Authorization hooks are measured directly. The 95% floor therefore applies to product `.ts` logic; component tests exist and run, but do not count toward it.
+- Coverage **excludes** `**/*.svelte`, `src/routes/**/+page.ts`, `src/lib/site.config.ts`, `scripts/`, `.remember/` tool scratch data, and `src/lib/server/generated/` (Dafny compiler output carrying the whole Dafny runtime; the rule is proven in `dafny/*.dfy` and its TS wrappers are measured). Authorization hooks are measured directly. The 95% floor therefore applies to product `.ts` logic; component tests exist and run, but do not count toward it.
 - `pool: 'threads'` with `fileParallelism: false` (test files run one at a time, not concurrently), plus `unstubGlobals: true`. The last one is not optional: several suites stub `crypto` with a bare `{ randomUUID }`, and because files share a worker serially that object leaks into every later _file_ without it. Symptom is a suite that passes alone and fails in a full run.
 
 ## Claude-specific

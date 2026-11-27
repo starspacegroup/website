@@ -47,7 +47,6 @@ export const SITEMAP_ROUTES: readonly SitemapRoute[] = [
 	{ path: '/guide', changefreq: 'weekly', priority: 0.8 },
 	{ path: '/stats', changefreq: 'daily', priority: 0.7 },
 	{ path: '/badge', changefreq: 'monthly', priority: 0.6 },
-	{ path: '/chat', changefreq: 'monthly', priority: 0.6 },
 	{ path: '/contact', changefreq: 'monthly', priority: 0.5 },
 	{ path: '/privacy', changefreq: 'yearly', priority: 0.3 },
 	{ path: '/terms', changefreq: 'yearly', priority: 0.3 }
@@ -64,6 +63,7 @@ export const SITEMAP_EXCLUDED_ROUTES: Readonly<Record<string, string>> = {
 	admin: 'Owner/admin console — private, and Disallowed for every crawler.',
 	api: 'JSON endpoints, not pages. Described by /.well-known/api-catalog instead.',
 	auth: 'Sign-in and sign-up forms — no standalone content worth indexing.',
+	chat: 'Page is noindex; listing a noindex URL in a sitemap is a Search Console error.',
 	profile: 'Requires an authenticated session; renders per-user data.',
 	reset: 'Destructive maintenance route — must never be crawled or surfaced.',
 	setup: 'One-time install wizard; meaningless (and risky) once the site is live.',
